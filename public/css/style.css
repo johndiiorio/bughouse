@@ -1,0 +1,14 @@
+.main-container {
+    float: left;
+    position: relative;
+    left: 50%;
+}
+.fixer-container {
+    float: left;
+    position: relative;
+    left: -50%;
+}
+.wrap-text {
+    width: 500px;
+    word-wrap: break-word;
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <script src="js/bug.js"></script>
+</head>
+<html>
+<body>
+<script>
+    var chess = new Chess();
+    console.log(chess.ascii());
+    chess.move('e4');
+    console.log(chess.ascii());
+    chess.move('d5');
+    console.log(chess.ascii());
+    chess.move('exd5');
+    console.log(chess.ascii());
+    chess.move('Qxd5');
+    console.log(chess.ascii());
+    chess.move('P@b4');
+    console.log(chess.ascii());
+    chess.move('P@g3');
+    console.log(chess.ascii());
+    console.log(chess.reserve_white);
+    console.log(chess.reserve_black);
+</script>
+</body>
+</html>
