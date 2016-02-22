@@ -12,3 +12,6 @@
     width: 500px;
     word-wrap: break-word;
 }
+body {
+   background-color: #1a1a1a;
+}

@@ -1,26 +1,28 @@
 var express = require('express');
 var mysql = require('mysql');
+var pool = require('./pool.js').pool;
 var router = express.Router();
-
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'jzdMySQL88',
-    database: 'bughouse_db'
-});
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
-    var conn = connection.connect();
-    connection.query('SELECT * from users', function (err, rows, fields) {
-        if (!err) {
-            res.send(rows);
+    pool.getConnection(function(err,connection){
+        if (err) {
+            res.json({"code" : 100, "status" : "Error in connection database"});
+            return;
         }
-        else {
-            console.log('Error while performing Query.');
-        }
+        connection.query("SELECT * FROM USERS", function(err, rows){
+            connection.release();
+            if(!err) {
+                res.json(rows);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function(err) {
+            res.json({"code" : 100, "status" : "Error in connection database"});
+        });
     });
-    connection.end();
 });
 
 module.exports = router;

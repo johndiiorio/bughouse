@@ -1,183 +1,37 @@
-<!doctype html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" ng-app="bughouse">
 <head>
-    <meta charset="utf-8"/>
-    <title>Bughouse Chess</title>
+    <TITLE>Bughouse Chess</TITLE>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--CSS libraries -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/chessboard.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!--Javascript libraries -->
+    <script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular-route.min.js"></script>
+    <script src="js/bughouse.js"></script>
+    <script src="js/bug.js"></script>
+    <script src="js/json3.min.js"></script>
+    <script src="js/jquery-1.10.1.min.js"></script>
+    <script src="js/chessboard.js"></script>
 </head>
-<body>
-<script src="js/bug.js"></script>
-<script src="js/json3.min.js"></script>
-<script src="js/jquery-1.10.1.min.js"></script>
-<script src="js/chessboard.js"></script>
+<BODY ng-controller="homeController">
 
-<div class="main-container">
-    <div class="fixer-container">
-        <div class="game-left wrap-text" style="float: left; margin-right: 1em">
-            <div id="board1" style="width: 500px"></div>
-            <p>Status: <span id="status1"></span></p>
-            <p>FEN: <span id="fen1"></span></p>
-            <p>PGN: <span id="pgn1"></span></p>
-        </div>
-        <div class="game-right wrap-text" style="float: left">
-            <div id="board2" style="width: 500px"></div>
-            <p>Status: <span id="status2"></span></p>
-            <p>FEN: <span id="fen2"></span></p>
-            <p>PGN: <span id="pgn2"></span></p>
-        </div>
-    </div>
+<div class="alert-box errorNotification" id="notificationError"><span>Error: </span>Invalid
+    username/password
+    combination
+</div>
+<div class="alert-box successNotification" id="notificationSuccess"><span>Success: </span>Logged in.</div>
+<img src="../img/bug-text.png" alt="Bughouse Chess" width="372px" height="100px" style="margin-top: 1em; margin-left: 1em">
+
+<div id="main">
+    <div ng-view></div>
 </div>
 
-<script>
-    var init1 = function () {
-        var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1'), pgnEl = $('#pgn1');
-
-        var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                    (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                    (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
-        };
-
-        var onDrop = function (source, target) {
-            // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
-
-            // illegal move
-            if (move === null) return 'snapback';
-
-            updateStatus();
-        };
-        var onSnapEnd = function () {
-            board.position(game.fen());
-        };
-
-        var updateStatus = function () {
-            var status = '';
-
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-
-            // game still on
-            else {
-                status = moveColor + ' to move';
-
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
-        };
-
-        var cfg = {
-            draggable: true,
-            position: 'start',
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd
-        };
-        board = ChessBoard('board1', cfg);
-
-        updateStatus();
-
-    };
-    var init2 = function () {
-        var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2'), pgnEl = $('#pgn2');
-
-        var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                    (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                    (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
-        };
-
-        var onDrop = function (source, target) {
-            // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
-
-            // illegal move
-            if (move === null) return 'snapback';
-
-            updateStatus();
-        };
-        var onSnapEnd = function () {
-            board.position(game.fen());
-        };
-
-        var updateStatus = function () {
-            var status = '';
-
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-
-            // game still on
-            else {
-                status = moveColor + ' to move';
-
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
-        };
-
-        var cfg = {
-            draggable: true,
-            position: 'start',
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd
-        };
-        board = ChessBoard('board2', cfg);
-
-        updateStatus();
-
-    };
-    $(document).ready(init1);
-    $(document).ready(init2);
-</script>
 </body>
 </html>
