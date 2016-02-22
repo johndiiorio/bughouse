@@ -1,17 +1,18 @@
-.main-container {
-    float: left;
-    position: relative;
-    left: 50%;
+body {
+    background-color: #1a1a1a;
+    margin-left: 1em;
 }
-.fixer-container {
-    float: left;
-    position: relative;
-    left: -50%;
+p {
+    color: #ABABAB;
 }
 .wrap-text {
     width: 500px;
     word-wrap: break-word;
 }
-body {
-   background-color: #1a1a1a;
+.brighter-color {
+    color: #ABABAB;
+}
+.align-player-info {
+    top: 3px;
+    position: relative;
 }

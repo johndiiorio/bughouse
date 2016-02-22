@@ -1,17 +1,43 @@
-<div class="main-container">
-    <div class="fixer-container">
-        <div class="game-left wrap-text" style="float: left; color: #ABABAB; margin-right: 1em">
-            <div id="board1" style="width: 500px"></div>
-            <p>Status: <span id="status1"></span></p>
-            <p>FEN: <span id="fen1"></span></p>
-            <p>PGN: <span id="pgn1"></span></p>
+<div class="container-fluid" style="margin-top: 2em">
+    <div id="infoPanel" class="col-md-2" style="text-align:center">
+        <h4 class="brighter-color" style="text-decoration: underline">{{game.time_control + ' ' + getFormat(game.time_control) + ' ' + game.mode}}</h4>
+        <div>
+            <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
+            <span class="brighter-color align-player-info">
+                {{game.player1.username + ' (' + game.player1.rating + ')'}}</span>
+            <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
+            <span class="brighter-color align-player-info">
+                {{game.player2.username + ' (' + game.player2.rating + ')'}}</span>
+            <p style="top: 7px; position: relative">versus</p>
+            <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
+            <span class="brighter-color align-player-info">
+                {{game.player3.username + ' (' + game.player3.rating + ')'}}</span>
+            <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
+            <span class="brighter-color align-player-info">
+                {{game.player4.username + ' (' + game.player4.rating + ')'}}</span>
         </div>
-        <div class="game-right wrap-text" style="float: left; color: #ABABAB">
-            <div id="board2" style="width: 500px"></div>
-            <p>Status: <span id="status2"></span></p>
-            <p>FEN: <span id="fen2"></span></p>
-            <p>PGN: <span id="pgn2"></span></p>
+    </div>
+
+    <div id="game-left" class="col-md-5 brighter-color">
+        <div id="yourOpponentReserve">
         </div>
+        <div id="board1" style="width: 500px"></div>
+        <div id="yourReserve">
+        </div>
+        <p>Status: <span id="status1"></span></p>
+        <p>FEN: <span id="fen1"></span></p>
+        <p class="wrap-text">PGN: <span id="pgn1"></span></p>
+    </div>
+
+    <div id="game-right" class="col-xs-5">
+        <div id="opponentAcrossReserve">
+        </div>
+        <div id="board2" style="width: 350px"></div>
+        <div id="teammateReserve">
+        </div>
+        <p>Status: <span id="status2"></span></p>
+        <p>FEN: <span id="fen2"></span></p>
+        <p class="wrap-text">PGN: <span id="pgn2"></span></p>
     </div>
 </div>
 <script>
@@ -79,6 +105,7 @@
         var cfg = {
             draggable: true,
             position: 'start',
+            sparePieces: true,
             onDragStart: onDragStart,
             onDrop: onDrop,
             onSnapEnd: onSnapEnd
@@ -152,6 +179,7 @@
         var cfg = {
             draggable: true,
             position: 'start',
+            sparePieces: true,
             onDragStart: onDragStart,
             onDrop: onDrop,
             onSnapEnd: onSnapEnd

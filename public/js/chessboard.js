@@ -545,14 +545,14 @@ function buildBoardContainer() {
 
   if (cfg.sparePieces === true) {
     html += '<div class="' + CSS.sparePieces + ' ' +
-      CSS.sparePiecesTop + '"></div>';
+      CSS.sparePiecesTop + '" style="background-color: #A7A7A7"></div>';
   }
 
   html += '<div class="' + CSS.board + '"></div>';
 
   if (cfg.sparePieces === true) {
     html += '<div class="' + CSS.sparePieces + ' ' +
-      CSS.sparePiecesBottom + '"></div>';
+      CSS.sparePiecesBottom + '" style="background-color: #A7A7A7"></div>';
   }
 
   html += '</div>';
