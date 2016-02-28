@@ -45,12 +45,15 @@ app.controller('editProfileController', function ($scope) {
 app.controller('gameController', function ($scope) {
     //Hard coded tests for UI
     $scope.game = {};
-    $scope.game.time_control = "5+5";
+    $scope.game.time_control = "180+5";
     $scope.game.mode = "Casual";
     $scope.game.player1 = {username: "Xivister", rating: 1623};
     $scope.game.player2 = {username: "someguy86", rating: 1462};
     $scope.game.player3 = {username: "scrublord3", rating: 1363};
     $scope.game.player4 = {username: "superGM", rating: 2753};
+
+    $scope.game.duration = $scope.game.time_control.substring(0, $scope.game.time_control.indexOf("+"));
+
     $scope.getFormat = function (time_control) {
         var firstNum = parseInt(time_control.charAt(0));
         if (firstNum < 3) return "Bullet";

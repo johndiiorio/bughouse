@@ -34,7 +34,7 @@
         <div class="container-fluid align-name-clock-top">
             <h3 class="left-game-top-username">
                 {{game.player2.username + ' (' + game.player2.rating + ')'}}</h3>
-            <h3 id="yourOpponentTime" class="left-game-clock"></h3>
+            <h3 id="yourOpponentTime" class="left-game-clock">{{scope.game.duration}}</h3>
         </div>
         <div id="yourOpponentReserve"></div>
         <div id="board1" style="width: 500px"></div>
@@ -42,27 +42,28 @@
         <div class="align-name-clock-bottom">
             <h3 class="left-game-bottom-username">
                 {{game.player1.username + ' (' + game.player1.rating + ')'}}</h3>
-            <h3 id="yourTime" class="left-game-clock"></h3>
+            <h3 id="yourTime" class="left-game-clock">{{scope.game.duration}}</h3>
         </div>
     </div>
     <div id="game-right" class="col-xs-5">
         <div class="container-fluid align-name-clock-top">
             <h3 class="right-game-top-username">
                 {{game.player4.username + ' (' + game.player4.rating + ')'}}</h3>
-            <h3 id="opponentAcrossTime" class="right-game-clock"></h3>
+            <h3 id="opponentAcrossTime" class="right-game-clock">{{scope.game.duration}}</h3>
         </div>
         <div id="opponentAcrossReserve">
         </div>
         <div id="board2" style="width: 500px"></div>
-        <div id="teammateReserve">
-        </div>
+        <div id="teammateReserve"></div>
         <div class="align-name-clock-bottom">
             <h3 class="right-game-bottom-username">
                 {{game.player3.username + ' (' + game.player3.rating + ')'}}</h3>
-            <h3 id="teammateTime" class="right-game-clock"></h3>
+            <h3 id="teammateTime" class="right-game-clock">{{scope.game.duration}}</h3>
         </div>
     </div>
 </div>
+<button id="button1">Toggle timer 1</button>
+
 <script src="../js/countdowntimer.js"></script>
 <script src="../js/game.js"></script>
 <script>
@@ -76,10 +77,17 @@
             opponentAcrossTimer = new CountDownTimer(48),
             teammateTimer = new CountDownTimer(34);
 
-        yourTimer.onTick(format(yourDisplay)).start();
-        yourOpponentTimer.onTick(format(yourOpponentDisplay)).start();
-        opponentAcrossTimer.onTick(format(opponentAcrossDisplay)).start();
-        teammateTimer.onTick(format(teammateAcrossDisplay)).start();
+        yourTimer.onTick(format(yourDisplay));
+        yourOpponentTimer.onTick(format(yourOpponentDisplay));
+        opponentAcrossTimer.onTick(format(opponentAcrossDisplay));
+        teammateTimer.onTick(format(teammateAcrossDisplay));
+
+        yourTimer.start();
+        teammateTimer.start();
+
+//        $("#button1").click(function() {
+//            yourOpponentTimer.toggle();
+//        });
 
         function format(display) {
             return function (minutes, seconds) {
