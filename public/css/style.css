@@ -6,13 +6,52 @@ p {
     color: #ABABAB;
 }
 .wrap-text {
-    width: 500px;
     word-wrap: break-word;
 }
 .brighter-color {
     color: #ABABAB;
 }
+.blue-color {
+    color: #46BCDE;
+}
+.red-color {
+    color: #B33D4D;
+}
 .align-player-info {
     top: 3px;
     position: relative;
+}
+.align-name-clock-bottom {
+    width: 500px;
+    margin-left: 0;
+}
+.align-name-clock-top {
+    width: 500px;
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+.left-game-top-username {
+    float: left;
+    color: #B33D4D;
+}
+.left-game-bottom-username {
+    float: left;
+    color: #46BCDE;
+}
+.right-game-top-username {
+    float: right;
+    color: #B33D4D;
+}
+.right-game-bottom-username {
+    float: right;
+    color: #46BCDE;
+}
+.left-game-clock {
+    float: right;
+    color: #d85000;
+}
+.right-game-clock {
+    float: left;
+    color: #d85000;
 }

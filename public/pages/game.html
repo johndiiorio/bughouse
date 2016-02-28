@@ -1,194 +1,92 @@
 <div class="container-fluid" style="margin-top: 2em">
-    <div id="infoPanel" class="col-md-2" style="text-align:center">
-        <h4 class="brighter-color" style="text-decoration: underline">{{game.time_control + ' ' + getFormat(game.time_control) + ' ' + game.mode}}</h4>
-        <div>
-            <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
-            <span class="brighter-color align-player-info">
+    <div id="infoPanel" class="col-md-3">
+        <div id="infoPlayers" style="text-align:  center">
+            <h4 class="brighter-color" style="text-decoration: underline">{{game.time_control + ' ' +
+                getFormat(game.time_control) + ' ' + game.mode}}</h4>
+            <div>
+                <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
+            <span class="align-player-info blue-color">
                 {{game.player1.username + ' (' + game.player1.rating + ')'}}</span>
-            <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
-            <span class="brighter-color align-player-info">
+                <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
+            <span class="align-player-info blue-color">
                 {{game.player2.username + ' (' + game.player2.rating + ')'}}</span>
-            <p style="top: 7px; position: relative">versus</p>
-            <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
-            <span class="brighter-color align-player-info">
+                <p style="top: 7px; position: relative">versus</p>
+                <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
+            <span class="align-player-info red-color" >
                 {{game.player3.username + ' (' + game.player3.rating + ')'}}</span>
-            <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
-            <span class="brighter-color align-player-info">
+                <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
+            <span class="align-player-info red-color">
                 {{game.player4.username + ' (' + game.player4.rating + ')'}}</span>
+            </div>
+        </div>
+        <br>
+        <div id="infoPGN">
+            <p>Status: <span id="status1"></span></p>
+            <p>FEN: <span id="fen1"></span></p>
+            <p class="wrap-text">PGN: <span id="pgn1"></span></p>
+            <br>
+            <p>Status: <span id="status2"></span></p>
+            <p>FEN: <span id="fen2"></span></p>
+            <p class="wrap-text">PGN: <span id="pgn2"></span></p>
         </div>
     </div>
-
-    <div id="game-left" class="col-md-5 brighter-color">
-        <div id="yourOpponentReserve">
+    <div id="game-left" class="col-md-4">
+        <div class="container-fluid align-name-clock-top">
+            <h3 class="left-game-top-username">
+                {{game.player2.username + ' (' + game.player2.rating + ')'}}</h3>
+            <h3 id="yourOpponentTime" class="left-game-clock"></h3>
         </div>
+        <div id="yourOpponentReserve"></div>
         <div id="board1" style="width: 500px"></div>
-        <div id="yourReserve">
+        <div id="yourReserve"></div>
+        <div class="align-name-clock-bottom">
+            <h3 class="left-game-bottom-username">
+                {{game.player1.username + ' (' + game.player1.rating + ')'}}</h3>
+            <h3 id="yourTime" class="left-game-clock"></h3>
         </div>
-        <p>Status: <span id="status1"></span></p>
-        <p>FEN: <span id="fen1"></span></p>
-        <p class="wrap-text">PGN: <span id="pgn1"></span></p>
     </div>
-
     <div id="game-right" class="col-xs-5">
+        <div class="container-fluid align-name-clock-top">
+            <h3 class="right-game-top-username">
+                {{game.player4.username + ' (' + game.player4.rating + ')'}}</h3>
+            <h3 id="opponentAcrossTime" class="right-game-clock"></h3>
+        </div>
         <div id="opponentAcrossReserve">
         </div>
-        <div id="board2" style="width: 350px"></div>
+        <div id="board2" style="width: 500px"></div>
         <div id="teammateReserve">
         </div>
-        <p>Status: <span id="status2"></span></p>
-        <p>FEN: <span id="fen2"></span></p>
-        <p class="wrap-text">PGN: <span id="pgn2"></span></p>
+        <div class="align-name-clock-bottom">
+            <h3 class="right-game-bottom-username">
+                {{game.player3.username + ' (' + game.player3.rating + ')'}}</h3>
+            <h3 id="teammateTime" class="right-game-clock"></h3>
+        </div>
     </div>
 </div>
+<script src="../js/countdowntimer.js"></script>
+<script src="../js/game.js"></script>
 <script>
-    var init1 = function () {
-        var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1'), pgnEl = $('#pgn1');
+    jQuery(function ($) {
+        var yourDisplay = $('#yourTime'),
+            yourOpponentDisplay = $('#yourOpponentTime'),
+            opponentAcrossDisplay = $('#opponentAcrossTime'),
+            teammateAcrossDisplay = $('#teammateTime');
+        var yourTimer = new CountDownTimer(56),
+            yourOpponentTimer = new CountDownTimer(63),
+            opponentAcrossTimer = new CountDownTimer(48),
+            teammateTimer = new CountDownTimer(34);
 
-        var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                    (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                    (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
-        };
+        yourTimer.onTick(format(yourDisplay)).start();
+        yourOpponentTimer.onTick(format(yourOpponentDisplay)).start();
+        opponentAcrossTimer.onTick(format(opponentAcrossDisplay)).start();
+        teammateTimer.onTick(format(teammateAcrossDisplay)).start();
 
-        var onDrop = function (source, target) {
-            // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
-
-            // illegal move
-            if (move === null) return 'snapback';
-
-            updateStatus();
-        };
-        var onSnapEnd = function () {
-            board.position(game.fen());
-        };
-
-        var updateStatus = function () {
-            var status = '';
-
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-
-            // game still on
-            else {
-                status = moveColor + ' to move';
-
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
-        };
-
-        var cfg = {
-            draggable: true,
-            position: 'start',
-            sparePieces: true,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd
-        };
-        board = ChessBoard('board1', cfg);
-
-        updateStatus();
-
-    };
-    var init2 = function () {
-        var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2'), pgnEl = $('#pgn2');
-
-        var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                    (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                    (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
-        };
-
-        var onDrop = function (source, target) {
-            // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
-
-            // illegal move
-            if (move === null) return 'snapback';
-
-            updateStatus();
-        };
-        var onSnapEnd = function () {
-            board.position(game.fen());
-        };
-
-        var updateStatus = function () {
-            var status = '';
-
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-
-            // game still on
-            else {
-                status = moveColor + ' to move';
-
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
-        };
-
-        var cfg = {
-            draggable: true,
-            position: 'start',
-            sparePieces: true,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd
-        };
-        board = ChessBoard('board2', cfg);
-
-        updateStatus();
-
-    };
-    $(document).ready(init1);
-    $(document).ready(init2);
+        function format(display) {
+            return function (minutes, seconds) {
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.text(minutes + ':' + seconds);
+            };
+        }
+    });
 </script>
