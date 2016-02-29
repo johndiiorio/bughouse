@@ -2,7 +2,7 @@
     <div id="infoPanel" class="col-md-3">
         <div id="infoPlayers" style="text-align:  center">
             <h4 class="brighter-color" style="text-decoration: underline">{{game.time_control + ' ' +
-                getFormat(game.time_control) + ' ' + game.mode}}</h4>
+                getInfoFormat(game.time_control) + ' ' + game.mode}}</h4>
             <div>
                 <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
             <span class="align-player-info blue-color">
@@ -34,7 +34,7 @@
         <div class="container-fluid align-name-clock-top">
             <h3 class="left-game-top-username">
                 {{game.player2.username + ' (' + game.player2.rating + ')'}}</h3>
-            <h3 id="yourOpponentTime" class="left-game-clock">{{scope.game.duration}}</h3>
+            <h3 id="yourOpponentTime" class="left-game-clock">{{getDurationFormat(game.duration)}}</h3>
         </div>
         <div id="yourOpponentReserve"></div>
         <div id="board1" style="width: 500px"></div>
@@ -42,14 +42,14 @@
         <div class="align-name-clock-bottom">
             <h3 class="left-game-bottom-username">
                 {{game.player1.username + ' (' + game.player1.rating + ')'}}</h3>
-            <h3 id="yourTime" class="left-game-clock">{{scope.game.duration}}</h3>
+            <h3 id="yourTime" class="left-game-clock">{{getDurationFormat(game.duration)}}</h3>
         </div>
     </div>
     <div id="game-right" class="col-xs-5">
         <div class="container-fluid align-name-clock-top">
             <h3 class="right-game-top-username">
                 {{game.player4.username + ' (' + game.player4.rating + ')'}}</h3>
-            <h3 id="opponentAcrossTime" class="right-game-clock">{{scope.game.duration}}</h3>
+            <h3 id="opponentAcrossTime" class="right-game-clock">{{getDurationFormat(game.duration)}}</h3>
         </div>
         <div id="opponentAcrossReserve">
         </div>
@@ -58,43 +58,8 @@
         <div class="align-name-clock-bottom">
             <h3 class="right-game-bottom-username">
                 {{game.player3.username + ' (' + game.player3.rating + ')'}}</h3>
-            <h3 id="teammateTime" class="right-game-clock">{{scope.game.duration}}</h3>
+            <h3 id="teammateTime" class="right-game-clock">{{getDurationFormat(game.duration)}}</h3>
         </div>
     </div>
 </div>
-<button id="button1">Toggle timer 1</button>
-
 <script src="../js/countdowntimer.js"></script>
-<script src="../js/game.js"></script>
-<script>
-    jQuery(function ($) {
-        var yourDisplay = $('#yourTime'),
-            yourOpponentDisplay = $('#yourOpponentTime'),
-            opponentAcrossDisplay = $('#opponentAcrossTime'),
-            teammateAcrossDisplay = $('#teammateTime');
-        var yourTimer = new CountDownTimer(56),
-            yourOpponentTimer = new CountDownTimer(63),
-            opponentAcrossTimer = new CountDownTimer(48),
-            teammateTimer = new CountDownTimer(34);
-
-        yourTimer.onTick(format(yourDisplay));
-        yourOpponentTimer.onTick(format(yourOpponentDisplay));
-        opponentAcrossTimer.onTick(format(opponentAcrossDisplay));
-        teammateTimer.onTick(format(teammateAcrossDisplay));
-
-        yourTimer.start();
-        teammateTimer.start();
-
-//        $("#button1").click(function() {
-//            yourOpponentTimer.toggle();
-//        });
-
-        function format(display) {
-            return function (minutes, seconds) {
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                display.text(minutes + ':' + seconds);
-            };
-        }
-    });
-</script>
