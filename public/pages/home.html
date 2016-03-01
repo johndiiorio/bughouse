@@ -1,0 +1,65 @@
+<div class="container-fluid" style="margin-top: 2em">
+    <div id="createPanel" class="col-md-3">
+        <h3 class="brighter-color" style="text-decoration: underline">Create a new game:</h3>
+        <p type="text" id="minutesDisplay">Minutes: 5</p>
+        <input type="text" id="minutesSlider" class="span2" value="" data-slider-min="1" data-slider-max="20"
+               data-slider-step="1"
+               data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after"
+               data-slider-tooltip="hide">
+        <br>
+        <p type="text" id="incrementDisplay">Increment (seconds): 5</p>
+        <input type="text" id="incrementSlider" class="span2" value="" data-slider-min="0" data-slider-max="30"
+               data-slider-step="1"
+               data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after"
+               data-slider-tooltip="hide">
+        <br>
+        <p>Players join random sides:</p>
+        <input data-size="mini" type="checkbox" id="randomSlider" checked>
+        <br><br>
+        <p>Choose your side and create game!</p>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary">White</button>
+            <button type="button" class="btn btn-secondary">Random</button>
+            <button type="button" class="btn btn-secondary">Black</button>
+        </div>
+    </div>
+    <div id="lobbyPanel" class="col-md-9">
+        <h3 class="brighter-color" style="text-decoration: underline">Lobby:</h3>
+        <table class="table table-striped table-hover brighter-color">
+            <thead>
+            <tr>
+                <th>Slots</th>
+                <th>Teams</th>
+                <th>Time</th>
+                <th>Mode</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>2/4</td>
+                <td>random graphics here</td>
+                <td>5+5</td>
+                <td>Casual</td>
+            </tr>
+            <tr>
+                <td>1/4</td>
+                <td>random graphics here</td>
+                <td>3+4</td>
+                <td>Ranked</td>
+            </tr>
+            <tr>
+                <td>3/4</td>
+                <td>random graphics here</td>
+                <td>1+3</td>
+                <td>Casual</td>
+            </tr>
+            <tr>
+                <td>2/4</td>
+                <td>random graphics here</td>
+                <td>10+10</td>
+                <td>Ranked</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

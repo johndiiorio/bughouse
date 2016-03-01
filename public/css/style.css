@@ -2,56 +2,98 @@ body {
     background-color: #1a1a1a;
     margin-left: 1em;
 }
+
 p {
     color: #ABABAB;
 }
+
 .wrap-text {
     word-wrap: break-word;
 }
+
 .brighter-color {
     color: #ABABAB;
 }
+
 .blue-color {
     color: #46BCDE;
 }
+
 .red-color {
     color: #B33D4D;
 }
+
+.slider-track {
+    top: 0 !important;
+    background: #d85000;
+}
+
+.slider-selection {
+    background: #5D5D5D;
+}
+
+.bootstrap-switch{
+    border-color: #1a1a1a;
+    outline: 0 !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
 .align-player-info {
     top: 3px;
     position: relative;
 }
+
 .align-name-clock-bottom {
     width: 500px;
     margin-left: 0;
 }
+
 .align-name-clock-top {
     width: 500px;
     margin-left: 0;
     padding-left: 0;
     padding-right: 0;
 }
+
 .left-game-top-username {
     float: left;
     color: #B33D4D;
 }
+
 .left-game-bottom-username {
     float: left;
     color: #46BCDE;
 }
+
 .right-game-top-username {
     float: right;
     color: #B33D4D;
 }
+
 .right-game-bottom-username {
     float: right;
     color: #46BCDE;
 }
+
 .left-game-clock {
     float: right;
     color: #d85000;
 }
+
 .right-game-clock {
     float: left;
     color: #d85000;
+}
+
+.btn-secondary {
+    color: #ffffff;
+    background-color: #777;
+    border-color: #555;
+}
+
+.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active, .btn-secondary.active, .open .dropdown-toggle.btn-secondary {
+    color: #ffffff;
+    background-color: #006dcc;
+    border-color: #0044cc #0044cc #002a80;
 }
