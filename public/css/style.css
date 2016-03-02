@@ -23,6 +23,12 @@ p {
     color: #B33D4D;
 }
 
+/* SLIDERS */
+
+.slider-handle {
+    background: #000000;
+}
+
 .slider-track {
     top: 0 !important;
     background: #d85000;
@@ -32,12 +38,47 @@ p {
     background: #5D5D5D;
 }
 
+#ratingSliderDiv .slider-selection {
+    background: #d85000 !important;
+}
+#ratingSliderDiv .slider-track {
+    background: #5D5D5D !important;
+}
+
+/* SWITCHES */
+
 .bootstrap-switch{
     border-color: #1a1a1a;
     outline: 0 !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
 }
+
+/* Buttons */
+
+.btn-secondary {
+    color: #ffffff;
+    background-color: #777;
+    border-color: #555;
+}
+
+.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active, .btn-secondary.active, .open .dropdown-toggle.btn-secondary {
+    color: #ffffff;
+    background-color: #006dcc;
+    border-color: #0044cc #0044cc #002a80;
+}
+
+/* Tables */
+
+.table {
+    background-color: #383838;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: #555555;
+}
+
+/* CSS for Game page */
 
 .align-player-info {
     top: 3px;
@@ -84,16 +125,4 @@ p {
 .right-game-clock {
     float: left;
     color: #d85000;
-}
-
-.btn-secondary {
-    color: #ffffff;
-    background-color: #777;
-    border-color: #555;
-}
-
-.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active, .btn-secondary.active, .open .dropdown-toggle.btn-secondary {
-    color: #ffffff;
-    background-color: #006dcc;
-    border-color: #0044cc #0044cc #002a80;
 }

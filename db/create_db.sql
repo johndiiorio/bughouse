@@ -33,13 +33,13 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bughouse_db`.`games` (
   `game_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-  `timestamp` VARCHAR(45) NULL COMMENT '',
   `pgn` VARCHAR(5000) NULL COMMENT '',
   `time_control` VARCHAR(15) NULL COMMENT '',
-  `mode` VARCHAR(15) NULL COMMENT '',
+  `mode` VARCHAR(15) NOT NULL DEFAULT 'Casual' COMMENT '',
   `status` VARCHAR(25) NOT NULL DEFAULT 'open' COMMENT '',
-  `game_timestamp` TIMESTAMP(6) NULL COMMENT '',
+  `timestamp` TIMESTAMP(6) NULL COMMENT '',
   `termination` VARCHAR(45) NULL COMMENT '',
+  `join_random` TINYINT(1) NULL DEFAULT 1 COMMENT '',
   PRIMARY KEY (`game_id`)  COMMENT '',
   CONSTRAINT `player1`
     FOREIGN KEY (`game_id`)
