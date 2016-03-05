@@ -3,29 +3,35 @@
         <h3 class="brighter-color" style="text-decoration: underline">Create a new game:</h3>
         <p type="text" id="minutesDisplay">Minutes: 5</p>
         <input type="text" id="minutesSlider" class="span2" value="" data-slider-min="1" data-slider-max="20"
-               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after"
+               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
+               data-slider-selection="after"
                data-slider-tooltip="hide">
         <br>
         <p type="text" id="incrementDisplay">Increment (seconds): 5</p>
         <input type="text" id="incrementSlider" class="span2" value="" data-slider-min="0" data-slider-max="30"
-               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal" data-slider-selection="after"
+               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
+               data-slider-selection="after"
                data-slider-tooltip="hide">
         <br>
         <p type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
         <div id="ratingSliderDiv">
             <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
-                   data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal" data-slider-selection="after"
+                   data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
+                   data-slider-selection="after"
                    data-slider-tooltip="hide">
         </div>
         <br>
-        <p>Players join random sides:</p>
-        <input data-size="mini" type="checkbox" id="randomSlider" checked>
+        <p class="noBottomMargin">Players join random sides:</p>
+        <input data-size="mini" type="checkbox" id="randomSwitch" checked>
+        <br><br>
+        <p class="noBottomMargin">Rated or casual game?</p>
+        <input data-size="mini" data-on-text="Casual" data-off-text="Rated" type="checkbox" id="modeSwitch" checked>
         <br><br>
         <p>Choose your side and create game!</p>
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-secondary">White</button>
-            <button type="button" class="btn btn-secondary">Random</button>
-            <button type="button" class="btn btn-secondary">Black</button>
+            <button class="btn btn-secondary" ng-click="createGame('white')">White</button>
+            <button class="btn btn-secondary" ng-click="createGame('random')">Random</button>
+            <button class="btn btn-secondary" ng-click="createGame('black')">Black</button>
         </div>
     </div>
     <div id="lobbyPanel" class="col-md-7">
@@ -45,12 +51,12 @@
                 <td>{{getSlots(game)}}</td>
                 <td>
                     <div class="row">
-                        <div class="col-xs-6">{{formatPlayer(game.player2)}}</div>
-                        <div class="col-xs-6">{{formatPlayer(game.player3)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player2)}}">{{formatPlayer(game.player2)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player3)}}">{{formatPlayer(game.player3)}}</div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6">{{formatPlayer(game.player1)}}</div>
-                        <div class="col-xs-6">{{formatPlayer(game.player4)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player1)}}">{{formatPlayer(game.player1)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player4)}}">{{formatPlayer(game.player4)}}</div>
                     </div>
                 </td>
                 <td>{{formatRandom(game)}}</td>

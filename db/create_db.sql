@@ -33,31 +33,41 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bughouse_db`.`games` (
   `game_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-  `pgn` VARCHAR(5000) NULL COMMENT '',
-  `time_control` VARCHAR(15) NULL COMMENT '',
+  `moves` VARCHAR(5000) NULL COMMENT '',
+  `minutes` INT NOT NULL DEFAULT 5 COMMENT '',
+  `increment` INT NOT NULL DEFAULT 5 COMMENT '',
+  `rating_range` VARCHAR(9) NULL DEFAULT '0,3000' COMMENT '',
   `mode` VARCHAR(15) NOT NULL DEFAULT 'Casual' COMMENT '',
   `status` VARCHAR(25) NOT NULL DEFAULT 'open' COMMENT '',
   `timestamp` TIMESTAMP(6) NULL COMMENT '',
   `termination` VARCHAR(45) NULL COMMENT '',
   `join_random` TINYINT(1) NULL DEFAULT 1 COMMENT '',
+  `fk_player1_id` INT NULL COMMENT '',
+  `fk_player2_id` INT NULL COMMENT '',
+  `fk_player3_id` INT NULL COMMENT '',
+  `fk_player4_id` INT NULL COMMENT '',
   PRIMARY KEY (`game_id`)  COMMENT '',
-  CONSTRAINT `player1`
-    FOREIGN KEY (`game_id`)
+  INDEX `fk_player1_id_idx` (`fk_player1_id` ASC)  COMMENT '',
+  INDEX `fk_player2_id_idx` (`fk_player2_id` ASC)  COMMENT '',
+  INDEX `fk_player3_id_idx` (`fk_player3_id` ASC)  COMMENT '',
+  INDEX `fk_player4_id_idx` (`fk_player4_id` ASC)  COMMENT '',
+  CONSTRAINT `fk_player1_id`
+    FOREIGN KEY (`fk_player1_id`)
     REFERENCES `bughouse_db`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `player2`
-    FOREIGN KEY (`game_id`)
+  CONSTRAINT `fk_player2_id`
+    FOREIGN KEY (`fk_player2_id`)
     REFERENCES `bughouse_db`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `player3`
-    FOREIGN KEY (`game_id`)
+  CONSTRAINT `fk_player3_id`
+    FOREIGN KEY (`fk_player3_id`)
     REFERENCES `bughouse_db`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `player4`
-    FOREIGN KEY (`game_id`)
+  CONSTRAINT `fk_player4_id`
+    FOREIGN KEY (`fk_player4_id`)
     REFERENCES `bughouse_db`.`users` (`user_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)

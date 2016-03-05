@@ -1,16 +1,19 @@
 app.controller('homeController', function ($scope, $http) {
+    //TODO get userID
+    var userID = 1;
     $scope.gameArray = [];
 
-    //Tests
-    $scope.game = {};
-    $scope.game.time_control = "5+8";
-    $scope.game.mode = "Casual";
-    $scope.game.join_random = true;
-    $scope.game.player1 = {username: "Xivister", rating: 1623};
-    $scope.game.player2 = null;
-    $scope.game.player3 = {username: "superGM", rating: 2753};
-    $scope.game.player4 = null;
-    $scope.gameArray.push($scope.game);
+    $http({
+        method: 'GET',
+        url: '/api/games/open'
+    }).success(function (data, status, headers, config) {
+        for (var i = 0; i < data.length; i++) {
+            $scope.gameArray.push(data[i]);
+        }
+    }).error(function (data, status, headers, config) {
+        console.log("Error getting open games");
+    });
+
 
     $(document).ready(function () {
         //Hide the login notifications
@@ -26,7 +29,9 @@ app.controller('homeController', function ($scope, $http) {
         $('#ratingSlider').slider().on('slide', function (ev) {
             $('#ratingDisplay').text("Rating range: " + ev.value[0] + " - " + ev.value[1]);
         });
-        $('#randomSlider').bootstrapSwitch();
+        $('#randomSwitch').bootstrapSwitch();
+        $('#modeSwitch').bootstrapSwitch();
+
     });
 
     $scope.formatRandom = function(game) {
@@ -41,6 +46,13 @@ app.controller('homeController', function ($scope, $http) {
         if(game.player4 != null) count++;
         return count + "/4";
     };
+
+    $scope.formatColor = function(player) {
+        if (player == null) {
+            return "text-success";
+        }
+    };
+
     $scope.formatPlayer = function(player) {
         if(player != null) {
             return player.username + " (" + player.rating + ")";
@@ -62,18 +74,7 @@ app.controller('homeController', function ($scope, $http) {
             var slot = openSlots[Math.floor(Math.random() * openSlots.length)];
             //TODO CHANGE THIS
             var currentUser = {username: "Anonymous", rating: 1200};
-            if (slot == 1) {
-                game.player1 = currentUser;
-            }
-            else if (slot == 2) {
-                game.player2 = currentUser;
-            }
-            else if (slot == 3) {
-                game.player3 = currentUser;
-            }
-            else if (slot == 4) {
-                game.player4 = currentUser;
-            }
+            eval(String("game.player" + slot+"= currentUser"));
             if($scope.getOpenSlots(game).length == 0) {
                 $scope.startGame(game);
             }
@@ -81,7 +82,59 @@ app.controller('homeController', function ($scope, $http) {
             alert("Joining when join_random is false is not implemented");
         }
     };
+    $scope.createGame = function(side) {
+        var postData = {};
+        postData.minutes = $('#minutesSlider').val() ? $('#minutesSlider').val() : 5;
+        postData.increment = $('#incrementSlider').val() ? $('#incrementSlider').val() : 5;
+        postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
+        postData.join_random = $('#randomSwitch').bootstrapSwitch('state') == true ? 1 : 0;
+        postData.mode = $('#randomSwitch').bootstrapSwitch('state') == true ? "Casual" : "Rated";
+        postData.status = "open";
+        if (side == 'random') {
+            Math.floor(Math.random() * 2) == 0 ? side = 'white' : side = 'black';
+        }
+        if (side == 'white') {
+            postData.player1 = userID;
+            postData.player2 = null;
+            postData.player3 = null;
+            postData.player4 = null;
+        } else {
+            postData.player1 = null;
+            postData.player2 = userID;
+            postData.player3 = null;
+            postData.player4 = null;
+        }
+        $http({
+            method: 'POST',
+            url: '/api/games',
+            data: postData
+        }).success(function (data, status, headers, config) {
+            $http({
+                method: 'GET',
+                url: '/api/games/open'
+            }).success(function (data, status, headers, config) {
+                $scope.gameArray = [];
+                for (var i = 0; i < data.length; i++) {
+                    $scope.gameArray.push(data[i]);
+                }
+            }).error(function (data, status, headers, config) {
+                console.log("Error getting open games");
+            });
+        }).error(function (data, status, headers, config) {
+            console.log("Error creating game");
+        });
+    };
     $scope.startGame = function(game) {
+        var putData = {};
+        //TODO implement putting games
+        //$http({
+        //    method: 'PUT',
+        //    url: '/api/games',
+        //    data: putData
+        //}).success(function (data, status, headers, config) {
+        //}).error(function (data, status, headers, config) {
+        //    console.log("Error creating game");
+        //});
         window.location = "/#/game";
     }
 });
