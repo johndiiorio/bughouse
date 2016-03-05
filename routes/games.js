@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var pool = require('./pool.js').pool;
 var router = express.Router();
 
-/* GET users listing. */
+/* Get all games */
 router.get('/', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -25,6 +25,8 @@ router.get('/', function (req, res) {
         });
     });
 });
+
+/* GET all open games */
 router.get('/open', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -46,6 +48,74 @@ router.get('/open', function (req, res) {
         });
     });
 });
+/* Get an open game */
+router.get('/open/:game_id', function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("SELECT * FROM games WHERE game_id = ?", req.params.game_id, function (err, rows) {
+            connection.release();
+            if (!err) {
+                res.json(rows);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
+/* Update players for an open game */
+router.put('/open/:game_id', function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        var statement = "UPDATE Games SET fk_player1_id = (SELECT user_id FROM USERS WHERE user_id = ?), fk_player2_id = (SELECT user_id FROM USERS WHERE user_id = ?), fk_player3_id = (SELECT user_id FROM USERS WHERE user_id = ?), fk_player4_id = (SELECT user_id FROM USERS WHERE user_id = ?) WHERE game_id = ?";
+        connection.query(statement, [req.body.player1, req.body.player2, req.body.player3, req.body.player4 ,req.params.game_id], function (err, rows) {
+            connection.release();
+            if (!err) {
+                res.json(rows);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
+/* Start a game */
+router.put('/start/:game_id', function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("UPDATE Games SET status = 'playing' WHERE game_id = ?", req.params.game_id, function (err, rows) {
+            connection.release();
+            if (!err) {
+                res.json(rows);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
+/* Create a new game */
 router.post('/', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -63,7 +133,6 @@ router.post('/', function (req, res) {
             return this.getUTCFullYear() + "-" + twoDigits(1 + this.getUTCMonth()) + "-" + twoDigits(this.getUTCDate()) + " " + twoDigits(this.getUTCHours()) + ":" + twoDigits(this.getUTCMinutes()) + ":" + twoDigits(this.getUTCSeconds());
         };
         var currentTime = new Date().toMysqlFormat();
-        console.log(currentTime);
         var statement = "INSERT INTO GAMES (minutes, increment, rating_range, mode, status, timestamp, join_random, fk_player1_id, fk_player2_id, fk_player3_id, fk_player4_id) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT user_id FROM USERS WHERE user_id = ?), (SELECT user_id FROM USERS WHERE user_id=?), (SELECT user_id FROM USERS WHERE user_id=?), (SELECT user_id FROM USERS WHERE user_id=?))";
         connection.query(statement, [req.body.minutes, req.body.increment, req.body.rating_range, req.body.mode, req.body.status, currentTime, req.body.join_random, req.body.player1, req.body.player2, req.body.player3, req.body.player4], function (err, game) {
             connection.release();
@@ -76,25 +145,6 @@ router.post('/', function (req, res) {
         });
         connection.on('error', function (err) {
             res.json({"code": 100, "status": "Error in connection database"});
-        });
-    });
-});
-router.get('/:game_id', function (req, res) {
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            connection.release();
-            res.json({"code": 100, "status": "Error in connection database"});
-            return;
-        }
-        connection.query("SELECT * FROM GAMES WHERE game_id = ?", req.params.game_id, function (err, game) {
-            connection.release();
-            if (!err) {
-                res.json(game);
-            }
-            else {
-                console.log('Error while performing query');
-            }
-
         });
     });
 });

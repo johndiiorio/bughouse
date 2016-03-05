@@ -23,6 +23,11 @@ p {
     color: #B33D4D;
 }
 
+.noBottomMargin {
+    margin-bottom: 0;
+}
+
+
 /* SLIDERS */
 
 .slider-handle {
@@ -48,10 +53,16 @@ p {
 /* SWITCHES */
 
 .bootstrap-switch{
-    border-color: #1a1a1a;
+    border: none;
     outline: 0 !important;
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
+}
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-orange,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-orange {
+    color: #fff;
+    background: #d85000;
 }
 
 /* Buttons */
@@ -68,12 +79,6 @@ p {
     border-color: #555555;
 }
 
-/* Other */
-
-.noBottomMargin {
-    margin-bottom: 0;
-}
-
 /* Tables */
 
 .table {
@@ -81,7 +86,7 @@ p {
 }
 
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-    background-color: #555555;
+    background-color: rgb(70, 70, 70);
 }
 
 /* CSS for Game page */
