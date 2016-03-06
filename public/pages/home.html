@@ -48,17 +48,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="game in gameArray" ng-click="addPlayer(game)">
+            <tr ng-repeat="game in gameArray track by $index" ng-click="addPlayer(game)">
                 <td>{{getSlots(game)}}</td>
                 <td>{{game.mode}}</td>
                 <td>
                     <div class="row">
-                        <div class="col-xs-6 {{formatColor(game.player2)}}">{{formatPlayer(game.player2)}}</div>
-                        <div class="col-xs-6 {{formatColor(game.player3)}}">{{formatPlayer(game.player3)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player2)}}">{{formatPlayer(game.player2, game)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player3)}}">{{formatPlayer(game.player3, game)}}</div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-6 {{formatColor(game.player1)}}">{{formatPlayer(game.player1)}}</div>
-                        <div class="col-xs-6 {{formatColor(game.player4)}}">{{formatPlayer(game.player4)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player1)}}">{{formatPlayer(game.player1, game)}}</div>
+                        <div class="col-xs-6 {{formatColor(game.player4)}}">{{formatPlayer(game.player4, game)}}</div>
                     </div>
                 </td>
                 <td>{{game.minutes + "+" + game.increment}}</td>

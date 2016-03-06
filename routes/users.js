@@ -3,7 +3,7 @@ var mysql = require('mysql');
 var pool = require('./pool.js').pool;
 var router = express.Router();
 
-/* GET users listing. */
+/* GET all users */
 router.get('/', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -25,6 +25,7 @@ router.get('/', function (req, res) {
         });
     });
 });
+/* GET a specific users */
 router.get('/:user_id', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {

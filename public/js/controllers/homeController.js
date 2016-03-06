@@ -29,12 +29,39 @@ app.controller('homeController', function ($scope, $http) {
     $scope.formatRange = function(game) {
         return game.rating_range.substring(0, game.rating_range.indexOf(',')) + " - " + game.rating_range.substring(game.rating_range.indexOf(',') + 1);
     };
+    $scope.formatColor = function(player) {
+        if (typeof player === 'undefined') {
+            return "text-success";
+        }
+        if (player.length <= 0) {
+            return "text-success";
+        }
+    };
+    $scope.formatPlayer = function(player, game) {
+        if (typeof player !== 'undefined') {
+            if (typeof player[0] !== 'undefined') {
+                var returnString = player[0].username;
+                if (game.minutes < 3) {
+                    returnString += " (" + player[0].ratingBullet + ")";
+                } else if (game.minutes >= 3 && game.minutes <= 8) {
+                    returnString += " (" + player[0].ratingBlitz + ")";
+                } else {
+                    returnString += " (" + player[0].ratingClassical + ")";
+                }
+                if (player[0].title !== null) {
+                    returnString = player[0].title + " " + returnString;
+                }
+                return returnString;
+            }
+        }
+        return "empty";
+    };
     $scope.getSlots = function (game) {
         var count = 0;
-        if(game.player1 != null) count++;
-        if(game.player2 != null) count++;
-        if(game.player3 != null) count++;
-        if(game.player4 != null) count++;
+        if (typeof game.player1 !== 'undefined' && game.player1.length > 0) count++;
+        if (typeof game.player2 !== 'undefined' && game.player2.length > 0) count++;
+        if (typeof game.player3 !== 'undefined' && game.player3.length > 0) count++;
+        if (typeof game.player4 !== 'undefined' && game.player4.length > 0) count++;
         return count + "/4";
     };
     $scope.getGamesForUser = function() {
@@ -47,6 +74,20 @@ app.controller('homeController', function ($scope, $http) {
                 var minRange = parseInt(data[i].rating_range.substring(0, data[i].rating_range.indexOf(',')));
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
                 if ($scope.currentUser.rating >= minRange && $scope.currentUser.rating <= maxRange) {
+                    for (var j = 1; j <= 4; j++) {
+                        (function(i) {
+                            (function(j) {
+                                $http({
+                                    method: 'GET',
+                                    url: '/api/users/' + eval(String("data[i].fk_player" + j + "_id"))
+                                }).success(function (user, status, headers, config) {
+                                    eval(String("data[i].player" + j + "=user"));
+                                }).error(function () {
+                                    console.log("Error getting user");
+                                });
+                            })(j);
+                        })(i);
+                    }
                     $scope.gameArray.push(data[i]);
                 }
             }
@@ -54,24 +95,12 @@ app.controller('homeController', function ($scope, $http) {
             console.log("Error getting open games");
         });
     };
-    $scope.formatColor = function(player) {
-        if (player == null) {
-            return "text-success";
-        }
-    };
-    $scope.formatPlayer = function(player) {
-        if(player != null) {
-            return player.username + " (" + player.rating + ")";
-        } else {
-            return "empty";
-        }
-    };
     $scope.getOpenSlots = function(game) {
         var openSlots = [];
-        if(game.player1 == null) openSlots.push(1);
-        if(game.player2 == null) openSlots.push(2);
-        if(game.player3 == null) openSlots.push(3);
-        if(game.player4 == null) openSlots.push(4);
+        if (typeof game.player1 === 'undefined' || game.player1.length <= 0) openSlots.push(1);
+        if (typeof game.player2 === 'undefined' || game.player2.length <= 0) openSlots.push(2);
+        if (typeof game.player3 === 'undefined' || game.player3.length <= 0) openSlots.push(3);
+        if (typeof game.player4 === 'undefined' || game.player4.length <= 0) openSlots.push(4);
         return openSlots;
     };
     $scope.addPlayer = function(game) {
@@ -86,10 +115,10 @@ app.controller('homeController', function ($scope, $http) {
                 method: 'GET',
                 url: '/api/games/open/' + game.game_id
             }).success(function (data, status, headers, config) {
-                player1 = data.fk_player1_id;
-                player2 = data.fk_player2_id;
-                player3 = data.fk_player3_id;
-                player4 = data.fk_player4_id;
+                player1 = data[0].fk_player1_id;
+                player2 = data[0].fk_player2_id;
+                player3 = data[0].fk_player3_id;
+                player4 = data[0].fk_player4_id;
 
                 if(slot == 1) {
                     player1 = $scope.currentUser.user_id;
@@ -102,23 +131,22 @@ app.controller('homeController', function ($scope, $http) {
                 }
 
                 var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
-                console.log(putData);
 
                 $http({
                     method: 'PUT',
                     url: '/api/games/open/' + game.game_id,
                     data: putData
                 }).success(function (data, status, headers, config) {
+                    $scope.getGamesForUser();
+                    if($scope.getOpenSlots(game).length == 0) {
+                        $scope.startGame(game);
+                    }
                 }).error(function (data, status, headers, config) {
-                    console.log("Error creating game");
+                    console.log("Error updating game");
                 });
             }).error(function (data, status, headers, config) {
-                console.log("Error creating game");
+                console.log("Error getting game");
             });
-
-            if($scope.getOpenSlots(game).length == 0) {
-                $scope.startGame(game);
-            }
         } else {
             alert("Joining when join_random is false is not implemented");
         }
@@ -161,7 +189,7 @@ app.controller('homeController', function ($scope, $http) {
             url: '/api/games/start/' + game.game_id
         }).success(function (data, status, headers, config) {
         }).error(function (data, status, headers, config) {
-            console.log("Error creating game");
+            console.log("Error starting game");
         });
         window.location = "/#/game";
     };
