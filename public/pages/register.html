@@ -1,0 +1,47 @@
+<div class="container-fluid brighter-color">
+    <h3 class="brighter-color" style="text-decoration: underline">Register</h3>
+
+    <form class="form-horizontal" role="form" name="registerForm" ng-submit="submitRegisterForm()"
+          novalidate>
+        <div class="form-group">
+            <div class="col-xs-3"
+                 ng-class="{'has-error' : facultyForm.registerUsername.$invalid && facultyForm.registerUsername.$touched}">
+                <input type="text" class="form-control" id="registerUsername" name="registerUsername"
+                       ng-model="registerData.username" placeholder="Username" ng-minlength="4" ng-maxlength="15"
+                       required>
+
+                <p ng-show="registerForm.registerUsername.$error.minlength && facultyForm.registerUsername.$touched"
+                   class="help-block">Username is too short.</p>
+
+                <p ng-show="registerForm.registerUsername.$error.maxlength && facultyForm.registerUsername.$touched"
+                   class="help-block">Username is too long.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-3"
+                 ng-class="{'has-error' : facultyForm.registerPassword.$invalid && facultyForm.registerPassword.$touched}">
+                <input type="password" class="form-control" id="registerPassword" name="registerUsername"
+                       ng-model="registerData.password" placeholder="Password" ng-minlength="6" ng-maxlength="25"
+                       required>
+
+                <p ng-show="registerForm.registerUsername.$error.minlength && facultyForm.registerUsername.$touched"
+                   class="help-block">Password is too short.</p>
+
+                <p ng-show="registerForm.registerUsername.$error.maxlength && facultyForm.registerUsername.$touched"
+                   class="help-block">Password is too long.</p>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <div class="col-xs-6">
+                <div id="captcha"></div>
+                <input type="text" class="form-control" id="captchaText" ng-model="registerData.captchaText"
+                       placeholder="CAPTCHA text" style="width: 246px; display: inline-block" required>
+                <button class="btn btn-info" ng-click="newCaptcha()" style="width: 150px; display: inline-block">New CAPTCHA</button>
+            </div>
+
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

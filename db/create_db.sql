@@ -20,11 +20,13 @@ USE `bughouse_db` ;
 CREATE TABLE IF NOT EXISTS `bughouse_db`.`users` (
   `user_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `username` VARCHAR(25) NOT NULL COMMENT '',
+  `password_hash` CHAR(60) NOT NULL COMMENT '',
   `title` VARCHAR(2) NULL COMMENT '',
-  `ratingBlitz` INT NULL DEFAULT 1200 COMMENT '',
   `ratingBullet` INT NULL DEFAULT 1200 COMMENT '',
+  `ratingBlitz` INT NULL DEFAULT 1200 COMMENT '',
   `ratingClassical` INT NULL DEFAULT 1200 COMMENT '',
-  PRIMARY KEY (`user_id`)  COMMENT '')
+  PRIMARY KEY (`user_id`)  COMMENT '',
+  UNIQUE INDEX `username_UNIQUE` (`username` ASC)  COMMENT '')
 ENGINE = InnoDB;
 
 

@@ -16,6 +16,10 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
             templateUrl: 'pages/editprofile.html',
             controller: 'editProfileController'
         })
+        .when('/register', {
+            templateUrl: 'pages/register.html',
+            controller: 'registerController'
+        })
         .when('/game', {
             templateUrl: 'pages/game.html',
             controller: 'gameController'

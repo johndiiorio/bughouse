@@ -9,6 +9,10 @@ app.controller('homeController', function ($scope, $http) {
         $("#notificationSuccess").hide();
         $("#notificationError").hide();
 
+        $('.dropdown-menu input').click(function (event) {
+            event.stopPropagation();
+        });
+
         //Create the sliders and switches
         $('#minutesSlider').slider().on('slide', function (ev) {
             $('#minutesDisplay').text("Minutes: " + ev.value);
