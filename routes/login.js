@@ -12,7 +12,6 @@ router.post('/', function (req, res) {
             res.json({"code": 100, "status": "Error in connection database"});
             return;
         }
-        console.log(req.body);
         connection.query("SELECT * FROM USERS WHERE username = ?", req.body.username, function (err, user) {
             connection.release();
             if (!err && user.length > 0) {

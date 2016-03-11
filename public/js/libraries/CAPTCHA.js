@@ -50,8 +50,8 @@
             }
 
             if (this._settings.randomColours) {
-                this._settings.colour1 = this._generateRandomColour();
-                this._settings.colour2 = this._generateRandomColour();
+                this._settings.colour1 = this._generateRandomColourDark();
+                this._settings.colour2 = this._generateRandomColourLight();
             }
 
             var gradient1 = context.createLinearGradient(0, 0, this._settings.width, 0);
@@ -120,8 +120,12 @@
             }
         },
 
-        _generateRandomColour: function () {
-            return "rgb(" + Math.floor((Math.random() * 255)) + ", " + Math.floor((Math.random() * 255)) + ", " + Math.floor((Math.random() * 255)) + ")";
+        _generateRandomColourDark: function () {
+            return "rgb(" + Math.floor((Math.random() * 151)) + ", " + Math.floor((Math.random() * 151)) + ", " + Math.floor((Math.random() * 151)) + ")";
+        },
+
+        _generateRandomColourLight: function () {
+            return "rgb(" + Math.floor(Math.random() * (106)) + 150 + ", " + Math.floor(Math.random() * (106)) + 150 + ", " + Math.floor(Math.random() * (106)) + 150 + ")";
         }
     };
 

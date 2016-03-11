@@ -144,6 +144,14 @@ p {
     background-color: rgb(70, 70, 70);
 }
 
+/* Modal */
+
+.centerDiv {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* CSS for Game page */
 
 .align-player-info {

@@ -1,7 +1,9 @@
-app.controller('homeController', function ($scope, $http) {
-    //TODO get userID, rating
-    $scope.currentUser = {user_id: 1, username: "Anonymous", classicalRating: 1800};
+app.controller('homeController', function ($scope, $http, $route) {
+    if(!userInitialized) {
+        $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
+    }
     $scope.gameArray = [];
+    console.log(userID);
 
     $(document).ready(function () {
         //Hide the login notifications
@@ -28,13 +30,13 @@ app.controller('homeController', function ($scope, $http) {
         $('#modeSwitch').bootstrapSwitch({onColor: 'orange', size: 'mini', onText: 'Yes', offText: 'No'});
     });
 
-    $scope.formatRandom = function(game) {
+    $scope.formatRandom = function (game) {
         return game.join_random ? "Yes" : "No";
     };
-    $scope.formatRange = function(game) {
+    $scope.formatRange = function (game) {
         return game.rating_range.substring(0, game.rating_range.indexOf(',')) + " - " + game.rating_range.substring(game.rating_range.indexOf(',') + 1);
     };
-    $scope.formatColor = function(player) {
+    $scope.formatColor = function (player) {
         if (typeof player === 'undefined') {
             return "text-success";
         }
@@ -42,7 +44,7 @@ app.controller('homeController', function ($scope, $http) {
             return "text-success";
         }
     };
-    $scope.formatPlayer = function(player, game) {
+    $scope.formatPlayer = function (player, game) {
         if (typeof player !== 'undefined') {
             if (typeof player[0] !== 'undefined') {
                 var returnString = player[0].username;
@@ -69,7 +71,7 @@ app.controller('homeController', function ($scope, $http) {
         if (typeof game.player4 !== 'undefined' && game.player4.length > 0) count++;
         return count + "/4";
     };
-    $scope.getGamesForUser = function() {
+    $scope.getGamesForUser = function () {
         $http({
             method: 'GET',
             url: '/api/games/open'
@@ -78,10 +80,19 @@ app.controller('homeController', function ($scope, $http) {
             for (var i = 0; i < data.length; i++) {
                 var minRange = parseInt(data[i].rating_range.substring(0, data[i].rating_range.indexOf(',')));
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
-                if ($scope.currentUser.classicalRating >= minRange && $scope.currentUser.classicalRating <= maxRange) {
+                var passBool = false;
+
+                if (data[i].minutes < 3 && $scope.currentUser.ratingBullet >= minRange && $scope.currentUser.ratingBullet <= maxRange) {
+                    passBool = true;
+                } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.currentUser.ratingBlitz >= minRange && $scope.currentUser.ratingBlitz <= maxRange) {
+                    passBool = true;
+                } else if (data[i].minutes > 8 && $scope.currentUser.ratingClassical >= minRange && $scope.currentUser.ratingClassical <= maxRange) {
+                    passBool = true;
+                }
+                if (passBool) {
                     for (var j = 1; j <= 4; j++) {
-                        (function(i) {
-                            (function(j) {
+                        (function (i) {
+                            (function (j) {
                                 $http({
                                     method: 'GET',
                                     url: '/api/users/' + eval(String("data[i].fk_player" + j + "_id"))
@@ -100,7 +111,7 @@ app.controller('homeController', function ($scope, $http) {
             console.log("Error getting open games");
         });
     };
-    $scope.getOpenSlots = function(game) {
+    $scope.getOpenSlots = function (game) {
         var openSlots = [];
         if (typeof game.player1 === 'undefined' || game.player1.length <= 0) openSlots.push(1);
         if (typeof game.player2 === 'undefined' || game.player2.length <= 0) openSlots.push(2);
@@ -108,12 +119,12 @@ app.controller('homeController', function ($scope, $http) {
         if (typeof game.player4 === 'undefined' || game.player4.length <= 0) openSlots.push(4);
         return openSlots;
     };
-    $scope.addPlayer = function(game) {
+    $scope.addPlayer = function (game) {
         if (game.join_random) {
             var openSlots = $scope.getOpenSlots(game);
             var slot = openSlots[Math.floor(Math.random() * openSlots.length)];
 
-            eval(String("game.player" + slot+"= $scope.currentUser"));
+            eval(String("game.player" + slot + "= $scope.currentUser"));
 
             var player1, player2, player3, player4;
             $http({
@@ -125,11 +136,11 @@ app.controller('homeController', function ($scope, $http) {
                 player3 = data[0].fk_player3_id;
                 player4 = data[0].fk_player4_id;
 
-                if(slot == 1) {
+                if (slot == 1) {
                     player1 = $scope.currentUser.user_id;
-                } else if(slot == 2) {
+                } else if (slot == 2) {
                     player2 = $scope.currentUser.user_id;
-                } else if(slot == 3) {
+                } else if (slot == 3) {
                     player3 = $scope.currentUser.user_id;
                 } else {
                     player4 = $scope.currentUser.user_id;
@@ -143,7 +154,7 @@ app.controller('homeController', function ($scope, $http) {
                     data: putData
                 }).success(function (data, status, headers, config) {
                     $scope.getGamesForUser();
-                    if($scope.getOpenSlots(game).length == 0) {
+                    if ($scope.getOpenSlots(game).length == 0) {
                         $scope.startGame(game);
                     }
                 }).error(function (data, status, headers, config) {
@@ -153,10 +164,11 @@ app.controller('homeController', function ($scope, $http) {
                 console.log("Error getting game");
             });
         } else {
-            alert("Joining when join_random is false is not implemented");
+            //alert("Joining when join_random is false is not implemented");
+            $('#gameModal').modal('show');
         }
     };
-    $scope.createGame = function(side) {
+    $scope.createGame = function (side) {
         var postData = {};
         postData.minutes = $('#minutesSlider').val() ? $('#minutesSlider').val() : 5;
         postData.increment = $('#incrementSlider').val() ? $('#incrementSlider').val() : 5;
@@ -188,7 +200,7 @@ app.controller('homeController', function ($scope, $http) {
             console.log("Error creating game");
         });
     };
-    $scope.startGame = function(game) {
+    $scope.startGame = function (game) {
         $http({
             method: 'PUT',
             url: '/api/games/start/' + game.game_id
@@ -198,7 +210,7 @@ app.controller('homeController', function ($scope, $http) {
         });
         window.location = "/#/game";
     };
-    $scope.userLogIn = function() {
+    $scope.userLogIn = function () {
         var user = {username: $scope.login.username, password: $scope.login.password};
         $http({
             method: 'POST',
@@ -206,9 +218,14 @@ app.controller('homeController', function ($scope, $http) {
             data: user
         }).success(function (data, status, headers, config) {
             $scope.currentUser = data;
-            showNotification("#notificationLoginSuccess");
-            $("#myNavbar").load("pages/navbar.html #loadNavbar");
+            userID = data.user_id;
+            $("#myNavbar").load("pages/navbar.html #loadNavbar", function () {
+                $("#profileName").text($scope.currentUser.username + " (" + $scope.currentUser.ratingBullet + ", " + $scope.currentUser.ratingBlitz + ", " + $scope.currentUser.ratingClassical + ")");
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+            userInitialized = true;
             window.location = "/#/";
+            $route.reload();
         }).error(function (data, status, headers, config) {
             showNotification("#notificationLoginFailed");
         });
