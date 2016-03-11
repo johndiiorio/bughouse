@@ -2,8 +2,8 @@ app.controller('homeController', function ($scope, $http, $route) {
     if(!userInitialized) {
         $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
     }
+    $scope.selectedGame = null;
     $scope.gameArray = [];
-    console.log(userID);
 
     $(document).ready(function () {
         //Hide the login notifications
@@ -75,7 +75,7 @@ app.controller('homeController', function ($scope, $http, $route) {
         $http({
             method: 'GET',
             url: '/api/games/open'
-        }).success(function (data, status, headers, config) {
+        }).success(function (data) {
             $scope.gameArray = [];
             for (var i = 0; i < data.length; i++) {
                 var minRange = parseInt(data[i].rating_range.substring(0, data[i].rating_range.indexOf(',')));
@@ -107,7 +107,7 @@ app.controller('homeController', function ($scope, $http, $route) {
                     $scope.gameArray.push(data[i]);
                 }
             }
-        }).error(function (data, status, headers, config) {
+        }).error(function () {
             console.log("Error getting open games");
         });
     };
@@ -130,7 +130,7 @@ app.controller('homeController', function ($scope, $http, $route) {
             $http({
                 method: 'GET',
                 url: '/api/games/open/' + game.game_id
-            }).success(function (data, status, headers, config) {
+            }).success(function (data) {
                 player1 = data[0].fk_player1_id;
                 player2 = data[0].fk_player2_id;
                 player3 = data[0].fk_player3_id;
@@ -152,21 +152,75 @@ app.controller('homeController', function ($scope, $http, $route) {
                     method: 'PUT',
                     url: '/api/games/open/' + game.game_id,
                     data: putData
-                }).success(function (data, status, headers, config) {
+                }).success(function () {
                     $scope.getGamesForUser();
                     if ($scope.getOpenSlots(game).length == 0) {
                         $scope.startGame(game);
                     }
-                }).error(function (data, status, headers, config) {
+                }).error(function () {
                     console.log("Error updating game");
                 });
-            }).error(function (data, status, headers, config) {
+            }).error(function () {
                 console.log("Error getting game");
             });
         } else {
-            //alert("Joining when join_random is false is not implemented");
             $('#gameModal').modal('show');
+            $scope.selectedGame = game;
+
+            $http({
+                method: 'GET',
+                url: '/api/games/open/' + game.game_id
+            }).success(function (data) {
+                player1 = data[0].fk_player1_id;
+                player2 = data[0].fk_player2_id;
+                player3 = data[0].fk_player3_id;
+                player4 = data[0].fk_player4_id;
+
+                if (player1 != null) $("#joinPlayer1").hide();
+                if (player2 != null) $("#joinPlayer2").hide();
+                if (player3 != null) $("#joinPlayer3").hide();
+                if (player4 != null) $("#joinPlayer4").hide();
+
+            }).error(function (data, status, headers, config) {
+                console.log("Error getting game");
+            });
         }
+    };
+    $scope.joinPlayer = function ($event) {
+        $('#gameModal').removeClass('fade');
+        $('#gameModal').modal('hide');
+        var slot = $event.target.id.substring($event.target.id.length - 1);
+        var player1, player2, player3, player4;
+
+        player1 = $scope.selectedGame.fk_player1_id;
+        player2 = $scope.selectedGame.fk_player2_id;
+        player3 = $scope.selectedGame.fk_player3_id;
+        player4 = $scope.selectedGame.fk_player4_id;
+
+        if (slot == 1) {
+            player1 = $scope.currentUser.user_id;
+        } else if (slot == 2) {
+            player2 = $scope.currentUser.user_id;
+        } else if (slot == 3) {
+            player3 = $scope.currentUser.user_id;
+        } else {
+            player4 = $scope.currentUser.user_id;
+        }
+
+        var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
+
+        $http({
+            method: 'PUT',
+            url: '/api/games/open/' + $scope.selectedGame.game_id,
+            data: putData
+        }).success(function () {
+            $scope.getGamesForUser();
+            if ($scope.getOpenSlots($scope.selectedGame).length <= 1) {
+                $scope.startGame($scope.selectedGame);
+            }
+        }).error(function () {
+            console.log("Error updating game");
+        });
     };
     $scope.createGame = function (side) {
         var postData = {};
@@ -194,9 +248,9 @@ app.controller('homeController', function ($scope, $http, $route) {
             method: 'POST',
             url: '/api/games',
             data: postData
-        }).success(function (data, status, headers, config) {
+        }).success(function () {
             $scope.getGamesForUser();
-        }).error(function (data, status, headers, config) {
+        }).error(function () {
             console.log("Error creating game");
         });
     };
@@ -204,8 +258,8 @@ app.controller('homeController', function ($scope, $http, $route) {
         $http({
             method: 'PUT',
             url: '/api/games/start/' + game.game_id
-        }).success(function (data, status, headers, config) {
-        }).error(function (data, status, headers, config) {
+        }).success(function () {
+        }).error(function () {
             console.log("Error starting game");
         });
         window.location = "/#/game";
@@ -216,7 +270,7 @@ app.controller('homeController', function ($scope, $http, $route) {
             method: 'POST',
             url: '/api/login',
             data: user
-        }).success(function (data, status, headers, config) {
+        }).success(function (data) {
             $scope.currentUser = data;
             userID = data.user_id;
             $("#myNavbar").load("pages/navbar.html #loadNavbar", function () {
@@ -226,7 +280,7 @@ app.controller('homeController', function ($scope, $http, $route) {
             userInitialized = true;
             window.location = "/#/";
             $route.reload();
-        }).error(function (data, status, headers, config) {
+        }).error(function () {
             showNotification("#notificationLoginFailed");
         });
     };
