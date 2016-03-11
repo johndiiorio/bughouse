@@ -48,14 +48,12 @@
     </div>
     <div id="navbar" class="col-md-8">
         <div class="navbar-collapse collapse">
-            <div class="navbar-right">
-                <a href="/#/register">
-                    <button type="button" class="btn btn-secondary dropdown-toggle">Register</button>
-                </a>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
-                        Login <span class="caret"></span>
-                    </button>
+            <div class="navbar-right" id="myNavbar">
+                <ul class="nav navbar-nav navbar-right" id="loadNavbar">
+                    <li><a href="/#/register">Register</a></li>
+                    <li class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" onClick="return false;">Login<span class="caret"></span></a>
+                    </li>
                     <div class="dropdown-menu">
                         <div class="col-sm-12">
                             <div class="col-sm-12">
@@ -69,11 +67,12 @@
                                 <input type="password" placeholder="Password" class="form-control input-sm" id="loginPassword" ng-model="login.password"/>
                             </div>
                             <div class="col-sm-12">
-                                <button type="button" ng-click="userLogIn()" class="btn btn-primary btn-sm">Sign in</button>
+                                <button type="button" ng-click="userLogIn()" class="btn btn-primary btn-sm">Sign in
+                                    <span class="glyphicon glyphicon-log-in"></span></button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ul>
             </div>
         </div>
     </div>

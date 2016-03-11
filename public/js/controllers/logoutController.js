@@ -1,6 +1,6 @@
 app.controller('logoutController', function ($scope) {
-    //TODO clear all variables
     userID = null;
     authToken = null;
+    $("#myNavbar").load("pages/navbar.html #originalNavbar");
     window.location = "/#/";
 });

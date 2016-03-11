@@ -1,7 +1,6 @@
 app.controller('homeController', function ($scope, $http) {
     //TODO get userID, rating
-    $scope.currentUser = {user_id: 1, username: "Anonymous", rating: 1800};
-
+    $scope.currentUser = {user_id: 1, username: "Anonymous", classicalRating: 1800};
     $scope.gameArray = [];
 
     $(document).ready(function () {
@@ -79,7 +78,7 @@ app.controller('homeController', function ($scope, $http) {
             for (var i = 0; i < data.length; i++) {
                 var minRange = parseInt(data[i].rating_range.substring(0, data[i].rating_range.indexOf(',')));
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
-                if ($scope.currentUser.rating >= minRange && $scope.currentUser.rating <= maxRange) {
+                if ($scope.currentUser.classicalRating >= minRange && $scope.currentUser.classicalRating <= maxRange) {
                     for (var j = 1; j <= 4; j++) {
                         (function(i) {
                             (function(j) {
@@ -206,7 +205,9 @@ app.controller('homeController', function ($scope, $http) {
             url: '/api/login',
             data: user
         }).success(function (data, status, headers, config) {
+            $scope.currentUser = data;
             showNotification("#notificationLoginSuccess");
+            $("#myNavbar").load("pages/navbar.html #loadNavbar");
             window.location = "/#/";
         }).error(function (data, status, headers, config) {
             showNotification("#notificationLoginFailed");

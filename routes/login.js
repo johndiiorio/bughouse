@@ -17,7 +17,7 @@ router.post('/', function (req, res) {
             connection.release();
             if (!err && user.length > 0) {
                 if (bcrypt.compareSync(req.body.password, user[0].password_hash)) {
-                    res.json(user);
+                    res.json(user[0]);
                 } else {
                     res.status(500).send({ error: "error" });
                 }

@@ -55,7 +55,11 @@ p {
 .navbar-collapse {
     padding-top:5px;
     padding-bottom:5px !important;
-    padding-right: 25px; !important;
+    padding-right: 4em; !important;
+}
+
+#myNavbar a:hover, a:active, a:visited{
+    background: #1a1a1a !important;
 }
 
 .dropdown-menu {
