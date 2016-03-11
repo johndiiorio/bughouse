@@ -32,6 +32,21 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
             templateUrl: 'pages/error.html'
         })
 }]);
+
+app.directive('pwCheck', [function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, elem, attrs, ctrl) {
+            var firstPassword = '#' + attrs.pwCheck;
+            elem.add(firstPassword).on('keyup', function () {
+                scope.$apply(function () {
+                    ctrl.$setValidity('pwmatch', elem.val() === $(firstPassword).val());
+                });
+            });
+        }
+    }
+}]);
+
 //Show notifications for 3 seconds
 function showNotification(div) {
     $(div).delay("fast").fadeIn().delay(3000).fadeOut();

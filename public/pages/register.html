@@ -5,30 +5,34 @@
           novalidate>
         <div class="form-group">
             <div class="col-xs-3"
-                 ng-class="{'has-error' : facultyForm.registerUsername.$invalid && facultyForm.registerUsername.$touched}">
+                 ng-class="{'has-error' : registerForm.registerUsername.$invalid && registerForm.registerUsername.$touched}">
                 <input type="text" class="form-control" id="registerUsername" name="registerUsername"
                        ng-model="registerData.username" placeholder="Username" ng-minlength="4" ng-maxlength="15"
                        required>
-
-                <p ng-show="registerForm.registerUsername.$error.minlength && facultyForm.registerUsername.$touched"
+                <p class="red-color" ng-show="registerForm.registerUsername.$error.minlength && registerForm.registerUsername.$touched"
                    class="help-block">Username is too short.</p>
-
-                <p ng-show="registerForm.registerUsername.$error.maxlength && facultyForm.registerUsername.$touched"
+                <p class="red-color" ng-show="registerForm.registerUsername.$error.maxlength && registerForm.registerUsername.$touched"
                    class="help-block">Username is too long.</p>
             </div>
         </div>
         <div class="form-group">
             <div class="col-xs-3"
-                 ng-class="{'has-error' : facultyForm.registerPassword.$invalid && facultyForm.registerPassword.$touched}">
-                <input type="password" class="form-control" id="registerPassword" name="registerUsername"
+                 ng-class="{'has-error' : registerForm.registerPassword.$invalid && registerForm.registerPassword.$touched}">
+                <input type="password" class="form-control" id="registerPassword" name="registerPassword"
                        ng-model="registerData.password" placeholder="Password" ng-minlength="6" ng-maxlength="25"
                        required>
-
-                <p ng-show="registerForm.registerUsername.$error.minlength && facultyForm.registerUsername.$touched"
+                <p class="red-color" ng-show="registerForm.registerPassword.$error.minlength && registerForm.registerPassword.$touched"
                    class="help-block">Password is too short.</p>
-
-                <p ng-show="registerForm.registerUsername.$error.maxlength && facultyForm.registerUsername.$touched"
+                <p class="red-color" ng-show="registerForm.registerPassword.$error.maxlength && registerForm.registerPassword.$touched"
                    class="help-block">Password is too long.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-3"
+                 ng-class="{'has-error' : registerForm.confirmPassword.$invalid && registerForm.confirmPassword.$touched}">
+                <input type="password" class="form-control" name="confirmPassword" id="confirmPassword"
+                       placeholder="Re-enter password" ng-model="registerData.confirmPassword" pw-check="registerPassword" required>
+                <p class="red-color" ng-show="registerForm.confirmPassword.$error.pwmatch" class="help-block">Passwords don't match</p>
             </div>
         </div>
         <br>
@@ -37,11 +41,12 @@
                 <div id="captcha"></div>
                 <input type="text" class="form-control" id="captchaText" ng-model="registerData.captchaText"
                        placeholder="CAPTCHA text" style="width: 246px; display: inline-block" required>
-                <button class="btn btn-info" ng-click="newCaptcha()" style="width: 150px; display: inline-block">New CAPTCHA</button>
+                <button type="button" class="btn btn-info" ng-click="newCaptcha()" style="width: 150px; display: inline-block">New CAPTCHA</button>
             </div>
 
         </div>
         <br>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="registerForm.$invalid">Submit</button>
+
     </form>
 </div>

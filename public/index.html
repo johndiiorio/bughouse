@@ -33,21 +33,24 @@
 </head>
 <BODY ng-controller="homeController">
 
-<div class="alert-box errorNotification" id="notificationError"><span>Error: </span>Invalid
-    username/password
-    combination
+<div class="alert-box errorNotification" id="notificationLoginFailed"><span>Error: </span>Invalid
+    username/password combination
 </div>
-<div class="alert-box successNotification" id="notificationSuccess"><span>Success: </span>Logged in.</div>
+<div class="alert-box successNotification" id="notificationLoginSuccess"><span>Success: </span>Logged in.</div>
+
+<div class="alert-box successNotification" id="notificationRegisterSuccess"><span>Success: </span>Registered</div>
+<div class="alert-box errorNotification" id="notificationRegisterFailed"><span>Error: </span>Failed to register</div>
+
 
 <div class="container-fluid" style="margin-top: 1em">
     <div id="logo" class="col-md-4">
-        <img src="../img/bug-text.png" alt="Bughouse Chess" width="223px" height="60px">
+        <a href="/#/"><img src="../img/bug-text.png" alt="Bughouse Chess" width="223px" height="60px"></a>
     </div>
     <div id="navbar" class="col-md-8">
         <div class="navbar-collapse collapse">
             <div class="navbar-right">
                 <a href="/#/register">
-                    <button class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Register</button>
+                    <button type="button" class="btn btn-secondary dropdown-toggle">Register</button>
                 </a>
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
@@ -59,14 +62,14 @@
                                 Login
                             </div>
                             <div class="col-sm-12">
-                                <input type="text" placeholder="Username" onclick="return false;" class="form-control input-sm" id="inputError" />
+                                <input type="text" placeholder="Username" class="form-control input-sm" id="loginUsername" ng-model="login.username" />
                             </div>
                             <br>
                             <div class="col-sm-12">
-                                <input type="password" placeholder="Password" class="form-control input-sm" name="password" id="Password1" />
+                                <input type="password" placeholder="Password" class="form-control input-sm" id="loginPassword" ng-model="login.password"/>
                             </div>
                             <div class="col-sm-12">
-                                <button type="submit" class="btn btn-primary btn-sm">Sign in</button>
+                                <button type="button" ng-click="userLogIn()" class="btn btn-primary btn-sm">Sign in</button>
                             </div>
                         </div>
                     </div>

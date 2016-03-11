@@ -62,6 +62,7 @@ router.post('/', function (req, res) {
             }
             else {
                 console.log('Error while performing query');
+                res.status(500).send({ error: "error" });
             }
         });
         connection.on('error', function (err) {
@@ -69,16 +70,5 @@ router.post('/', function (req, res) {
         });
     });
 });
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

@@ -6,8 +6,10 @@ app.controller('homeController', function ($scope, $http) {
 
     $(document).ready(function () {
         //Hide the login notifications
-        $("#notificationSuccess").hide();
-        $("#notificationError").hide();
+        $("#notificationLoginSuccess").hide();
+        $("#notificationLoginFailed").hide();
+        $("#notificationRegisterSuccess").hide();
+        $("#notificationRegisterFailed").hide();
 
         $('.dropdown-menu input').click(function (event) {
             event.stopPropagation();
@@ -196,6 +198,19 @@ app.controller('homeController', function ($scope, $http) {
             console.log("Error starting game");
         });
         window.location = "/#/game";
+    };
+    $scope.userLogIn = function() {
+        var user = {username: $scope.login.username, password: $scope.login.password};
+        $http({
+            method: 'POST',
+            url: '/api/login',
+            data: user
+        }).success(function (data, status, headers, config) {
+            showNotification("#notificationLoginSuccess");
+            window.location = "/#/";
+        }).error(function (data, status, headers, config) {
+            showNotification("#notificationLoginFailed");
+        });
     };
 
     //Done after function has been initialized

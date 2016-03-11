@@ -1,4 +1,4 @@
-app.controller('registerController', function ($scope) {
+app.controller('registerController', function ($scope, $http) {
     var captcha;
     $(function () {
         captcha = new CAPTCHA({
@@ -12,10 +12,25 @@ app.controller('registerController', function ($scope) {
         captcha.generate();
     };
     $scope.submitRegisterForm = function () {
-        if (captcha.validate($scope.registerData.captchaText)) {
-            alert("Correct captcha");
-        } else {
-            captcha.generate();
+        if (typeof $scope.registerData !== 'undefined') {
+            if (captcha.validate($scope.registerData.captchaText)) {
+                var postData = {username: $scope.registerData.username, password: $scope.registerData.password};
+                $http({
+                    method: 'POST',
+                    url: '/api/users',
+                    data: postData
+                }).success(function (data, status, headers, config) {
+                    console.log("Success: " + status);
+                    showNotification("#notificationRegisterSuccess");
+                    window.location = "/#/";
+                }).error(function (data, status, headers, config) {
+                    console.log("Error: " + status);
+                    showNotification("#notificationRegisterFailed");
+                });
+            } else {
+                captcha.generate();
+                showNotification("#notificationRegisterFailed");
+            }
         }
     };
 });

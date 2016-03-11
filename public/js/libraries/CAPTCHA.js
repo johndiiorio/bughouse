@@ -30,19 +30,6 @@
 
         var controlWrapper = $('<div>').appendTo(this._container);
 
-        //this._input = $('<input>').addClass('user-text')
-        //    .on('keypress', function (e) {
-        //        if (e.which == 13) {
-        //            that.validate(that._input.val());
-        //        }
-        //    })
-        //    .appendTo(controlWrapper);
-
-        //this._button = $('<button>').text('submit')
-        //    .addClass('validate btn-primary')
-        //    .on('click', function () { that.validate(that._input.val()); })
-        //    .appendTo(controlWrapper);
-
         this._context = this._canvas.get(0).getContext("2d");
 
     };
@@ -100,11 +87,6 @@
         },
 
         validate: function (userText) {
-            //if (userText === this._settings.text) {
-            //    this._settings.onSuccess();
-            //} else {
-            //    this.generate();
-            //}
             if (userText === this._settings.text) {
                 return true;
             } else {
