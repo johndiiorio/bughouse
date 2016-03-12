@@ -1,8 +1,8 @@
 <div class="container-fluid" style="margin-top: 2em">
     <div id="infoPanel" class="col-md-3">
         <div id="infoPlayers" style="text-align:  center">
-            <h4 class="brighter-color" style="text-decoration: underline">{{game.time_control + ' ' +
-                getInfoFormat(game.time_control) + ' ' + game.mode}}</h4>
+            <h4 class="brighter-color" style="text-decoration: underline">{{game.minutes + '+' + game.increment + ' ' +
+                getInfoFormat(game.minutes) + ' ' + game.mode}}</h4>
             <div>
                 <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
             <span class="align-player-info blue-color">
@@ -34,7 +34,7 @@
         <div class="container-fluid align-name-clock-top">
             <h3 class="left-game-top-username">
                 {{game.player2.username + ' (' + game.player2.rating + ')'}}</h3>
-            <h3 id="yourOpponentTime" class="left-game-clock">{{getDurationFormat(game.duration)}}</h3>
+            <h3 id="yourOpponentTime" class="left-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
         <div id="yourOpponentReserve"></div>
         <div id="board1" style="width: 500px"></div>
@@ -42,14 +42,14 @@
         <div class="align-name-clock-bottom">
             <h3 class="left-game-bottom-username">
                 {{game.player1.username + ' (' + game.player1.rating + ')'}}</h3>
-            <h3 id="yourTime" class="left-game-clock">{{getDurationFormat(game.duration)}}</h3>
+            <h3 id="yourTime" class="left-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
     </div>
     <div id="game-right" class="col-xs-5">
         <div class="container-fluid align-name-clock-top">
             <h3 class="right-game-top-username">
                 {{game.player4.username + ' (' + game.player4.rating + ')'}}</h3>
-            <h3 id="opponentAcrossTime" class="right-game-clock">{{getDurationFormat(game.duration)}}</h3>
+            <h3 id="opponentAcrossTime" class="right-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
         <div id="opponentAcrossReserve">
         </div>
@@ -58,7 +58,7 @@
         <div class="align-name-clock-bottom">
             <h3 class="right-game-bottom-username">
                 {{game.player3.username + ' (' + game.player3.rating + ')'}}</h3>
-            <h3 id="teammateTime" class="right-game-clock">{{getDurationFormat(game.duration)}}</h3>
+            <h3 id="teammateTime" class="right-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
     </div>
 </div>

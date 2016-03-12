@@ -527,7 +527,7 @@ function createElIds() {
   }
 
   // spare pieces
-  var pieces = 'KQRBNP'.split('');
+  var pieces = 'QRBNP'.split('');
   for (var i = 0; i < pieces.length; i++) {
     var whitePiece = 'w' + pieces[i];
     var blackPiece = 'b' + pieces[i];
@@ -670,9 +670,12 @@ function buildPiece(piece, hidden, id) {
 }
 
 function buildSparePieces(color) {
-  var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
+  //var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
+  var pieces = ['wQ', 'wR', 'wB', 'wN', 'wP'];
+
   if (color === 'black') {
-    pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP'];
+    //pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP'];
+    pieces = ['bQ', 'bR', 'bB', 'bN', 'bP'];
   }
 
   var html = '';

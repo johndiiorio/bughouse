@@ -1676,6 +1676,7 @@ var Chess = function (fen) {
              * so join together moves
              */
             if (max_width === 0) {
+                //return moves.join(' ');
                 return result.join('') + moves.join(' ');
             }
 
@@ -1699,7 +1700,6 @@ var Chess = function (fen) {
                 result.push(moves[i]);
                 current_width += moves[i].length;
             }
-
             return result.join('');
         },
 
@@ -1794,7 +1794,7 @@ var Chess = function (fen) {
             ms = ms.replace(/(\{[^}]+\})+?/g, '');
 
             /* delete recursive annotation variations */
-            var rav_regex = /(\([^\(\)]+\))+?/g
+            var rav_regex = /(\([^\(\)]+\))+?/g;
             while (rav_regex.test(ms)) {
                 ms = ms.replace(rav_regex, '');
             }
@@ -1879,8 +1879,7 @@ var Chess = function (fen) {
                 var move_replaced = move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
 
                 for (var i = 0, len = moves.length; i < len; i++) {
-                    if (move_replaced ===
-                        move_to_san(moves[i]).replace(/=/, '').replace(/[+#]?[?!]*$/, '')) {
+                    if (move_replaced === move_to_san(moves[i]).replace(/=/, '').replace(/[+#]?[?!]*$/, '')) {
                         move_obj = moves[i];
                         break;
                     }
@@ -1888,10 +1887,7 @@ var Chess = function (fen) {
             } else if (typeof move === 'object') {
                 /* convert the pretty move object to an ugly move object */
                 for (var i = 0, len = moves.length; i < len; i++) {
-                    if (move.from === algebraic(moves[i].from) &&
-                        move.to === algebraic(moves[i].to) &&
-                        (!('promotion' in moves[i]) ||
-                        move.promotion === moves[i].promotion)) {
+                    if (move.from === algebraic(moves[i].from) && move.to === algebraic(moves[i].to) && (!('promotion' in moves[i]) || move.promotion === moves[i].promotion)) {
                         move_obj = moves[i];
                         break;
                     }

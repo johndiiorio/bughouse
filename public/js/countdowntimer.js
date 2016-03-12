@@ -1,5 +1,6 @@
-function CountDownTimer(duration, granularity) {
+function CountDownTimer(duration, increment, granularity) {
     this.duration = duration;
+    this.increment = increment;
     this.granularity = granularity || 1000;
     this.tickFtns = [];
     this.running = false;
@@ -38,8 +39,7 @@ CountDownTimer.prototype.toggle = function () {
     if(this.running){
         this.running = false;
         this.duration = this.duration - (((Date.now() - this.startTime) / 1000) | 0);
-        console.log(this.duration);
-
+        this.duration += this.increment;
     }
     else {
         this.running = true;

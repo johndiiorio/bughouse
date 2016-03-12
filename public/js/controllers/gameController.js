@@ -3,26 +3,28 @@ app.controller('gameController', function ($scope) {
 
     //Hard coded tests for UI, use AJAX for production
     $scope.game = {};
-    $scope.game.time_control = "246+5";
+    $scope.game.minutes = 5;
+    $scope.game.increment = 10;
     $scope.game.mode = "Casual";
     $scope.game.player1 = {username: "Xivister", rating: 1623};
     $scope.game.player2 = {username: "someguy86", rating: 1462};
     $scope.game.player3 = {username: "scrublord3", rating: 1363};
     $scope.game.player4 = {username: "superGM", rating: 2753};
 
-    $scope.game.duration = $scope.game.time_control.substring(0, $scope.game.time_control.indexOf("+"));
-    $scope.game.increment = $scope.game.time_control.substring($scope.game.time_control.indexOf("+") + 1);
+    var yourDisplay = $('#yourTime'),
+        yourOpponentDisplay = $('#yourOpponentTime'),
+        opponentAcrossDisplay = $('#opponentAcrossTime'),
+        teammateAcrossDisplay = $('#teammateTime');
+
+
 
     jQuery(function ($) {
-        var yourDisplay = $('#yourTime'),
-            yourOpponentDisplay = $('#yourOpponentTime'),
-            opponentAcrossDisplay = $('#opponentAcrossTime'),
-            teammateAcrossDisplay = $('#teammateTime');
 
-        yourTimer = new CountDownTimer($scope.game.duration);
-        yourOpponentTimer = new CountDownTimer($scope.game.duration);
-        opponentAcrossTimer = new CountDownTimer($scope.game.duration);
-        teammateTimer = new CountDownTimer($scope.game.duration);
+
+        yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
+        yourOpponentTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
+        opponentAcrossTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
+        teammateTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
 
         yourTimer.onTick(format(yourDisplay));
         yourOpponentTimer.onTick(format(yourOpponentDisplay));
@@ -44,6 +46,8 @@ app.controller('gameController', function ($scope) {
     var gameLeft = function () {
         var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1'), pgnEl = $('#pgn1');
 
+        var moves = [];
+
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
                 (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -51,13 +55,19 @@ app.controller('gameController', function ($scope) {
                 return false;
             }
         };
-        var onDrop = function (source, target) {
+        var onDrop = function (source, target, piece) {
             // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
+            var move;
+            if(source == "spare") {
+                move = game.move(piece.charAt(1) + "@" + target);
+                console.log(move);
+            } else {
+                move = game.move({
+                    from: source,
+                    to: target,
+                    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+                });
+            }
 
             // illegal move
             if (move === null) return 'snapback';
@@ -93,12 +103,14 @@ app.controller('gameController', function ($scope) {
             }
             statusEl.html(status);
             fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
+            moves.push(game.history() + " ");
+            pgnEl.html(moves);
         };
         var cfg = {
             draggable: true,
             position: 'start',
             sparePieces: true,
+            showNotation: false,
             onDragStart: onDragStart,
             onDrop: onDrop,
             onSnapEnd: onSnapEnd
@@ -108,6 +120,7 @@ app.controller('gameController', function ($scope) {
     };
     var gameRight = function () {
         var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2'), pgnEl = $('#pgn2');
+        var moves = [];
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -116,13 +129,19 @@ app.controller('gameController', function ($scope) {
                 return false;
             }
         };
-        var onDrop = function (source, target) {
+        var onDrop = function (source, target, piece) {
             // see if the move is legal
-            var move = game.move({
-                from: source,
-                to: target,
-                promotion: 'q' // NOTE: always promote to a queen for example simplicity
-            });
+            var move;
+            if(source == "spare") {
+                move = game.move(piece.charAt(1) + "@" + target);
+                console.log(move);
+            } else {
+                move = game.move({
+                    from: source,
+                    to: target,
+                    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+                });
+            }
             // illegal move
             if (move === null) return 'snapback';
 
@@ -157,12 +176,14 @@ app.controller('gameController', function ($scope) {
             }
             statusEl.html(status);
             fenEl.html(game.fen());
-            pgnEl.html(game.pgn());
+            moves.push(game.history() + " ");
+            pgnEl.html(moves);
         };
         var cfg = {
             draggable: true,
             position: 'start',
             sparePieces: true,
+            showNotation: false,
             onDragStart: onDragStart,
             onDrop: onDrop,
             onSnapEnd: onSnapEnd
@@ -174,10 +195,9 @@ app.controller('gameController', function ($scope) {
     $(document).ready(gameLeft);
     $(document).ready(gameRight);
 
-    $scope.getInfoFormat = function (time_control) {
-        var firstNum = parseInt(time_control.charAt(0));
-        if (firstNum < 3) return "Bullet";
-        else if (firstNum >= 3 && firstNum <= 7) return "Blitz";
+    $scope.getInfoFormat = function (minutes) {
+        if (minutes < 3) return "Bullet";
+        else if (minutes >= 3 && minutes <= 8) return "Blitz";
         else return "Classical";
     };
     $scope.getDurationFormat = function (duration) {
