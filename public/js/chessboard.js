@@ -671,11 +671,11 @@ function buildPiece(piece, hidden, id) {
 
 function buildSparePieces(color) {
   //var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP'];
-  var pieces = ['wQ', 'wR', 'wB', 'wN', 'wP'];
+  var pieces = [];
 
   if (color === 'black') {
     //pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP'];
-    pieces = ['bQ', 'bR', 'bB', 'bN', 'bP'];
+      pieces = [];
   }
 
   var html = '';
@@ -684,6 +684,14 @@ function buildSparePieces(color) {
   }
 
   return html;
+}
+
+function buildUpdatedSparePieces(pieces) {
+    var html = '';
+    for (var i = 0; i < pieces.length; i++) {
+        html += buildPiece(pieces[i], false, SPARE_PIECE_ELS_IDS[pieces[i]]);
+    }
+    return html;
 }
 
 //------------------------------------------------------------------------------
@@ -988,14 +996,52 @@ function drawBoard() {
 
   if (cfg.sparePieces === true) {
     if (CURRENT_ORIENTATION === 'white') {
-      sparePiecesTopEl.html(buildSparePieces('black'));
-      sparePiecesBottomEl.html(buildSparePieces('white'));
+      //sparePiecesTopEl.html(buildSparePieces('black'));
+      //sparePiecesBottomEl.html(buildSparePieces('white'));
+      //this adds a 62px layer for the DOM
+      sparePiecesTopEl.html("<div style='width: 62px;height: 62px;'></div>");
+      sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>");
     }
     else {
-      sparePiecesTopEl.html(buildSparePieces('white'));
-      sparePiecesBottomEl.html(buildSparePieces('black'));
+      //sparePiecesTopEl.html(buildSparePieces('white'));
+      //sparePiecesBottomEl.html(buildSparePieces('black'));
+      sparePiecesTopEl.html("<div style='width: 62px;height: 62px;'></div>");
+      sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>");
     }
   }
+}
+
+function updateSparePieces(color, pieces) {
+    if (CURRENT_ORIENTATION === 'white') {
+        if(color === 'white') {
+            if (pieces.length > 0) {
+                sparePiecesBottomEl.html(buildUpdatedSparePieces(pieces));
+            } else {
+                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+            }
+        } else {
+            if (pieces.length > 0) {
+                sparePiecesTopEl.html(buildUpdatedSparePieces(pieces));
+            } else {
+                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+            }
+        }
+    }
+    else {
+        if (color === 'white') {
+            if (pieces.length > 0) {
+                sparePiecesTopEl.html(buildUpdatedSparePieces(pieces));
+            } else {
+                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+            }
+        } else {
+            if (pieces.length > 0) {
+                sparePiecesBottomEl.html(buildUpdatedSparePieces(pieces));
+            } else {
+                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+            }
+        }
+    }
 }
 
 // given a position and a set of moves, return a new position
@@ -1295,6 +1341,12 @@ function stopDraggedPiece(location) {
 //------------------------------------------------------------------------------
 // Public Methods
 //------------------------------------------------------------------------------
+
+//Update the spare pieces
+widget.updateSparePieces = function (color, pieces) {
+  updateSparePieces(color, pieces);
+};
+
 
 // clear the board
 widget.clear = function(useAnimation) {

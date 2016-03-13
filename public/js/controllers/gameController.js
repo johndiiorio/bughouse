@@ -20,8 +20,6 @@ app.controller('gameController', function ($scope) {
     var leftCount = 1;
     var rightCount = 1;
 
-
-
     jQuery(function ($) {
         yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
         yourOpponentTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
@@ -78,6 +76,42 @@ app.controller('gameController', function ($scope) {
                 leftCount += 1;
             }
 
+            if (game.turn() === 'b') {
+                var queen, rook, knight, bishop, pawn;
+                for (var i = 0; i < game.reserve_white.length; i++) {
+                    if (game.reserve_white[i].type == 'p') pawn = true;
+                    else if (game.reserve_white[i].type == 'n') knight = true;
+                    else if (game.reserve_white[i].type == 'b') bishop = true;
+                    else if (game.reserve_white[i].type == 'r') rook = true;
+                    else if (game.reserve_white[i].type == 'q') queen = true;
+                }
+                var sparePiecesArr = [];
+                if (pawn) sparePiecesArr.push('wP');
+                if (knight) sparePiecesArr.push('wN');
+                if (bishop) sparePiecesArr.push('wB');
+                if (rook) sparePiecesArr.push('wR');
+                if (queen) sparePiecesArr.push('wQ');
+                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                board.updateSparePieces("white", sparePiecesArr);
+            } else {
+                var queen, rook, knight, bishop, pawn;
+                for (var i = 0; i < game.reserve_black.length; i++) {
+                    if (game.reserve_black[i].type == 'p') pawn = true;
+                    else if (game.reserve_black[i].type == 'n') knight = true;
+                    else if (game.reserve_black[i].type == 'b') bishop = true;
+                    else if (game.reserve_black[i].type == 'r') rook = true;
+                    else if (game.reserve_black[i].type == 'q') queen = true;
+                }
+                var sparePiecesArr = [];
+                if (pawn) sparePiecesArr.push('bP');
+                if (knight) sparePiecesArr.push('bN');
+                if (bishop) sparePiecesArr.push('bB');
+                if (rook) sparePiecesArr.push('bR');
+                if (queen) sparePiecesArr.push('bQ');
+                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                board.updateSparePieces("black", sparePiecesArr);
+            }
+
             yourOpponentTimer.toggle();
             yourTimer.toggle();
             updateStatus();
@@ -130,6 +164,42 @@ app.controller('gameController', function ($scope) {
             } else {
                 moves.push(" " + rightCount + "b. " + game.history());
                 rightCount += 1;
+            }
+
+            if (game.turn() === 'b') {
+                var queen, rook, knight, bishop, pawn;
+                for (var i = 0; i < game.reserve_white.length; i++) {
+                    if (game.reserve_white[i].type == 'p') pawn = true;
+                    else if (game.reserve_white[i].type == 'n') knight = true;
+                    else if (game.reserve_white[i].type == 'b') bishop = true;
+                    else if (game.reserve_white[i].type == 'r') rook = true;
+                    else if (game.reserve_white[i].type == 'q') queen = true;
+                }
+                var sparePiecesArr = [];
+                if (pawn) sparePiecesArr.push('wP');
+                if (knight) sparePiecesArr.push('wN');
+                if (bishop) sparePiecesArr.push('wB');
+                if (rook) sparePiecesArr.push('wR');
+                if (queen) sparePiecesArr.push('wQ');
+                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                board.updateSparePieces("white", sparePiecesArr);
+            } else {
+                var queen, rook, knight, bishop, pawn;
+                for (var i = 0; i < game.reserve_black.length; i++) {
+                    if (game.reserve_black[i].type == 'p') pawn = true;
+                    else if (game.reserve_black[i].type == 'n') knight = true;
+                    else if (game.reserve_black[i].type == 'b') bishop = true;
+                    else if (game.reserve_black[i].type == 'r') rook = true;
+                    else if (game.reserve_black[i].type == 'q') queen = true;
+                }
+                var sparePiecesArr = [];
+                if (pawn) sparePiecesArr.push('bP');
+                if (knight) sparePiecesArr.push('bN');
+                if (bishop) sparePiecesArr.push('bB');
+                if (rook) sparePiecesArr.push('bR');
+                if (queen) sparePiecesArr.push('bQ');
+                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                board.updateSparePieces("black", sparePiecesArr);
             }
 
             opponentAcrossTimer.toggle();
