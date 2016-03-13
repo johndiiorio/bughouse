@@ -16,11 +16,13 @@ app.controller('gameController', function ($scope) {
         opponentAcrossDisplay = $('#opponentAcrossTime'),
         teammateAcrossDisplay = $('#teammateTime');
 
+    var moves = [];
+    var leftCount = 1;
+    var rightCount = 1;
+
 
 
     jQuery(function ($) {
-
-
         yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
         yourOpponentTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
         opponentAcrossTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
@@ -32,7 +34,7 @@ app.controller('gameController', function ($scope) {
         teammateTimer.onTick(format(teammateAcrossDisplay));
 
         yourTimer.start();
-        teammateTimer.start();
+        opponentAcrossTimer.start();
 
         function format(display) {
             return function (minutes, seconds) {
@@ -46,8 +48,6 @@ app.controller('gameController', function ($scope) {
     var gameLeft = function () {
         var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1'), pgnEl = $('#pgn1');
 
-        var moves = [];
-
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
                 (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -60,7 +60,6 @@ app.controller('gameController', function ($scope) {
             var move;
             if(source == "spare") {
                 move = game.move(piece.charAt(1) + "@" + target);
-                console.log(move);
             } else {
                 move = game.move({
                     from: source,
@@ -72,6 +71,13 @@ app.controller('gameController', function ($scope) {
             // illegal move
             if (move === null) return 'snapback';
 
+            if (game.turn() === 'b') {
+                moves.push(" " + leftCount + "A. " + game.history());
+            } else {
+                moves.push(" " + leftCount + "a. " + game.history());
+                leftCount += 1;
+            }
+
             yourOpponentTimer.toggle();
             yourTimer.toggle();
             updateStatus();
@@ -80,31 +86,7 @@ app.controller('gameController', function ($scope) {
             board.position(game.fen());
         };
         var updateStatus = function () {
-            var status = '';
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-            // game still on
-            else {
-                status = moveColor + ' to move';
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            moves.push(game.history() + " ");
-            pgnEl.html(moves);
+            $('#pgn').html(moves);
         };
         var cfg = {
             draggable: true,
@@ -120,7 +102,6 @@ app.controller('gameController', function ($scope) {
     };
     var gameRight = function () {
         var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2'), pgnEl = $('#pgn2');
-        var moves = [];
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -134,7 +115,6 @@ app.controller('gameController', function ($scope) {
             var move;
             if(source == "spare") {
                 move = game.move(piece.charAt(1) + "@" + target);
-                console.log(move);
             } else {
                 move = game.move({
                     from: source,
@@ -145,6 +125,13 @@ app.controller('gameController', function ($scope) {
             // illegal move
             if (move === null) return 'snapback';
 
+            if (game.turn() === 'b') {
+                moves.push(" " + rightCount + "B. " + game.history());
+            } else {
+                moves.push(" " + rightCount + "b. " + game.history());
+                rightCount += 1;
+            }
+
             opponentAcrossTimer.toggle();
             teammateTimer.toggle();
             updateStatus();
@@ -153,31 +140,7 @@ app.controller('gameController', function ($scope) {
             board.position(game.fen());
         };
         var updateStatus = function () {
-            var status = '';
-            var moveColor = 'White';
-            if (game.turn() === 'b') {
-                moveColor = 'Black';
-            }
-            // checkmate?
-            if (game.in_checkmate() === true) {
-                status = 'Game over, ' + moveColor + ' is in checkmate.';
-            }
-            // draw?
-            else if (game.in_draw() === true) {
-                status = 'Game over, drawn position';
-            }
-            // game still on
-            else {
-                status = moveColor + ' to move';
-                // check?
-                if (game.in_check() === true) {
-                    status += ', ' + moveColor + ' is in check';
-                }
-            }
-            statusEl.html(status);
-            fenEl.html(game.fen());
-            moves.push(game.history() + " ");
-            pgnEl.html(moves);
+            $('#pgn').html(moves);
         };
         var cfg = {
             draggable: true,
@@ -189,6 +152,7 @@ app.controller('gameController', function ($scope) {
             onSnapEnd: onSnapEnd
         };
         board = ChessBoard('board2', cfg);
+        board.flip();
         updateStatus();
     };
 
