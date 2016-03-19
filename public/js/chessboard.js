@@ -1023,7 +1023,7 @@ function updateSparePieces(color, pieces) {
             if (pieces.length > 0) {
                 sparePiecesTopEl.html(buildUpdatedSparePieces(pieces));
             } else {
-                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+                sparePiecesTopEl.html("<div style='width: 62px;height: 62px;'></div>")
             }
         }
     }
@@ -1032,7 +1032,7 @@ function updateSparePieces(color, pieces) {
             if (pieces.length > 0) {
                 sparePiecesTopEl.html(buildUpdatedSparePieces(pieces));
             } else {
-                sparePiecesBottomEl.html("<div style='width: 62px;height: 62px;'></div>")
+                sparePiecesTopEl.html("<div style='width: 62px;height: 62px;'></div>")
             }
         } else {
             if (pieces.length > 0) {

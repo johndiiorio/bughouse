@@ -25,6 +25,10 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
             templateUrl: 'pages/game.html',
             controller: 'gameController'
         })
+        .when('/about', {
+            templateUrl: 'pages/about.html',
+            controller: 'aboutController'
+        })
         .when('/logout', {
             templateUrl: 'pages/logout.html',
             controller: 'logoutController'
