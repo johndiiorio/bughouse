@@ -56,7 +56,7 @@ app.controller('gameController', function ($scope) {
         var onDrop = function (source, target, piece) {
             // see if the move is legal
             var move;
-            if(source == "spare") {
+            if (source == "spare") {
                 move = game.move(piece.charAt(1) + "@" + target);
             } else {
                 move = game.move({
@@ -77,38 +77,44 @@ app.controller('gameController', function ($scope) {
             }
 
             if (game.turn() === 'b') {
-                var queen, rook, knight, bishop, pawn;
-                for (var i = 0; i < game.reserve_white.length; i++) {
-                    if (game.reserve_white[i].type == 'p') pawn = true;
-                    else if (game.reserve_white[i].type == 'n') knight = true;
-                    else if (game.reserve_white[i].type == 'b') bishop = true;
-                    else if (game.reserve_white[i].type == 'r') rook = true;
-                    else if (game.reserve_white[i].type == 'q') queen = true;
-                }
                 var sparePiecesArr = [];
-                if (pawn) sparePiecesArr.push('wP');
-                if (knight) sparePiecesArr.push('wN');
-                if (bishop) sparePiecesArr.push('wB');
-                if (rook) sparePiecesArr.push('wR');
-                if (queen) sparePiecesArr.push('wQ');
-                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                for (var i = 0; i < game.reserve_white.length; i++) {
+                    if (game.reserve_white[i].type == 'p') {
+                        sparePiecesArr.push('wP');
+                    }
+                    else if (game.reserve_white[i].type == 'n') {
+                        sparePiecesArr.push('wN');
+                    }
+                    else if (game.reserve_white[i].type == 'b'){
+                        sparePiecesArr.push('wB');
+                    }
+                    else if (game.reserve_white[i].type == 'r') {
+                        sparePiecesArr.push('wR');
+                    }
+                    else if (game.reserve_white[i].type == 'q') {
+                        sparePiecesArr.push('wQ');
+                    }
+                }
                 board.updateSparePieces("white", sparePiecesArr);
             } else {
-                var queen, rook, knight, bishop, pawn;
-                for (var i = 0; i < game.reserve_black.length; i++) {
-                    if (game.reserve_black[i].type == 'p') pawn = true;
-                    else if (game.reserve_black[i].type == 'n') knight = true;
-                    else if (game.reserve_black[i].type == 'b') bishop = true;
-                    else if (game.reserve_black[i].type == 'r') rook = true;
-                    else if (game.reserve_black[i].type == 'q') queen = true;
-                }
                 var sparePiecesArr = [];
-                if (pawn) sparePiecesArr.push('bP');
-                if (knight) sparePiecesArr.push('bN');
-                if (bishop) sparePiecesArr.push('bB');
-                if (rook) sparePiecesArr.push('bR');
-                if (queen) sparePiecesArr.push('bQ');
-                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                for (var i = 0; i < game.reserve_black.length; i++) {
+                    if (game.reserve_black[i].type == 'p') {
+                        sparePiecesArr.push('bP');
+                    }
+                    else if (game.reserve_black[i].type == 'n') {
+                        sparePiecesArr.push('bN');
+                    }
+                    else if (game.reserve_black[i].type == 'b') {
+                        sparePiecesArr.push('bB');
+                    }
+                    else if (game.reserve_black[i].type == 'r') {
+                        sparePiecesArr.push('bR');
+                    }
+                    else if (game.reserve_black[i].type == 'q') {
+                        sparePiecesArr.push('bQ');
+                    }
+                }
                 board.updateSparePieces("black", sparePiecesArr);
             }
 
@@ -167,38 +173,44 @@ app.controller('gameController', function ($scope) {
             }
 
             if (game.turn() === 'b') {
-                var queen, rook, knight, bishop, pawn;
-                for (var i = 0; i < game.reserve_white.length; i++) {
-                    if (game.reserve_white[i].type == 'p') pawn = true;
-                    else if (game.reserve_white[i].type == 'n') knight = true;
-                    else if (game.reserve_white[i].type == 'b') bishop = true;
-                    else if (game.reserve_white[i].type == 'r') rook = true;
-                    else if (game.reserve_white[i].type == 'q') queen = true;
-                }
                 var sparePiecesArr = [];
-                if (pawn) sparePiecesArr.push('wP');
-                if (knight) sparePiecesArr.push('wN');
-                if (bishop) sparePiecesArr.push('wB');
-                if (rook) sparePiecesArr.push('wR');
-                if (queen) sparePiecesArr.push('wQ');
-                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                for (var i = 0; i < game.reserve_white.length; i++) {
+                    if (game.reserve_white[i].type == 'p') {
+                        sparePiecesArr.push('wP');
+                    }
+                    else if (game.reserve_white[i].type == 'n') {
+                        sparePiecesArr.push('wN');
+                    }
+                    else if (game.reserve_white[i].type == 'b'){
+                        sparePiecesArr.push('wB');
+                    }
+                    else if (game.reserve_white[i].type == 'r') {
+                        sparePiecesArr.push('wR');
+                    }
+                    else if (game.reserve_white[i].type == 'q') {
+                        sparePiecesArr.push('wQ');
+                    }
+                }
                 board.updateSparePieces("white", sparePiecesArr);
             } else {
-                var queen, rook, knight, bishop, pawn;
-                for (var i = 0; i < game.reserve_black.length; i++) {
-                    if (game.reserve_black[i].type == 'p') pawn = true;
-                    else if (game.reserve_black[i].type == 'n') knight = true;
-                    else if (game.reserve_black[i].type == 'b') bishop = true;
-                    else if (game.reserve_black[i].type == 'r') rook = true;
-                    else if (game.reserve_black[i].type == 'q') queen = true;
-                }
                 var sparePiecesArr = [];
-                if (pawn) sparePiecesArr.push('bP');
-                if (knight) sparePiecesArr.push('bN');
-                if (bishop) sparePiecesArr.push('bB');
-                if (rook) sparePiecesArr.push('bR');
-                if (queen) sparePiecesArr.push('bQ');
-                pawn = false; knight = false; bishop = false; rook = false; queen = false;
+                for (var i = 0; i < game.reserve_black.length; i++) {
+                    if (game.reserve_black[i].type == 'p') {
+                        sparePiecesArr.push('bP');
+                    }
+                    else if (game.reserve_black[i].type == 'n') {
+                        sparePiecesArr.push('bN');
+                    }
+                    else if (game.reserve_black[i].type == 'b') {
+                        sparePiecesArr.push('bB');
+                    }
+                    else if (game.reserve_black[i].type == 'r') {
+                        sparePiecesArr.push('bR');
+                    }
+                    else if (game.reserve_black[i].type == 'q') {
+                        sparePiecesArr.push('bQ');
+                    }
+                }
                 board.updateSparePieces("black", sparePiecesArr);
             }
 

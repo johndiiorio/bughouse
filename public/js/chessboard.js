@@ -1373,13 +1373,6 @@ widget.flip = function() {
   return widget.orientation('flip');
 };
 
-/*
-// TODO: write this, GitHub Issue #5
-widget.highlight = function() {
-
-};
-*/
-
 // move pieces
 widget.move = function() {
   // no need to throw an error here; just do nothing
