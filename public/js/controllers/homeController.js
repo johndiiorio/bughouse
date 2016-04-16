@@ -281,7 +281,11 @@ app.controller('homeController', function ($scope, $http, $route) {
             window.location = "/#/";
             $route.reload();
         }).error(function () {
-            showNotification("#notificationLoginFailed");
+            notif({
+                msg: "<b>Error:</b> Invalid username/password combination",
+                type: "error",
+                position: "center"
+            });
         });
     };
 

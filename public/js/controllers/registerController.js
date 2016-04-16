@@ -20,16 +20,26 @@ app.controller('registerController', function ($scope, $http) {
                     url: '/api/users',
                     data: postData
                 }).success(function (data, status, headers, config) {
-                    console.log("Success: " + status);
-                    showNotification("#notificationRegisterSuccess");
+                    notif({
+                        msg: "<b>Success:</b> Registered",
+                        type: "success",
+                        position: "left"
+                    });
                     window.location = "/#/";
                 }).error(function (data, status, headers, config) {
-                    console.log("Error: " + status);
-                    showNotification("#notificationRegisterFailed");
+                    notif({
+                        msg: "<b>Error:</b> Registration failed",
+                        type: "error",
+                        position: "left"
+                    });
                 });
             } else {
                 captcha.generate();
-                showNotification("#notificationRegisterFailed");
+                notif({
+                    msg: "<b>Error:</b> Registration failed",
+                    type: "error",
+                    position: "left"
+                });
             }
         }
     };

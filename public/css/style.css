@@ -27,29 +27,6 @@ p {
     margin-bottom: 0;
 }
 
-/* NOTIFICATIONS */
-
-.alert-box {
-    color: #555;
-    border-radius: 10px;
-    font-family: Tahoma, Geneva, Arial, sans-serif;
-    font-size: 11px;
-    padding: 10px 36px;
-    margin: 10px;
-}
-.alert-box span {
-    font-weight: bold;
-    text-transform: uppercase;
-}
-.errorNotification {
-    background: #ffecec url('../img/assets/error.png') no-repeat 10px 50%;
-    border: 1px solid #f5aca6;
-}
-.successNotification {
-    background: #e9ffd9 url('../img/assets/success.png') no-repeat 10px 50%;
-    border: 1px solid #a6ca8a;
-}
-
 /* NAVBAR */
 
 .navbar-collapse {

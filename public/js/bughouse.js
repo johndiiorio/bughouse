@@ -52,12 +52,7 @@ app.directive('pwCheck', [function () {
     }
 }]);
 
-//Show notifications for 3 seconds
-function showNotification(div) {
-    $(div).delay("fast").fadeIn().delay(3000).fadeOut();
-}
 //Helper function to check if value is in JSON
-//Used in the homeController when checking user roles
 function checkForValue(json, value) {
     for (var key in json) {
         if (typeof (json[key]) === "object") {
