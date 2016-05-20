@@ -48,8 +48,8 @@ router.get('/open', function (req, res) {
         });
     });
 });
-/* Get an open game */
-router.get('/open/:game_id', function (req, res) {
+/* Get a single game */
+router.get('/:game_id', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
@@ -138,6 +138,29 @@ router.post('/', function (req, res) {
             connection.release();
             if (!err) {
                 res.json(game);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
+
+/* Update a game's moves */
+router.put('/update/:game_id', function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("UPDATE Games SET moves = ? WHERE game_id = ?", [req.body.moves, req.params.game_id], function (err, rows) {
+            connection.release();
+            if (!err) {
+                res.json(rows);
             }
             else {
                 console.log('Error while performing query');

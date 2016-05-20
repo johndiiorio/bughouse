@@ -44,7 +44,7 @@ app.controller('gameController', function ($scope) {
     });
 
     var gameLeft = function () {
-        var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1'), pgnEl = $('#pgn1');
+        var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1');
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -141,7 +141,7 @@ app.controller('gameController', function ($scope) {
         updateStatus();
     };
     var gameRight = function () {
-        var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2'), pgnEl = $('#pgn2');
+        var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2');
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -253,4 +253,9 @@ app.controller('gameController', function ($scope) {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return minutes + ":" + seconds;
     };
+
+    //Update game every 10 ms
+    //window.setInterval(function(){
+    //    console.log(moves);
+    //}, 10);
 });

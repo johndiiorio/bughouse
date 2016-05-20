@@ -93,14 +93,17 @@ app.controller('homeController', function ($scope, $http, $route) {
                     for (var j = 1; j <= 4; j++) {
                         (function (i) {
                             (function (j) {
-                                $http({
-                                    method: 'GET',
-                                    url: '/api/users/' + eval(String("data[i].fk_player" + j + "_id"))
-                                }).success(function (user, status, headers, config) {
-                                    eval(String("data[i].player" + j + "=user"));
-                                }).error(function () {
-                                    console.log("Error getting user");
-                                });
+                                // check if player not null
+                                if(eval(String("data[i].fk_player" + j + "_id"))) {
+                                    $http({
+                                        method: 'GET',
+                                        url: '/api/users/' + eval(String("data[i].fk_player" + j + "_id"))
+                                    }).success(function (user, status, headers, config) {
+                                        eval(String("data[i].player" + j + "=user"));
+                                    }).error(function () {
+                                        console.log("Error getting user");
+                                    });
+                                }
                             })(j);
                         })(i);
                     }
@@ -129,7 +132,7 @@ app.controller('homeController', function ($scope, $http, $route) {
             var player1, player2, player3, player4;
             $http({
                 method: 'GET',
-                url: '/api/games/open/' + game.game_id
+                url: '/api/games/' + game.game_id
             }).success(function (data) {
                 player1 = data[0].fk_player1_id;
                 player2 = data[0].fk_player2_id;
@@ -169,7 +172,7 @@ app.controller('homeController', function ($scope, $http, $route) {
 
             $http({
                 method: 'GET',
-                url: '/api/games/open/' + game.game_id
+                url: '/api/games/' + game.game_id
             }).success(function (data) {
                 player1 = data[0].fk_player1_id;
                 player2 = data[0].fk_player2_id;
@@ -289,6 +292,11 @@ app.controller('homeController', function ($scope, $http, $route) {
         });
     };
 
-    //Done after function has been initialized
+    //Done after function has been initialized, outside loop to execute immediately
     $scope.getGamesForUser();
+
+    //Update game list every second
+    window.setInterval(function(){
+        $scope.getGamesForUser();
+    }, 1000);
 });
