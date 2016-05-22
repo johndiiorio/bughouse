@@ -265,6 +265,8 @@ app.controller('homeController', function ($scope, $http, $route) {
         }).error(function () {
             console.log("Error starting game");
         });
+        gameID = game.game_id;
+        clearInterval(updateGameList);
         window.location = "/#/game";
     };
     $scope.userLogIn = function () {
@@ -296,7 +298,7 @@ app.controller('homeController', function ($scope, $http, $route) {
     $scope.getGamesForUser();
 
     //Update game list every second
-    window.setInterval(function(){
+    var updateGameList = window.setInterval(function(){
         $scope.getGamesForUser();
     }, 1000);
 });

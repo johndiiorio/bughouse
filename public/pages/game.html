@@ -6,17 +6,17 @@
             <div>
                 <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
             <span class="align-player-info blue-color">
-                {{game.player1.username + ' (' + game.player1.rating + ')'}}</span>
+                {{game.player1.username + ' (' + getRating(game.player1, game) + ')'}}</span>
                 <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
             <span class="align-player-info blue-color">
-                {{game.player2.username + ' (' + game.player2.rating + ')'}}</span>
+                {{game.player2.username + ' (' + getRating(game.player2, game) + ')'}}</span>
                 <p style="top: 7px; position: relative">versus</p>
                 <img src="../img/chesspieces/wikipedia/bK.png" alt="Black" width="20px" height="20px">
             <span class="align-player-info red-color" >
-                {{game.player3.username + ' (' + game.player3.rating + ')'}}</span>
+                {{game.player3.username + ' (' + getRating(game.player3, game) + ')'}}</span>
                 <img src="../img/chesspieces/wikipedia/wK.png" alt="White" width="20px" height="20px">
             <span class="align-player-info red-color">
-                {{game.player4.username + ' (' + game.player4.rating + ')'}}</span>
+                {{game.player4.username + ' (' + getRating(game.player4, game) + ')'}}</span>
             </div>
         </div>
         <br>
@@ -28,7 +28,7 @@
     <div id="game-left" class="col-md-4">
         <div class="container-fluid align-name-clock-top">
             <h3 class="left-game-top-username">
-                {{game.player2.username + ' (' + game.player2.rating + ')'}}</h3>
+                {{game.player2.username + ' (' + getRating(game.player2, game) + ')'}}</h3>
             <h3 id="yourOpponentTime" class="left-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
         <div id="yourOpponentReserve"></div>
@@ -36,14 +36,14 @@
         <div id="yourReserve"></div>
         <div class="align-name-clock-bottom">
             <h3 class="left-game-bottom-username">
-                {{game.player1.username + ' (' + game.player1.rating + ')'}}</h3>
+                {{game.player1.username + ' (' + getRating(game.player1, game) + ')'}}</h3>
             <h3 id="yourTime" class="left-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
     </div>
     <div id="game-right" class="col-xs-5">
         <div class="container-fluid align-name-clock-top">
             <h3 class="right-game-top-username">
-                {{game.player4.username + ' (' + game.player4.rating + ')'}}</h3>
+                {{game.player4.username + ' (' + getRating(game.player4, game) + ')'}}</h3>
             <h3 id="opponentAcrossTime" class="right-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
         <div id="opponentAcrossReserve">
@@ -52,7 +52,7 @@
         <div id="teammateReserve"></div>
         <div class="align-name-clock-bottom">
             <h3 class="right-game-bottom-username">
-                {{game.player3.username + ' (' + game.player3.rating + ')'}}</h3>
+                {{game.player3.username + ' (' + getRating(game.player3, game) + ')'}}</h3>
             <h3 id="teammateTime" class="right-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
     </div>

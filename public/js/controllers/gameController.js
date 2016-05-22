@@ -1,15 +1,33 @@
-app.controller('gameController', function ($scope) {
-    var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
-
-    //Hard coded tests for UI, use AJAX for production
+app.controller('gameController', function ($scope, $http) {
     $scope.game = {};
-    $scope.game.minutes = 5;
-    $scope.game.increment = 10;
-    $scope.game.mode = "Casual";
-    $scope.game.player1 = {username: "Xivister", rating: 1623};
-    $scope.game.player2 = {username: "someguy86", rating: 1462};
-    $scope.game.player3 = {username: "scrublord3", rating: 1363};
-    $scope.game.player4 = {username: "superGM", rating: 2753};
+
+    if (gameID) {
+        $http({
+            method: 'GET',
+            url: '/api/games/' + gameID
+        }).success(function (dataGame) {
+            $scope.game = dataGame[0];
+            var players = {};
+            for (var i = 1; i <= 4; i++) {
+                (function (i) {
+                    $http({
+                        method: 'GET',
+                        url: '/api/users/' + eval(String("dataGame[0].fk_player" + i + "_id"))
+                    }).success(function (dataUser) {
+                        eval("$scope.game.player" + i + "=dataUser[0]");
+                    }).error(function () {
+                        console.log("Error getting user");
+                    });
+                })(i);
+            }
+        }).error(function () {
+            console.log("Error getting game");
+        });
+    } else {
+        window.location = "/#/";
+    }
+
+    var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
 
     var yourDisplay = $('#yourTime'),
         yourOpponentDisplay = $('#yourOpponentTime'),
@@ -253,9 +271,24 @@ app.controller('gameController', function ($scope) {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return minutes + ":" + seconds;
     };
+    $scope.getRating = function (user, game) {
+        if (game.minutes < 3) return user.ratingBullet;
+        else if (game.minutes >= 3 && game.minutes <= 8) return user.ratingBlitz;
+        else return user.ratingClassical;
+    };
 
     //Update game every 10 ms
     //window.setInterval(function(){
-    //    console.log(moves);
-    //}, 10);
+    //    //console.log(moves);
+    //    if (gameID) {
+    //        $http({
+    //            method: 'GET',
+    //            url: '/api/games/' + gameID
+    //        }).success(function (data) {
+    //            moves = data.moves;
+    //        }).error(function () {
+    //            console.log("Error starting game");
+    //        });
+    //    }
+    //}, 50);
 });

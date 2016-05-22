@@ -27,7 +27,7 @@ router.get('/', function (req, res) {
         });
     });
 });
-/* GET a specific users */
+/* GET a specific user */
 router.get('/:user_id', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -47,6 +47,7 @@ router.get('/:user_id', function (req, res) {
         });
     });
 });
+/* Create a new user */
 router.post('/', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {

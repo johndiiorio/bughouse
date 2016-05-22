@@ -1,6 +1,7 @@
 var app = angular.module('bughouse', ['ngRoute']);
 var authToken = null; //token return by database used for authentication
 var userID = null; //user ID of current user
+var gameID = null; //game ID of current game
 var userInitialized;
 
 app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) {
