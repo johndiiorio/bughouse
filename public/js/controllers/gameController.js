@@ -7,7 +7,6 @@ app.controller('gameController', function ($scope, $http) {
             url: '/api/games/' + gameID
         }).success(function (dataGame) {
             $scope.game = dataGame[0];
-            var players = {};
             for (var i = 1; i <= 4; i++) {
                 (function (i) {
                     $http({
@@ -87,6 +86,7 @@ app.controller('gameController', function ($scope, $http) {
             // illegal move
             if (move === null) return 'snapback';
 
+            //Update move history
             if (game.turn() === 'b') {
                 moves.push(" " + leftCount + "A. " + game.history());
             } else {
@@ -94,6 +94,17 @@ app.controller('gameController', function ($scope, $http) {
                 leftCount += 1;
             }
 
+            //Update server
+            $http({
+                method: 'PUT',
+                url: '/api/games/update/' + $scope.game.game_id,
+                data: {moves: moves.join()}
+            }).success(function () {
+            }).error(function () {
+                console.log("Error updating game moves");
+            });
+
+            //Update spare pieces
             if (game.turn() === 'b') {
                 var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_white.length; i++) {
@@ -243,7 +254,7 @@ app.controller('gameController', function ($scope, $http) {
             $('#pgn').html(moves);
         };
         var cfg = {
-            draggable: true,
+            draggable: false,
             position: 'start',
             sparePieces: true,
             showNotation: false,
@@ -272,23 +283,28 @@ app.controller('gameController', function ($scope, $http) {
         return minutes + ":" + seconds;
     };
     $scope.getRating = function (user, game) {
-        if (game.minutes < 3) return user.ratingBullet;
-        else if (game.minutes >= 3 && game.minutes <= 8) return user.ratingBlitz;
-        else return user.ratingClassical;
+        if (user && game) {
+            if (game.minutes < 3) return user.ratingBullet;
+            else if (game.minutes >= 3 && game.minutes <= 8) return user.ratingBlitz;
+            else return user.ratingClassical;
+        }
     };
 
     //Update game every 10 ms
-    //window.setInterval(function(){
-    //    //console.log(moves);
-    //    if (gameID) {
-    //        $http({
-    //            method: 'GET',
-    //            url: '/api/games/' + gameID
-    //        }).success(function (data) {
-    //            moves = data.moves;
-    //        }).error(function () {
-    //            console.log("Error starting game");
-    //        });
-    //    }
-    //}, 50);
+    window.setInterval(function(){
+        //console.log(moves);
+        if (gameID) {
+            $http({
+                method: 'GET',
+                url: '/api/games/' + gameID
+            }).success(function (data) {
+                var dataMoves = data[0].moves;
+                if (dataMoves) {
+                    moves = dataMoves.split(",");
+                }
+            }).error(function () {
+                console.log("Error starting game");
+            });
+        }
+    }, 50);
 });

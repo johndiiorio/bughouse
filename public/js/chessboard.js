@@ -433,11 +433,6 @@ function expandConfig() {
     cfg.sparePieces = false;
   }
 
-  // draggable must be true if sparePieces is enabled
-  if (cfg.sparePieces === true) {
-    cfg.draggable = true;
-  }
-
   // default piece theme is wikipedia
   if (cfg.hasOwnProperty('pieceTheme') !== true ||
       (typeof cfg.pieceTheme !== 'string' &&
