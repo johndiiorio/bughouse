@@ -35,7 +35,11 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bughouse_db`.`games` (
   `game_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-  `moves` VARCHAR(5000) NULL COMMENT '',
+  `moves` VARCHAR(10000) NULL COMMENT '',
+  `left_reserve_white` VARCHAR(100) NULL COMMENT '',
+  `left_reserve_black` VARCHAR(100) NULL COMMENT '',
+  `right_reserve_white` VARCHAR(100) NULL COMMENT '',
+  `right_reserve_black` VARCHAR(100) NULL COMMENT '',
   `minutes` INT NOT NULL DEFAULT 5 COMMENT '',
   `increment` INT NOT NULL DEFAULT 5 COMMENT '',
   `rating_range` VARCHAR(9) NULL DEFAULT '0,3000' COMMENT '',

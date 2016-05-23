@@ -150,7 +150,7 @@ router.post('/', function (req, res) {
 });
 
 /* Update a game's moves */
-router.put('/update/:game_id', function (req, res) {
+router.put('/update/moves/:game_id', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
@@ -158,6 +158,31 @@ router.put('/update/:game_id', function (req, res) {
             return;
         }
         connection.query("UPDATE Games SET moves = ? WHERE game_id = ?", [req.body.moves, req.params.game_id], function (err, rows) {
+            connection.release();
+            if (!err) {
+                res.json(rows);
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
+/* Update a game's reserve */
+router.put('/update/reserve/:game_id', function (req, res) {
+    console.log(req.body.pieces);
+    console.log(req.body.reserve);
+    console.log(req.params.game_id);
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("UPDATE Games SET ?? = ? WHERE game_id = ?", [req.body.reserve, req.body.pieces, req.params.game_id], function (err, rows) {
             connection.release();
             if (!err) {
                 res.json(rows);

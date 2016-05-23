@@ -94,10 +94,10 @@ app.controller('gameController', function ($scope, $http) {
                 leftCount += 1;
             }
 
-            //Update server
+            //Update moves on server
             $http({
                 method: 'PUT',
-                url: '/api/games/update/' + $scope.game.game_id,
+                url: '/api/games/update/moves/' + $scope.game.game_id,
                 data: {moves: moves.join()}
             }).success(function () {
             }).error(function () {
@@ -105,46 +105,73 @@ app.controller('gameController', function ($scope, $http) {
             });
 
             //Update spare pieces
+            var sparePiecesLeftArr = [];
+            var putReserveData = [];
             if (game.turn() === 'b') {
-                var sparePiecesArr = [];
+                //var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_white.length; i++) {
                     if (game.reserve_white[i].type == 'p') {
-                        sparePiecesArr.push('wP');
+                        sparePiecesLeftArr.push('wP');
                     }
                     else if (game.reserve_white[i].type == 'n') {
-                        sparePiecesArr.push('wN');
+                        sparePiecesLeftArr.push('wN');
                     }
                     else if (game.reserve_white[i].type == 'b'){
-                        sparePiecesArr.push('wB');
+                        sparePiecesLeftArr.push('wB');
                     }
                     else if (game.reserve_white[i].type == 'r') {
-                        sparePiecesArr.push('wR');
+                        sparePiecesLeftArr.push('wR');
                     }
                     else if (game.reserve_white[i].type == 'q') {
-                        sparePiecesArr.push('wQ');
+                        sparePiecesLeftArr.push('wQ');
                     }
                 }
-                board.updateSparePieces("white", sparePiecesArr);
+                board.updateSparePieces("white", sparePiecesLeftArr);
+
+                //Update reserve on server
+                for (var i = 0; i < game.reserve_white.length; i++) {
+                    putReserveData[i] = JSON.stringify(game.reserve_white[i]);
+                }
+                $http({
+                    method: 'PUT',
+                    url: '/api/games/update/reserve/' + $scope.game.game_id,
+                    data: {reserve: "left_reserve_white", pieces: putReserveData.toString()}
+                }).success(function () {
+                }).error(function () {
+                    console.log("Error updating left game white pieces");
+                });
             } else {
-                var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     if (game.reserve_black[i].type == 'p') {
-                        sparePiecesArr.push('bP');
+                        sparePiecesLeftArr.push('bP');
                     }
                     else if (game.reserve_black[i].type == 'n') {
-                        sparePiecesArr.push('bN');
+                        sparePiecesLeftArr.push('bN');
                     }
                     else if (game.reserve_black[i].type == 'b') {
-                        sparePiecesArr.push('bB');
+                        sparePiecesLeftArr.push('bB');
                     }
                     else if (game.reserve_black[i].type == 'r') {
-                        sparePiecesArr.push('bR');
+                        sparePiecesLeftArr.push('bR');
                     }
                     else if (game.reserve_black[i].type == 'q') {
-                        sparePiecesArr.push('bQ');
+                        sparePiecesLeftArr.push('bQ');
                     }
                 }
-                board.updateSparePieces("black", sparePiecesArr);
+                board.updateSparePieces("black", sparePiecesLeftArr);
+
+                //Update reserve on server
+                for (var i = 0; i < game.reserve_black.length; i++) {
+                    putReserveData[i] = JSON.stringify(game.reserve_black[i]);
+                }
+                $http({
+                    method: 'PUT',
+                    url: '/api/games/update/reserve/' + $scope.game.game_id,
+                    data: {reserve: "left_reserve_black", pieces: putReserveData.toString()}
+                }).success(function () {
+                }).error(function () {
+                    console.log("Error updating left game black pieces");
+                });
             }
 
             yourOpponentTimer.toggle();
@@ -201,46 +228,45 @@ app.controller('gameController', function ($scope, $http) {
                 rightCount += 1;
             }
 
+            var sparePiecesRightArr = [];
             if (game.turn() === 'b') {
-                var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_white.length; i++) {
                     if (game.reserve_white[i].type == 'p') {
-                        sparePiecesArr.push('wP');
+                        sparePiecesRightArr.push('wP');
                     }
                     else if (game.reserve_white[i].type == 'n') {
-                        sparePiecesArr.push('wN');
+                        sparePiecesRightArr.push('wN');
                     }
                     else if (game.reserve_white[i].type == 'b'){
-                        sparePiecesArr.push('wB');
+                        sparePiecesRightArr.push('wB');
                     }
                     else if (game.reserve_white[i].type == 'r') {
-                        sparePiecesArr.push('wR');
+                        sparePiecesRightArr.push('wR');
                     }
                     else if (game.reserve_white[i].type == 'q') {
-                        sparePiecesArr.push('wQ');
+                        sparePiecesRightArr.push('wQ');
                     }
                 }
-                board.updateSparePieces("white", sparePiecesArr);
+                board.updateSparePieces("white", sparePiecesRightArr);
             } else {
-                var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     if (game.reserve_black[i].type == 'p') {
-                        sparePiecesArr.push('bP');
+                        sparePiecesRightArr.push('bP');
                     }
                     else if (game.reserve_black[i].type == 'n') {
-                        sparePiecesArr.push('bN');
+                        sparePiecesRightArr.push('bN');
                     }
                     else if (game.reserve_black[i].type == 'b') {
-                        sparePiecesArr.push('bB');
+                        sparePiecesRightArr.push('bB');
                     }
                     else if (game.reserve_black[i].type == 'r') {
-                        sparePiecesArr.push('bR');
+                        sparePiecesRightArr.push('bR');
                     }
                     else if (game.reserve_black[i].type == 'q') {
-                        sparePiecesArr.push('bQ');
+                        sparePiecesRightArr.push('bQ');
                     }
                 }
-                board.updateSparePieces("black", sparePiecesArr);
+                board.updateSparePieces("black", sparePiecesRightArr);
             }
 
             opponentAcrossTimer.toggle();
