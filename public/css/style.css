@@ -219,3 +219,11 @@ table.table-fixedheader>thead tr th, table.table-fixedheader>tbody tr td {
     float: left;
     color: #d85000;
 }
+
+.highlight-white {
+    background-color:hsla(60,100%,50%,0.6);
+}
+
+.highlight-black {
+    background-color:hsla(60,100%,50%,0.6);
+}

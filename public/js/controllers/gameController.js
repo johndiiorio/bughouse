@@ -61,7 +61,7 @@ app.controller('gameController', function ($scope, $http) {
     });
 
     var gameLeft = function () {
-        var board, game = new Chess(), statusEl = $('#status1'), fenEl = $('#fen1');
+        var board, boardEl = $('#board1'), game = new Chess(), squareToHighlight;
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -174,6 +174,16 @@ app.controller('gameController', function ($scope, $http) {
                 });
             }
 
+            if(game.turn() === 'w') {
+                removeHighlights('white');
+                boardEl.find('.square-' + source).addClass('highlight-black');
+                boardEl.find('.square-' + target).addClass('highlight-black');
+            } else {
+                removeHighlights('black');
+                boardEl.find('.square-' + source).addClass('highlight-white');
+                boardEl.find('.square-' + target).addClass('highlight-white');
+            }
+
             yourOpponentTimer.toggle();
             yourTimer.toggle();
             updateStatus();
@@ -183,6 +193,9 @@ app.controller('gameController', function ($scope, $http) {
         };
         var updateStatus = function () {
             $('#pgn').html(moves);
+        };
+        var removeHighlights = function(color) {
+            boardEl.find('.square-55d63').removeClass('highlight-' + color);
         };
         var cfg = {
             draggable: true,
@@ -197,7 +210,7 @@ app.controller('gameController', function ($scope, $http) {
         updateStatus();
     };
     var gameRight = function () {
-        var board, game = new Chess(), statusEl = $('#status2'), fenEl = $('#fen2');
+        var board,  boardEl = $('#board2'), game = new Chess(), squareToHighlight;
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -269,6 +282,16 @@ app.controller('gameController', function ($scope, $http) {
                 board.updateSparePieces("black", sparePiecesRightArr);
             }
 
+            if(game.turn() === 'w') {
+                removeHighlights('white');
+                boardEl.find('.square-' + source).addClass('highlight-black');
+                boardEl.find('.square-' + target).addClass('highlight-black');
+            } else {
+                removeHighlights('black');
+                boardEl.find('.square-' + source).addClass('highlight-white');
+                boardEl.find('.square-' + target).addClass('highlight-white');
+            }
+
             opponentAcrossTimer.toggle();
             teammateTimer.toggle();
             updateStatus();
@@ -278,6 +301,9 @@ app.controller('gameController', function ($scope, $http) {
         };
         var updateStatus = function () {
             $('#pgn').html(moves);
+        };
+        var removeHighlights = function(color) {
+            boardEl.find('.square-55d63').removeClass('highlight-' + color);
         };
         var cfg = {
             draggable: false,
