@@ -16,13 +16,14 @@
                data-slider-tooltip="hide">
         <br>
 
-        <p type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
-
-        <div id="ratingSliderDiv">
-            <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
-                   data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
-                   data-slider-selection="after"
-                   data-slider-tooltip="hide">
+        <div ng-show="$parent.userInitialized">
+            <p type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
+            <div id="ratingSliderDiv">
+                <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
+                       data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
+                       data-slider-selection="after"
+                       data-slider-tooltip="hide">
+            </div>
         </div>
         <br>
 
@@ -30,9 +31,11 @@
         <input type="checkbox" id="randomSwitch" checked>
         <br><br>
 
-        <p class="noBottomMargin">Rated game?</p>
-        <input type="checkbox" id="modeSwitch" checked>
-        <br><br>
+        <div ng-show="$parent.userInitialized">
+            <p class="noBottomMargin">Rated game?</p>
+            <input type="checkbox" id="modeSwitch" checked>
+            <br><br>
+        </div>
 
         <p>Choose your side and create game!</p>
 

@@ -1,9 +1,11 @@
 app.controller('homeController', function ($scope, $http, $route) {
-    if(!userInitialized) {
-        $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
-    }
+    $scope.userInitialized = null;
     $scope.selectedGame = null;
     $scope.gameArray = [];
+
+    if(!$scope.userInitialized) {
+        $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
+    }
 
     $(document).ready(function () {
         //Hide the login notifications
@@ -82,12 +84,18 @@ app.controller('homeController', function ($scope, $http, $route) {
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
                 var passBool = false;
 
-                if (data[i].minutes < 3 && $scope.currentUser.ratingBullet >= minRange && $scope.currentUser.ratingBullet <= maxRange) {
-                    passBool = true;
-                } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.currentUser.ratingBlitz >= minRange && $scope.currentUser.ratingBlitz <= maxRange) {
-                    passBool = true;
-                } else if (data[i].minutes > 8 && $scope.currentUser.ratingClassical >= minRange && $scope.currentUser.ratingClassical <= maxRange) {
-                    passBool = true;
+                if(!$scope.userInitialized) { // User not signed in
+                    if (data[i].mode === "Casual") { //Anonymous users can only see casual games
+                        passBool = true;
+                    }
+                } else { // check that the user can view
+                    if (data[i].minutes < 3 && $scope.currentUser.ratingBullet >= minRange && $scope.currentUser.ratingBullet <= maxRange) {
+                        passBool = true;
+                    } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.currentUser.ratingBlitz >= minRange && $scope.currentUser.ratingBlitz <= maxRange) {
+                        passBool = true;
+                    } else if (data[i].minutes > 8 && $scope.currentUser.ratingClassical >= minRange && $scope.currentUser.ratingClassical <= maxRange) {
+                        passBool = true;
+                    }
                 }
                 if (passBool) {
                     for (var j = 1; j <= 4; j++) {
@@ -282,7 +290,7 @@ app.controller('homeController', function ($scope, $http, $route) {
                 $("#profileName").text($scope.currentUser.username + " (" + $scope.currentUser.ratingBullet + ", " + $scope.currentUser.ratingBlitz + ", " + $scope.currentUser.ratingClassical + ")");
                 $('[data-toggle="tooltip"]').tooltip();
             });
-            userInitialized = true;
+            $scope.userInitialized = true;
             window.location = "/#/";
             $route.reload();
         }).error(function () {
