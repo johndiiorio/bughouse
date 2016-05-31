@@ -3,7 +3,7 @@ app.controller('homeController', function ($scope, $http, $route) {
     $scope.selectedGame = null;
     $scope.gameArray = [];
 
-    if(!$scope.userInitialized) {
+    if(!$('[ng-controller=homeController]').scope().userInitialized) {
         $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
     }
 
@@ -84,7 +84,7 @@ app.controller('homeController', function ($scope, $http, $route) {
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
                 var passBool = false;
 
-                if(!$scope.userInitialized) { // User not signed in
+                if(!$('[ng-controller=homeController]').scope().userInitialized) { // User not signed in
                     if (data[i].mode === "Casual") { //Anonymous users can only see casual games
                         passBool = true;
                     }
@@ -237,10 +237,15 @@ app.controller('homeController', function ($scope, $http, $route) {
         var postData = {};
         postData.minutes = $('#minutesSlider').val() ? $('#minutesSlider').val() : 5;
         postData.increment = $('#incrementSlider').val() ? $('#incrementSlider').val() : 5;
-        postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
         postData.join_random = $('#randomSwitch').bootstrapSwitch('state') == true ? 1 : 0;
-        postData.mode = $('#modeSwitch').bootstrapSwitch('state') == true ? "Rated" : "Casual";
         postData.status = "open";
+        if ($('[ng-controller=homeController]').scope().userInitialized) {
+            postData.mode = $('#modeSwitch').bootstrapSwitch('state') == true ? "Rated" : "Casual";
+            postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
+        } else {
+            postData.mode = "Casual";
+            postData.rating_range = "0,3000";
+        }
         if (side == 'random') {
             Math.floor(Math.random() * 2) == 0 ? side = 'white' : side = 'black';
         }
@@ -290,7 +295,7 @@ app.controller('homeController', function ($scope, $http, $route) {
                 $("#profileName").text($scope.currentUser.username + " (" + $scope.currentUser.ratingBullet + ", " + $scope.currentUser.ratingBlitz + ", " + $scope.currentUser.ratingClassical + ")");
                 $('[data-toggle="tooltip"]').tooltip();
             });
-            $scope.userInitialized = true;
+            $('[ng-controller=homeController]').scope().userInitialized = true;
             window.location = "/#/";
             $route.reload();
         }).error(function () {
