@@ -173,9 +173,6 @@ router.put('/update/moves/:game_id', function (req, res) {
 });
 /* Update a game's reserve */
 router.put('/update/reserve/:game_id', function (req, res) {
-    console.log(req.body.pieces);
-    console.log(req.body.reserve);
-    console.log(req.params.game_id);
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();

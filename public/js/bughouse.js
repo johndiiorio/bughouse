@@ -9,6 +9,10 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
             templateUrl: 'pages/home.html',
             controller: 'homeController'
         })
+        .when('/loading', {
+            templateUrl: 'pages/loading.html',
+            controller: 'loadingController'
+        })
         .when('/myprofile', {
             templateUrl: 'pages/myprofile.html',
             controller: 'myProfileController'

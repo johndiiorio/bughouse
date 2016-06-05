@@ -158,13 +158,14 @@ app.controller('homeController', function ($scope, $http, $route) {
                 }
 
                 var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
-
                 $http({
                     method: 'PUT',
                     url: '/api/games/open/' + game.game_id,
                     data: putData
                 }).success(function () {
-                    $scope.getGamesForUser();
+                    clearInterval(updateGameList);
+                    gameID = game.game_id;
+                    window.location="/#/loading";
                     if ($scope.getOpenSlots(game).length == 0) {
                         $scope.startGame(game);
                     }
@@ -219,13 +220,14 @@ app.controller('homeController', function ($scope, $http, $route) {
         }
 
         var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
-
         $http({
             method: 'PUT',
             url: '/api/games/open/' + $scope.selectedGame.game_id,
             data: putData
         }).success(function () {
-            $scope.getGamesForUser();
+            clearInterval(updateGameList);
+            gameID = $scope.selectedGame.game_id;
+            window.location="/#/loading";
             if ($scope.getOpenSlots($scope.selectedGame).length <= 1) {
                 $scope.startGame($scope.selectedGame);
             }
@@ -311,7 +313,8 @@ app.controller('homeController', function ($scope, $http, $route) {
     $scope.getGamesForUser();
 
     //Update game list every second
-    var updateGameList = window.setInterval(function(){
+    var updateGameList = window.setInterval(function() {
         $scope.getGamesForUser();
     }, 1000);
+
 });

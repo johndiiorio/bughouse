@@ -344,7 +344,6 @@ app.controller('gameController', function ($scope, $http) {
 
     //Update game every 10 ms
     window.setInterval(function(){
-        //console.log(moves);
         if (gameID) {
             $http({
                 method: 'GET',
@@ -352,11 +351,25 @@ app.controller('gameController', function ($scope, $http) {
             }).success(function (data) {
                 var dataMoves = data[0].moves;
                 if (dataMoves) {
-                    moves = dataMoves.split(",");
+                    dataMoves = dataMoves.split(",");
+                    console.log(moves);
+                    console.log(dataMoves);
+                    if (!arraysEqual(dataMoves, moves)) {
+                        moves = dataMoves;
+                    }
                 }
             }).error(function () {
                 console.log("Error starting game");
             });
         }
     }, 50);
+    function arraysEqual(arr1, arr2) {
+        if(arr1.length !== arr2.length)
+            return false;
+        for(var i = arr1.length; i--;) {
+            if(arr1[i] !== arr2[i])
+                return false;
+        }
+        return true;
+    }
 });
