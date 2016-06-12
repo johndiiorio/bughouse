@@ -163,9 +163,7 @@ app.controller('homeController', function ($scope, $http, $route) {
                     url: '/api/games/open/' + game.game_id,
                     data: putData
                 }).success(function () {
-                    clearInterval(updateGameList);
-                    gameID = game.game_id;
-                    window.location="/#/loading";
+                    $scope.switchToLoadingScreen(game.game_id);
                     if ($scope.getOpenSlots(game).length == 0) {
                         $scope.startGame(game);
                     }
@@ -225,9 +223,7 @@ app.controller('homeController', function ($scope, $http, $route) {
             url: '/api/games/open/' + $scope.selectedGame.game_id,
             data: putData
         }).success(function () {
-            clearInterval(updateGameList);
-            gameID = $scope.selectedGame.game_id;
-            window.location="/#/loading";
+            $scope.switchToLoadingScreen($scope.selectedGame.game_id);
             if ($scope.getOpenSlots($scope.selectedGame).length <= 1) {
                 $scope.startGame($scope.selectedGame);
             }
@@ -266,8 +262,8 @@ app.controller('homeController', function ($scope, $http, $route) {
             method: 'POST',
             url: '/api/games',
             data: postData
-        }).success(function () {
-            $scope.getGamesForUser();
+        }).success(function (data) {
+            $scope.switchToLoadingScreen(data.insertId);
         }).error(function () {
             console.log("Error creating game");
         });
@@ -283,6 +279,11 @@ app.controller('homeController', function ($scope, $http, $route) {
         gameID = game.game_id;
         clearInterval(updateGameList);
         window.location = "/#/game";
+    };
+    $scope.switchToLoadingScreen = function(id) {
+        clearInterval(updateGameList);
+        gameID = id;
+        window.location="/#/loading";
     };
     $scope.userLogIn = function () {
         var user = {username: $scope.login.username, password: $scope.login.password};

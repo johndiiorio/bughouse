@@ -1,5 +1,6 @@
 app.controller('gameController', function ($scope, $http) {
     $scope.game = {};
+    $scope.display = {};
 
     if (gameID) {
         $http({
@@ -9,11 +10,17 @@ app.controller('gameController', function ($scope, $http) {
             $scope.game = dataGame[0];
             for (var i = 1; i <= 4; i++) {
                 (function (i) {
+                    // Get the info of each user
                     $http({
-                        method: 'GET',
-                        url: '/api/users/' + eval(String("dataGame[0].fk_player" + i + "_id"))
+                    method: 'GET',
+                    url: '/api/users/' + eval(String("dataGame[0].fk_player" + i + "_id"))
                     }).success(function (dataUser) {
+                        // $scope.game.player is the internal database representation of the user
                         eval("$scope.game.player" + i + "=dataUser[0]");
+                        // Populate $scope.display.player"i" with players on last loop
+                        if (i == 4) {
+                            updateDisplayUsers();
+                        }
                     }).error(function () {
                         console.log("Error getting user");
                     });
@@ -22,7 +29,7 @@ app.controller('gameController', function ($scope, $http) {
         }).error(function () {
             console.log("Error getting game");
         });
-    } else {
+    } else { // there is no game in progress
         window.location = "/#/";
     }
 
@@ -36,6 +43,8 @@ app.controller('gameController', function ($scope, $http) {
     var moves = [];
     var leftCount = 1;
     var rightCount = 1;
+    var board1;
+    var board2;
 
     jQuery(function ($) {
         yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
@@ -61,7 +70,7 @@ app.controller('gameController', function ($scope, $http) {
     });
 
     var gameLeft = function () {
-        var board, boardEl = $('#board1'), game = new Chess(), squareToHighlight;
+        var boardEl = $('#board1'), game = new Chess(), squareToHighlight;
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -126,7 +135,7 @@ app.controller('gameController', function ($scope, $http) {
                         sparePiecesLeftArr.push('wQ');
                     }
                 }
-                board.updateSparePieces("white", sparePiecesLeftArr);
+                board1.updateSparePieces("white", sparePiecesLeftArr);
 
                 //Update reserve on server
                 for (var i = 0; i < game.reserve_white.length; i++) {
@@ -158,7 +167,7 @@ app.controller('gameController', function ($scope, $http) {
                         sparePiecesLeftArr.push('bQ');
                     }
                 }
-                board.updateSparePieces("black", sparePiecesLeftArr);
+                board1.updateSparePieces("black", sparePiecesLeftArr);
 
                 //Update reserve on server
                 for (var i = 0; i < game.reserve_black.length; i++) {
@@ -189,7 +198,7 @@ app.controller('gameController', function ($scope, $http) {
             updateStatus();
         };
         var onSnapEnd = function () {
-            board.position(game.fen());
+            board1.position(game.fen());
         };
         var updateStatus = function () {
             $('#pgn').html(moves);
@@ -206,11 +215,11 @@ app.controller('gameController', function ($scope, $http) {
             onDrop: onDrop,
             onSnapEnd: onSnapEnd
         };
-        board = ChessBoard('board1', cfg);
+        board1 = ChessBoard('board1', cfg);
         updateStatus();
     };
     var gameRight = function () {
-        var board,  boardEl = $('#board2'), game = new Chess(), squareToHighlight;
+        var boardEl = $('#board2'), game = new Chess(), squareToHighlight;
 
         var onDragStart = function (source, piece, position, orientation) {
             if (game.game_over() === true ||
@@ -260,7 +269,7 @@ app.controller('gameController', function ($scope, $http) {
                         sparePiecesRightArr.push('wQ');
                     }
                 }
-                board.updateSparePieces("white", sparePiecesRightArr);
+                board2.updateSparePieces("white", sparePiecesRightArr);
             } else {
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     if (game.reserve_black[i].type == 'p') {
@@ -279,7 +288,7 @@ app.controller('gameController', function ($scope, $http) {
                         sparePiecesRightArr.push('bQ');
                     }
                 }
-                board.updateSparePieces("black", sparePiecesRightArr);
+                board2.updateSparePieces("black", sparePiecesRightArr);
             }
 
             if(game.turn() === 'w') {
@@ -297,7 +306,7 @@ app.controller('gameController', function ($scope, $http) {
             updateStatus();
         };
         var onSnapEnd = function () {
-            board.position(game.fen());
+            board2.position(game.fen());
         };
         var updateStatus = function () {
             $('#pgn').html(moves);
@@ -314,8 +323,7 @@ app.controller('gameController', function ($scope, $http) {
             onDrop: onDrop,
             onSnapEnd: onSnapEnd
         };
-        board = ChessBoard('board2', cfg);
-        board.flip();
+        board2 = ChessBoard('board2', cfg);
         updateStatus();
     };
 
@@ -371,5 +379,43 @@ app.controller('gameController', function ($scope, $http) {
                 return false;
         }
         return true;
+    }
+    function getForeignKeyNumber() {
+        for(var i = 1; i <= 4; i++) {
+            if (eval(String("$scope.game.fk_player" + i + "_id")) == $scope.currentUser.user_id) {
+                return i;
+            }
+        }
+    }
+    function updateDisplayUsers() {
+        // $scope.display.player"i" is graphical representation of the user for display the boards
+        //  2   3
+        //  1   4
+        var fkNum = getForeignKeyNumber();
+        if(fkNum == 1) {
+            $scope.display.player1 = $scope.game.player1;
+            $scope.display.player2 = $scope.game.player2;
+            $scope.display.player3 = $scope.game.player3;
+            $scope.display.player4 = $scope.game.player4;
+            board2.flip();
+        } else if (fkNum == 2){
+            $scope.display.player1 = $scope.game.player2;
+            $scope.display.player2 = $scope.game.player1;
+            $scope.display.player3 = $scope.game.player4;
+            $scope.display.player4 = $scope.game.player3;
+            board1.flip();
+        } else if (fkNum == 3){
+            $scope.display.player1 = $scope.game.player3;
+            $scope.display.player2 = $scope.game.player4;
+            $scope.display.player3 = $scope.game.player1;
+            $scope.display.player4 = $scope.game.player2;
+            board2.flip();
+        } else if (fkNum == 4){
+            $scope.display.player1 = $scope.game.player4;
+            $scope.display.player2 = $scope.game.player3;
+            $scope.display.player3 = $scope.game.player2;
+            $scope.display.player4 = $scope.game.player1;
+            board1.flip();
+        }
     }
 });
