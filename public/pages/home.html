@@ -2,14 +2,14 @@
     <div id="createPanel" class="col-md-3">
         <h3 class="brighter-color" style="text-decoration: underline">Create a new game:</h3>
 
-        <p type="text" id="minutesDisplay">Minutes: 5</p>
+        <p class="brighter-color" type="text" id="minutesDisplay">Minutes: 5</p>
         <input type="text" id="minutesSlider" class="span2" value="" data-slider-min="1" data-slider-max="20"
                data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
                data-slider-selection="after"
                data-slider-tooltip="hide">
         <br>
 
-        <p type="text" id="incrementDisplay">Increment (seconds): 5</p>
+        <p class="brighter-color" type="text" id="incrementDisplay">Increment (seconds): 5</p>
         <input type="text" id="incrementSlider" class="span2" value="" data-slider-min="0" data-slider-max="30"
                data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
                data-slider-selection="after"
@@ -17,7 +17,7 @@
         <br>
 
         <div ng-show="$parent.userInitialized">
-            <p type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
+            <p class="brighter-color" type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
             <div id="ratingSliderDiv">
                 <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
                        data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
@@ -27,7 +27,7 @@
         </div>
         <br>
 
-        <p class="noBottomMargin">Players join random sides?</p>
+        <p class="brighter-color" class="noBottomMargin">Players join random sides?</p>
         <input type="checkbox" id="randomSwitch" checked>
         <br><br>
 
@@ -37,7 +37,7 @@
             <br><br>
         </div>
 
-        <p>Choose your side and create game!</p>
+        <p class="brighter-color">Choose your side and create game!</p>
 
         <div class="btn-group" role="group">
             <button class="btn btn-secondary" ng-click="createGame('white')">White</button>

@@ -1,4 +1,4 @@
-app.controller('homeController', function ($scope, $http, $route) {
+app.controller('homeController', function ($scope, $http, $route, $interval, $rootScope) {
     $scope.userInitialized = null;
     $scope.selectedGame = null;
     $scope.gameArray = [];
@@ -276,9 +276,7 @@ app.controller('homeController', function ($scope, $http, $route) {
         }).error(function () {
             console.log("Error starting game");
         });
-        gameID = game.game_id;
-        clearInterval(updateGameList);
-        window.location = "/#/game";
+        $scope.switchToLoadingScreen(game.game_id);
     };
     $scope.switchToLoadingScreen = function(id) {
         clearInterval(updateGameList);
@@ -305,16 +303,23 @@ app.controller('homeController', function ($scope, $http, $route) {
             notif({
                 msg: "<b>Error:</b> Invalid username/password combination",
                 type: "error",
-                position: "center"
+                position: "center",
+                width: "all",
+                timeout: 2000
             });
         });
     };
+    // Stop updating game list when route changes
+    var dereg = $rootScope.$on('$locationChangeSuccess', function() {
+        $interval.cancel(updateGameList);
+        dereg();
+    });
 
     //Done after function has been initialized, outside loop to execute immediately
     $scope.getGamesForUser();
 
     //Update game list every second
-    var updateGameList = window.setInterval(function() {
+    var updateGameList = $interval(function() {
         $scope.getGamesForUser();
     }, 1000);
 

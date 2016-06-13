@@ -27,7 +27,7 @@ router.get('/', function (req, res) {
         });
     });
 });
-/* GET a specific user */
+/* GET a specific user by id */
 router.get('/:user_id', function (req, res) {
     pool.getConnection(function (err, connection) {
         if (err) {
@@ -43,7 +43,25 @@ router.get('/:user_id', function (req, res) {
             else {
                 console.log('Error while performing query');
             }
-
+        });
+    });
+});
+/* GET a specific user by username */
+router.get('/username/:username', function (req, res) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("SELECT * FROM USERS WHERE username = ?", req.params.username, function (err, user) {
+            connection.release();
+            if (!err) {
+                res.json(user);
+            }
+            else {
+                console.log('Error while performing query');
+            }
         });
     });
 });

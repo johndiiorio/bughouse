@@ -3,10 +3,6 @@ body {
     margin-left: 1em;
 }
 
-p {
-    color: #ABABAB;
-}
-
 .wrap-text {
     word-wrap: break-word;
 }

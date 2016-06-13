@@ -8,6 +8,23 @@ app.controller('registerController', function ($scope, $http) {
         });
         captcha.generate();
     });
+    $scope.checkUsernameAvailability = function() {
+        $http({
+            method: 'GET',
+            url: '/api/users/username/' + $scope.registerData.username
+        }).success(function (data) {
+            // Username is available
+            if (data.length == 0) {
+                $("#usernameAvailability").text("Username available");
+                $("#usernameAvailability").css("color", "green");
+            } else { //Username not available
+                $("#usernameAvailability").text("Username not available");
+                $("#usernameAvailability").css("color", "red");
+            }
+        }).error(function () {
+            console.log("Error getting user by username");
+        });
+    };
     $scope.newCaptcha = function () {
         captcha.generate();
     };
@@ -23,14 +40,17 @@ app.controller('registerController', function ($scope, $http) {
                     notif({
                         msg: "<b>Success:</b> Registered",
                         type: "success",
-                        position: "left"
+                        position: "left",
+                        timeout: 2000
                     });
                     window.location = "/#/";
                 }).error(function (data, status, headers, config) {
                     notif({
                         msg: "<b>Error:</b> Registration failed",
                         type: "error",
-                        position: "left"
+                        position: "left",
+                        width: "all",
+                        timeout: 2000
                     });
                 });
             } else {
@@ -38,7 +58,9 @@ app.controller('registerController', function ($scope, $http) {
                 notif({
                     msg: "<b>Error:</b> Registration failed",
                     type: "error",
-                    position: "left"
+                    position: "left",
+                    width: "all",
+                    timeout: 2000
                 });
             }
         }

@@ -8,11 +8,13 @@
                  ng-class="{'has-error' : registerForm.registerUsername.$invalid && registerForm.registerUsername.$touched}">
                 <input type="text" class="form-control" id="registerUsername" name="registerUsername"
                        ng-model="registerData.username" placeholder="Username" ng-minlength="4" ng-maxlength="15"
-                       required>
+                       ng-change="checkUsernameAvailability()" required>
                 <p class="red-color" ng-show="registerForm.registerUsername.$error.minlength && registerForm.registerUsername.$touched"
                    class="help-block">Username is too short.</p>
                 <p class="red-color" ng-show="registerForm.registerUsername.$error.maxlength && registerForm.registerUsername.$touched"
                    class="help-block">Username is too long.</p>
+                <p id="usernameAvailability" class="red-color" ng-show="!registerForm.registerUsername.$error.minlength
+                 && !registerForm.registerUsername.$error.maxlength">Username not available</p>
             </div>
         </div>
         <div class="form-group">
