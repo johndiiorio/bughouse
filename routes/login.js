@@ -2,6 +2,8 @@ var express = require('express');
 var mysql = require('mysql');
 var pool = require('./pool.js').pool;
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+var config = require('../config');
 
 var router = express.Router();
 
@@ -16,7 +18,13 @@ router.post('/', function (req, res) {
             connection.release();
             if (!err && user.length > 0) {
                 if (bcrypt.compareSync(req.body.password, user[0].password_hash)) {
-                    res.json(user[0]);
+                    var token = jwt.sign(user[0], config.token_secret, {
+                        expiresIn: 86400 // expires in one day
+                    });
+                    res.json({
+                        user: user[0],
+                        token: token
+                    });
                 } else {
                     res.status(500).send({ error: "error" });
                 }

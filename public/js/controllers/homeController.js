@@ -290,7 +290,10 @@ app.controller('homeController', function ($scope, $http, $route, $interval, $ro
             url: '/api/login',
             data: user
         }).success(function (data) {
-            $scope.currentUser = data;
+            $scope.currentUser = data.user;
+
+            //token is data.token
+
             userID = data.user_id;
             $("#myNavbar").load("pages/navbar.html #loadNavbar", function () {
                 $("#profileName").text($scope.currentUser.username + " (" + $scope.currentUser.ratingBullet + ", " + $scope.currentUser.ratingBlitz + ", " + $scope.currentUser.ratingClassical + ")");

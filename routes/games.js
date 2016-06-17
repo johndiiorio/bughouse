@@ -1,6 +1,7 @@
 var express = require('express');
 var mysql = require('mysql');
 var pool = require('./pool.js').pool;
+var authentication = require('./authenticator');
 var router = express.Router();
 
 /* Get all games */
@@ -148,6 +149,8 @@ router.post('/', function (req, res) {
         });
     });
 });
+
+router.use(authentication);
 
 /* Update a game's moves */
 router.put('/update/moves/:game_id', function (req, res) {
