@@ -1,4 +1,4 @@
-app.controller('gameController', function ($scope, $http) {
+app.controller('gameController', function ($scope, $http, $window) {
     $scope.game = {};
     $scope.display = {};
 
@@ -107,9 +107,10 @@ app.controller('gameController', function ($scope, $http) {
             $http({
                 method: 'PUT',
                 url: '/api/games/update/moves/' + $scope.game.game_id,
-                data: {moves: moves.join()}
+                data: {moves: moves.join()},
+                headers: {'x-access-token': $window.localStorage.getItem("token")}
             }).success(function () {
-            }).error(function () {
+            }).error(function (data) {
                 console.log("Error updating game moves");
             });
 
@@ -144,7 +145,8 @@ app.controller('gameController', function ($scope, $http) {
                 $http({
                     method: 'PUT',
                     url: '/api/games/update/reserve/' + $scope.game.game_id,
-                    data: {reserve: "left_reserve_white", pieces: putReserveData.toString()}
+                    data: {reserve: "left_reserve_white", pieces: putReserveData.toString()},
+                    headers: {'x-access-token': window.localStorage.getItem("token")}
                 }).success(function () {
                 }).error(function () {
                     console.log("Error updating left game white pieces");
@@ -176,7 +178,8 @@ app.controller('gameController', function ($scope, $http) {
                 $http({
                     method: 'PUT',
                     url: '/api/games/update/reserve/' + $scope.game.game_id,
-                    data: {reserve: "left_reserve_black", pieces: putReserveData.toString()}
+                    data: {reserve: "left_reserve_black", pieces: putReserveData.toString()},
+                    headers: {'x-access-token': window.localStorage.getItem("token")}
                 }).success(function () {
                 }).error(function () {
                     console.log("Error updating left game black pieces");

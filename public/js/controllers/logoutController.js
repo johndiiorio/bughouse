@@ -1,6 +1,6 @@
-app.controller('logoutController', function ($timeout) {
+app.controller('logoutController', function ($timeout, $window) {
     userID = null;
-    authToken = null;
+    $window.localStorage.removeItem("token");
     var $scope = $('[ng-controller=homeController]').scope();
     $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
     $scope.gameArray = [];
