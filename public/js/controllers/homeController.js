@@ -1,4 +1,7 @@
-app.controller('homeController', function ($scope, $http, $route, $interval, $rootScope, $window) {
+app.controller('homeController', function ($scope, $http, $route, $window) {
+    var socket = io('/lobby');
+    var socketLoading = io('/loading');
+
     $scope.userInitialized = null;
     $scope.selectedGame = null;
     $scope.gameArray = [];
@@ -273,13 +276,14 @@ app.controller('homeController', function ($scope, $http, $route, $interval, $ro
             method: 'PUT',
             url: '/api/games/start/' + game.game_id
         }).success(function () {
+            socketLoading.emit("begin game");
+            $scope.switchToLoadingScreen(game.game_id);
         }).error(function () {
             console.log("Error starting game");
         });
-        $scope.switchToLoadingScreen(game.game_id);
     };
     $scope.switchToLoadingScreen = function(id) {
-        clearInterval(updateGameList);
+        socket.emit('update game list');
         gameID = id;
         window.location="/#/loading";
     };
@@ -310,18 +314,11 @@ app.controller('homeController', function ($scope, $http, $route, $interval, $ro
             });
         });
     };
-    // Stop updating game list when route changes
-    var dereg = $rootScope.$on('$locationChangeSuccess', function() {
-        $interval.cancel(updateGameList);
-        dereg();
-    });
 
-    //Done after function has been initialized, outside loop to execute immediately
+    //Execute once on page load
     $scope.getGamesForUser();
 
-    //Update game list every second
-    var updateGameList = $interval(function() {
+    socket.on('update game list', function() {
         $scope.getGamesForUser();
-    }, 1000);
-
+    });
 });

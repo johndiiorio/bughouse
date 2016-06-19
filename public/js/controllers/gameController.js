@@ -1,7 +1,12 @@
 app.controller('gameController', function ($scope, $http, $window) {
+    var socket = io('/game');
+    socket.on('connect', function() {
+        socket.emit('room', gameID);
+    });
+
     $scope.game = {};
     $scope.display = {};
-
+    var fkNum;
     if (gameID) {
         $http({
             method: 'GET',
@@ -103,16 +108,9 @@ app.controller('gameController', function ($scope, $http, $window) {
                 leftCount += 1;
             }
 
-            //Update moves on server
-            $http({
-                method: 'PUT',
-                url: '/api/games/update/moves/' + $scope.game.game_id,
-                data: {moves: moves.join()},
-                headers: {'x-access-token': $window.localStorage.getItem("token")}
-            }).success(function () {
-            }).error(function (data) {
-                console.log("Error updating game moves");
-            });
+            // Update moves via socket
+            var updateMovesData = {game_id: $scope.game.game_id, moves: moves.join()};
+            socket.emit('update moves', updateMovesData);
 
             //Update spare pieces
             var sparePiecesLeftArr = [];
@@ -138,19 +136,9 @@ app.controller('gameController', function ($scope, $http, $window) {
                 }
                 board1.updateSparePieces("white", sparePiecesLeftArr);
 
-                //Update reserve on server
                 for (var i = 0; i < game.reserve_white.length; i++) {
                     putReserveData[i] = JSON.stringify(game.reserve_white[i]);
                 }
-                $http({
-                    method: 'PUT',
-                    url: '/api/games/update/reserve/' + $scope.game.game_id,
-                    data: {reserve: "left_reserve_white", pieces: putReserveData.toString()},
-                    headers: {'x-access-token': window.localStorage.getItem("token")}
-                }).success(function () {
-                }).error(function () {
-                    console.log("Error updating left game white pieces");
-                });
             } else {
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     if (game.reserve_black[i].type == 'p') {
@@ -171,20 +159,17 @@ app.controller('gameController', function ($scope, $http, $window) {
                 }
                 board1.updateSparePieces("black", sparePiecesLeftArr);
 
-                //Update reserve on server
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     putReserveData[i] = JSON.stringify(game.reserve_black[i]);
                 }
-                $http({
-                    method: 'PUT',
-                    url: '/api/games/update/reserve/' + $scope.game.game_id,
-                    data: {reserve: "left_reserve_black", pieces: putReserveData.toString()},
-                    headers: {'x-access-token': window.localStorage.getItem("token")}
-                }).success(function () {
-                }).error(function () {
-                    console.log("Error updating left game black pieces");
-                });
             }
+            //Update reserve via socket
+            var reserveLocation = "left_reserve_white";
+            if (fkNum == 2) { reserveLocation = "left_reserve_black"; }
+            else if(fkNum == 3) { reserveLocation = "right_reserve_black";}
+            else if (fkNum == 4) { reserveLocation = "right_reserve_white";}
+            var updateReserveData = {game_id: $scope.game.game_id, pieces: putReserveData.toString(), reserve: reserveLocation};
+            socket.emit('update reserve', updateReserveData);
 
             if(game.turn() === 'w') {
                 removeHighlights('white');
@@ -353,27 +338,26 @@ app.controller('gameController', function ($scope, $http, $window) {
         }
     };
 
-    //Update game every 10 ms
-    window.setInterval(function(){
-        if (gameID) {
-            $http({
-                method: 'GET',
-                url: '/api/games/' + gameID
-            }).success(function (data) {
-                var dataMoves = data[0].moves;
-                if (dataMoves) {
-                    dataMoves = dataMoves.split(",");
-                    console.log(moves);
-                    console.log(dataMoves);
-                    if (!arraysEqual(dataMoves, moves)) {
-                        moves = dataMoves;
-                    }
-                }
-            }).error(function () {
-                console.log("Error starting game");
-            });
-        }
-    }, 50);
+    // TODO: Update moves via socket
+    socket.on('update moves', function(data) {
+        console.log('Incoming message: ' + data);
+        //var dataMoves = data[0].moves;
+        //if (dataMoves) {
+        //    dataMoves = dataMoves.split(",");
+        //    console.log(moves);
+        //    console.log(dataMoves);
+        //    if (!arraysEqual(dataMoves, moves)) {
+        //        moves = dataMoves;
+        //    }
+        //}
+    });
+
+    // TODO: Update reserve via socket
+    socket.on('update reserve', function(data) {
+        console.log('Incoming message: ' + data);
+        //board1/2.updateSparePieces("white"/"black", data.pieces);
+    });
+
     function arraysEqual(arr1, arr2) {
         if(arr1.length !== arr2.length)
             return false;
@@ -394,7 +378,7 @@ app.controller('gameController', function ($scope, $http, $window) {
         // $scope.display.player"i" is graphical representation of the user for display the boards
         //  2   3
         //  1   4
-        var fkNum = getForeignKeyNumber();
+        fkNum = getForeignKeyNumber();
         if(fkNum == 1) {
             $scope.display.player1 = $scope.game.player1;
             $scope.display.player2 = $scope.game.player2;
