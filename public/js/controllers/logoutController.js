@@ -1,4 +1,4 @@
-app.controller('logoutController', function ($timeout, $window) {
+app.controller('logoutController', function ($timeout, $window, $location) {
     userID = null;
     $window.localStorage.removeItem("token");
     var $scope = $('[ng-controller=homeController]').scope();
@@ -10,5 +10,5 @@ app.controller('logoutController', function ($timeout, $window) {
         $scope.$apply();
     });
     $("#myNavbar").load("pages/navbar.html #originalNavbar");
-    window.location = "/#/";
+    $location.path('/');
 });

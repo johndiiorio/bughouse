@@ -1,4 +1,4 @@
-app.controller('gameController', function ($scope, $http, $window) {
+app.controller('gameController', function ($scope, $http, $window, $location) {
     var socket = io('/game');
     socket.on('connect', function() {
         socket.emit('room', gameID);
@@ -35,7 +35,7 @@ app.controller('gameController', function ($scope, $http, $window) {
             console.log("Error getting game");
         });
     } else { // there is no game in progress
-        window.location = "/#/";
+        $location.path('/');
     }
 
     var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
@@ -119,55 +119,54 @@ app.controller('gameController', function ($scope, $http, $window) {
                 //var sparePiecesArr = [];
                 for (var i = 0; i < game.reserve_white.length; i++) {
                     if (game.reserve_white[i].type == 'p') {
-                        sparePiecesLeftArr.push('wP');
+                        sparePiecesLeftArr.push('bP');
                     }
                     else if (game.reserve_white[i].type == 'n') {
-                        sparePiecesLeftArr.push('wN');
+                        sparePiecesLeftArr.push('bN');
                     }
                     else if (game.reserve_white[i].type == 'b'){
-                        sparePiecesLeftArr.push('wB');
+                        sparePiecesLeftArr.push('bB');
                     }
                     else if (game.reserve_white[i].type == 'r') {
-                        sparePiecesLeftArr.push('wR');
+                        sparePiecesLeftArr.push('bR');
                     }
                     else if (game.reserve_white[i].type == 'q') {
-                        sparePiecesLeftArr.push('wQ');
+                        sparePiecesLeftArr.push('bQ');
                     }
                 }
-                board1.updateSparePieces("white", sparePiecesLeftArr);
-
+                board2.updateSparePieces("black", sparePiecesLeftArr);
                 for (var i = 0; i < game.reserve_white.length; i++) {
                     putReserveData[i] = JSON.stringify(game.reserve_white[i]);
                 }
             } else {
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     if (game.reserve_black[i].type == 'p') {
-                        sparePiecesLeftArr.push('bP');
+                        sparePiecesLeftArr.push('wP');
                     }
                     else if (game.reserve_black[i].type == 'n') {
-                        sparePiecesLeftArr.push('bN');
+                        sparePiecesLeftArr.push('wN');
                     }
                     else if (game.reserve_black[i].type == 'b') {
-                        sparePiecesLeftArr.push('bB');
+                        sparePiecesLeftArr.push('wB');
                     }
                     else if (game.reserve_black[i].type == 'r') {
-                        sparePiecesLeftArr.push('bR');
+                        sparePiecesLeftArr.push('wR');
                     }
                     else if (game.reserve_black[i].type == 'q') {
-                        sparePiecesLeftArr.push('bQ');
+                        sparePiecesLeftArr.push('wQ');
                     }
                 }
-                board1.updateSparePieces("black", sparePiecesLeftArr);
+                board2.updateSparePieces("white", sparePiecesLeftArr);
 
                 for (var i = 0; i < game.reserve_black.length; i++) {
                     putReserveData[i] = JSON.stringify(game.reserve_black[i]);
                 }
             }
-            //Update reserve via socket
-            var reserveLocation = "left_reserve_white";
-            if (fkNum == 2) { reserveLocation = "left_reserve_black"; }
-            else if(fkNum == 3) { reserveLocation = "right_reserve_black";}
-            else if (fkNum == 4) { reserveLocation = "right_reserve_white";}
+
+            var reserveLocation = "right_reserve_black";
+            if (fkNum == 2) { reserveLocation = "right_reserve_white"; }
+            else if(fkNum == 3) { reserveLocation = "left_reserve_black";}
+            else if (fkNum == 4) { reserveLocation = "left_reserve_white";}
             var updateReserveData = {game_id: $scope.game.game_id, pieces: putReserveData.toString(), reserve: reserveLocation};
             socket.emit('update reserve', updateReserveData);
 
@@ -208,77 +207,10 @@ app.controller('gameController', function ($scope, $http, $window) {
     };
     var gameRight = function () {
         var boardEl = $('#board2'), game = new Chess(), squareToHighlight;
-
-        var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
-                return false;
-            }
+        var onSnapEnd = function () {
+            board2.position(game.fen());
         };
-        var onDrop = function (source, target, piece) {
-            // see if the move is legal
-            var move;
-            if(source == "spare") {
-                move = game.move(piece.charAt(1) + "@" + target);
-            } else {
-                move = game.move({
-                    from: source,
-                    to: target,
-                    promotion: 'q' // NOTE: always promote to a queen for example simplicity
-                });
-            }
-            // illegal move
-            if (move === null) return 'snapback';
-
-            if (game.turn() === 'b') {
-                moves.push(" " + rightCount + "B. " + game.history());
-            } else {
-                moves.push(" " + rightCount + "b. " + game.history());
-                rightCount += 1;
-            }
-
-            var sparePiecesRightArr = [];
-            if (game.turn() === 'b') {
-                for (var i = 0; i < game.reserve_white.length; i++) {
-                    if (game.reserve_white[i].type == 'p') {
-                        sparePiecesRightArr.push('wP');
-                    }
-                    else if (game.reserve_white[i].type == 'n') {
-                        sparePiecesRightArr.push('wN');
-                    }
-                    else if (game.reserve_white[i].type == 'b'){
-                        sparePiecesRightArr.push('wB');
-                    }
-                    else if (game.reserve_white[i].type == 'r') {
-                        sparePiecesRightArr.push('wR');
-                    }
-                    else if (game.reserve_white[i].type == 'q') {
-                        sparePiecesRightArr.push('wQ');
-                    }
-                }
-                board2.updateSparePieces("white", sparePiecesRightArr);
-            } else {
-                for (var i = 0; i < game.reserve_black.length; i++) {
-                    if (game.reserve_black[i].type == 'p') {
-                        sparePiecesRightArr.push('bP');
-                    }
-                    else if (game.reserve_black[i].type == 'n') {
-                        sparePiecesRightArr.push('bN');
-                    }
-                    else if (game.reserve_black[i].type == 'b') {
-                        sparePiecesRightArr.push('bB');
-                    }
-                    else if (game.reserve_black[i].type == 'r') {
-                        sparePiecesRightArr.push('bR');
-                    }
-                    else if (game.reserve_black[i].type == 'q') {
-                        sparePiecesRightArr.push('bQ');
-                    }
-                }
-                board2.updateSparePieces("black", sparePiecesRightArr);
-            }
-
+        var updateStatus = function () {
             if(game.turn() === 'w') {
                 removeHighlights('white');
                 boardEl.find('.square-' + source).addClass('highlight-black');
@@ -288,15 +220,8 @@ app.controller('gameController', function ($scope, $http, $window) {
                 boardEl.find('.square-' + source).addClass('highlight-white');
                 boardEl.find('.square-' + target).addClass('highlight-white');
             }
-
             opponentAcrossTimer.toggle();
             teammateTimer.toggle();
-            updateStatus();
-        };
-        var onSnapEnd = function () {
-            board2.position(game.fen());
-        };
-        var updateStatus = function () {
             $('#pgn').html(moves);
         };
         var removeHighlights = function(color) {
@@ -307,12 +232,9 @@ app.controller('gameController', function ($scope, $http, $window) {
             position: 'start',
             sparePieces: true,
             showNotation: false,
-            onDragStart: onDragStart,
-            onDrop: onDrop,
             onSnapEnd: onSnapEnd
         };
         board2 = ChessBoard('board2', cfg);
-        updateStatus();
     };
 
     $(document).ready(gameLeft);

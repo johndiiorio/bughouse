@@ -2,7 +2,7 @@ var app = angular.module('bughouse', ['ngRoute']);
 var userID = null; //user ID of current user
 var gameID = null; //game ID of current game
 
-app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) {
+app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'pages/home.html',
@@ -28,6 +28,10 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
             templateUrl: 'pages/game.html',
             controller: 'gameController'
         })
+        .when('/game/:game_id', {
+            templateUrl: 'pages/gameViewer.html',
+            controller: 'gameViewerController'
+        })
         .when('/about', {
             templateUrl: 'pages/about.html',
             controller: 'aboutController'
@@ -38,7 +42,8 @@ app.config(['$routeProvider', '$interpolateProvider', function ($routeProvider) 
         })
         .otherwise({
             templateUrl: 'pages/error.html'
-        })
+        });
+    $locationProvider.html5Mode(true);
 }]);
 
 app.directive('pwCheck', [function () {

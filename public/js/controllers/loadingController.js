@@ -1,6 +1,6 @@
-app.controller('loadingController', function ($scope, $http) {
+app.controller('loadingController', function ($scope, $http, $location) {
     if (!gameID) {
-        window.location = "/#/" ;
+        $location.path('/');
     }
 
     var socket = io('/loading');
@@ -9,6 +9,6 @@ app.controller('loadingController', function ($scope, $http) {
     });
 
     socket.on('begin game', function() {
-        window.location = "/#/game";
+        $location.path('/game');
     });
 });

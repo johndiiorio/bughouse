@@ -1,4 +1,4 @@
-app.controller('homeController', function ($scope, $http, $route, $window) {
+app.controller('homeController', function ($scope, $http, $route, $window, $location) {
     var socket = io('/lobby');
     var socketLoading = io('/loading');
 
@@ -265,8 +265,8 @@ app.controller('homeController', function ($scope, $http, $route, $window) {
             method: 'POST',
             url: '/api/games',
             data: postData
-        }).success(function (data) {
-            $scope.switchToLoadingScreen(data.insertId);
+        }).success(function (game_id) {
+            $scope.switchToLoadingScreen(game_id);
         }).error(function () {
             console.log("Error creating game");
         });
@@ -285,7 +285,7 @@ app.controller('homeController', function ($scope, $http, $route, $window) {
     $scope.switchToLoadingScreen = function(id) {
         socket.emit('update game list');
         gameID = id;
-        window.location="/#/loading";
+        $location.path('/loading');
     };
     $scope.userLogIn = function () {
         var user = {username: $scope.login.username, password: $scope.login.password};
@@ -302,7 +302,7 @@ app.controller('homeController', function ($scope, $http, $route, $window) {
                 $('[data-toggle="tooltip"]').tooltip();
             });
             $('[ng-controller=homeController]').scope().userInitialized = true;
-            window.location = "/#/";
+            $location.path('/');
             $route.reload();
         }).error(function () {
             notif({

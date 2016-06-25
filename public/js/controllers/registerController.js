@@ -1,4 +1,4 @@
-app.controller('registerController', function ($scope, $http) {
+app.controller('registerController', function ($scope, $http, $location) {
     var captcha;
     $(function () {
         captcha = new CAPTCHA({
@@ -43,7 +43,7 @@ app.controller('registerController', function ($scope, $http) {
                         position: "left",
                         timeout: 2000
                     });
-                    window.location = "/#/";
+                    $location.path("/");
                 }).error(function (data, status, headers, config) {
                     notif({
                         msg: "<b>Error:</b> Registration failed",

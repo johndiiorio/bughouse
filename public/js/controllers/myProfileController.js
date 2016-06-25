@@ -1,3 +1,3 @@
-app.controller('myProfileController', function ($scope) {
-    if ($scope.currentUser.username === "Anonymous") window.location = "/#/";
+app.controller('myProfileController', function ($scope, $location) {
+    if ($scope.currentUser.username === "Anonymous") $location.path('/');
 });
