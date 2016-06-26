@@ -1,42 +1,32 @@
 <div class="container-fluid" style="margin-top: 2em">
-    <div id="createPanel" class="col-md-3">
+    <div id="createPanel" class="col-md-3" ng-show="$parent.currentUser">
         <h3 class="brighter-color" style="text-decoration: underline">Create a new game:</h3>
-
         <p class="brighter-color" type="text" id="minutesDisplay">Minutes: 5</p>
         <input type="text" id="minutesSlider" class="span2" value="" data-slider-min="1" data-slider-max="20"
                data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
                data-slider-selection="after"
                data-slider-tooltip="hide">
         <br>
-
         <p class="brighter-color" type="text" id="incrementDisplay">Increment (seconds): 5</p>
         <input type="text" id="incrementSlider" class="span2" value="" data-slider-min="0" data-slider-max="30"
                data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
                data-slider-selection="after"
                data-slider-tooltip="hide">
         <br>
-
-        <div ng-show="$parent.userInitialized">
-            <p class="brighter-color" type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
-            <div id="ratingSliderDiv">
-                <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
-                       data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
-                       data-slider-selection="after"
-                       data-slider-tooltip="hide">
-            </div>
+        <p class="brighter-color" type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
+        <div id="ratingSliderDiv">
+            <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
+                   data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
+                   data-slider-selection="after"
+                   data-slider-tooltip="hide">
         </div>
         <br>
-
         <p class="brighter-color" class="noBottomMargin">Players join random sides?</p>
         <input type="checkbox" id="randomSwitch" checked>
         <br><br>
-
-        <div ng-show="$parent.userInitialized">
-            <p class="noBottomMargin brighter-color">Rated game?</p>
-            <input type="checkbox" id="modeSwitch" checked>
-            <br><br>
-        </div>
-
+        <p class="noBottomMargin brighter-color">Rated game?</p>
+        <input type="checkbox" id="modeSwitch" checked>
+        <br><br>
         <p class="brighter-color">Choose your side and create game!</p>
         <div class="btn-group" role="group">
             <button class="btn btn-secondary" ng-click="createGame('white')">White</button>
@@ -44,6 +34,37 @@
             <button class="btn btn-secondary" ng-click="createGame('black')">Black</button>
         </div>
     </div>
+    <div id="loginPanel" class="col-md-2" ng-show="!$parent.currentUser">
+        <h3 class="brighter-color" style="text-decoration: underline">Login:</h3>
+        <div style="background-color: #383838; padding-bottom: 10px">
+            <form ng-submit="userLogIn()">
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <h5 class="brighter-color">Username</h5>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control input-sm" id="loginUsername" ng-model="login.username" />
+                    </div>
+                </div>
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <h5 class="brighter-color">Password</h5>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="password" class="form-control input-sm" id="loginPassword" ng-model="login.password"/>
+                    </div>
+                </div>
+                <br>
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-secondary">Sign in
+                            <span class="glyphicon glyphicon-log-in"></span></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-1" ng-show="!$parent.currentUser"></div>
     <div id="lobbyPanel" class="col-md-8">
         <h3 class="brighter-color" style="text-decoration: underline">Lobby:</h3>
         <table class="table table-hover brighter-color table-condensed table-fixedheader">

@@ -1,3 +1,3 @@
 app.controller('myProfileController', function ($scope, $location) {
-    if ($scope.currentUser.username === "Anonymous") $location.path('/');
+    if (!$scope.currentUser.username) $location.path('/');
 });

@@ -2,13 +2,8 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
     var socket = io('/lobby');
     var socketLoading = io('/loading');
 
-    $scope.userInitialized = null;
     $scope.selectedGame = null;
     $scope.gameArray = [];
-
-    if(!$('[ng-controller=homeController]').scope().userInitialized) {
-        $scope.currentUser = {user_id: 1, username: "Anonymous", ratingBullet: 1500, ratingBlitz: 1500, ratingClassical: 1500};
-    }
 
     $(document).ready(function () {
         //Hide the login notifications
@@ -87,16 +82,15 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
                 var passBool = false;
 
-                if(!$('[ng-controller=homeController]').scope().userInitialized) { // User not signed in
-                    if (data[i].mode === "Casual") { //Anonymous users can only see casual games
-                        passBool = true;
-                    }
+                if(!$scope.$parent.currentUser) { // User not signed in
+                    //Anonymous users can see all games
+                    passBool = true;
                 } else { // check that the user can view
-                    if (data[i].minutes < 3 && $scope.currentUser.ratingBullet >= minRange && $scope.currentUser.ratingBullet <= maxRange) {
+                    if (data[i].minutes < 3 && $scope.$parent.currentUser.ratingBullet >= minRange && $scope.$parent.currentUser.ratingBullet <= maxRange) {
                         passBool = true;
-                    } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.currentUser.ratingBlitz >= minRange && $scope.currentUser.ratingBlitz <= maxRange) {
+                    } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.$parent.currentUser.ratingBlitz >= minRange && $scope.$parent.currentUser.ratingBlitz <= maxRange) {
                         passBool = true;
-                    } else if (data[i].minutes > 8 && $scope.currentUser.ratingClassical >= minRange && $scope.currentUser.ratingClassical <= maxRange) {
+                    } else if (data[i].minutes > 8 && $scope.$parent.currentUser.ratingClassical >= minRange && $scope.$parent.currentUser.ratingClassical <= maxRange) {
                         passBool = true;
                     }
                 }
@@ -134,11 +128,13 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         return openSlots;
     };
     $scope.addPlayer = function (game) {
+        if (!$scope.$parent.currentUser) return;
+
         if (game.join_random) {
             var openSlots = $scope.getOpenSlots(game);
             var slot = openSlots[Math.floor(Math.random() * openSlots.length)];
 
-            eval(String("game.player" + slot + "= $scope.currentUser"));
+            eval(String("game.player" + slot + "= $scope.$parent.currentUser"));
 
             var player1, player2, player3, player4;
             $http({
@@ -151,13 +147,13 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
                 player4 = data[0].fk_player4_id;
 
                 if (slot == 1) {
-                    player1 = $scope.currentUser.user_id;
+                    player1 = $scope.$parent.currentUser.user_id;
                 } else if (slot == 2) {
-                    player2 = $scope.currentUser.user_id;
+                    player2 = $scope.$parent.currentUser.user_id;
                 } else if (slot == 3) {
-                    player3 = $scope.currentUser.user_id;
+                    player3 = $scope.$parent.currentUser.user_id;
                 } else {
-                    player4 = $scope.currentUser.user_id;
+                    player4 = $scope.$parent.currentUser.user_id;
                 }
 
                 var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
@@ -211,13 +207,13 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         player4 = $scope.selectedGame.fk_player4_id;
 
         if (slot == 1) {
-            player1 = $scope.currentUser.user_id;
+            player1 = $scope.$parent.currentUser.user_id;
         } else if (slot == 2) {
-            player2 = $scope.currentUser.user_id;
+            player2 = $scope.$parent.currentUser.user_id;
         } else if (slot == 3) {
-            player3 = $scope.currentUser.user_id;
+            player3 = $scope.$parent.currentUser.user_id;
         } else {
-            player4 = $scope.currentUser.user_id;
+            player4 = $scope.$parent.currentUser.user_id;
         }
 
         var putData = {player1: player1, player2: player2, player3: player3, player4: player4};
@@ -240,24 +236,19 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         postData.increment = $('#incrementSlider').val() ? $('#incrementSlider').val() : 5;
         postData.join_random = $('#randomSwitch').bootstrapSwitch('state') == true ? 1 : 0;
         postData.status = "open";
-        if ($('[ng-controller=homeController]').scope().userInitialized) {
-            postData.mode = $('#modeSwitch').bootstrapSwitch('state') == true ? "Rated" : "Casual";
-            postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
-        } else {
-            postData.mode = "Casual";
-            postData.rating_range = "0,3000";
-        }
+        postData.mode = $('#modeSwitch').bootstrapSwitch('state') == true ? "Rated" : "Casual";
+        postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
         if (side == 'random') {
             Math.floor(Math.random() * 2) == 0 ? side = 'white' : side = 'black';
         }
         if (side == 'white') {
-            postData.player1 = $scope.currentUser.user_id;
+            postData.player1 = $scope.$parent.currentUser.user_id;
             postData.player2 = null;
             postData.player3 = null;
             postData.player4 = null;
         } else {
             postData.player1 = null;
-            postData.player2 = $scope.currentUser.user_id;
+            postData.player2 = $scope.$parent.currentUser.user_id;
             postData.player3 = null;
             postData.player4 = null;
         }
@@ -294,16 +285,13 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
             url: '/api/login',
             data: user
         }).success(function (data) {
-            $scope.currentUser = data.user;
+            $scope.$parent.currentUser = data.user;
             $window.localStorage.setItem("token", data.token);
-            userID = data.user_id;
+            userID = data.user.user_id;
             $("#myNavbar").load("pages/navbar.html #loadNavbar", function () {
-                $("#profileName").text($scope.currentUser.username + " (" + $scope.currentUser.ratingBullet + ", " + $scope.currentUser.ratingBlitz + ", " + $scope.currentUser.ratingClassical + ")");
+                $("#profileName").text($scope.$parent.currentUser.username + " (" + $scope.$parent.currentUser.ratingBullet + ", " + $scope.$parent.currentUser.ratingBlitz + ", " + $scope.$parent.currentUser.ratingClassical + ")");
                 $('[data-toggle="tooltip"]').tooltip();
             });
-            $('[ng-controller=homeController]').scope().userInitialized = true;
-            $location.path('/');
-            $route.reload();
         }).error(function () {
             notif({
                 msg: "<b>Error:</b> Invalid username/password combination",
