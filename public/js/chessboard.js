@@ -746,13 +746,14 @@ function animateSparePieceToSquare(piece, dest, completeFn) {
   var pieceId = uuid();
   $('body').append(buildPiece(piece, true, pieceId));
   var animatedPieceEl = $('#' + pieceId);
-  animatedPieceEl.css({
-    display: '',
-    position: 'absolute',
-    left: srcOffset.left,
-    top: srcOffset.top
-  });
-
+  if (srcOffset) { // piece did not come from spare
+    animatedPieceEl.css({
+      display: '',
+      position: 'absolute',
+      left: srcOffset.left,
+      top: srcOffset.top
+    });
+  }
   // on complete
   var complete = function() {
     // add the "real" piece to the destination square

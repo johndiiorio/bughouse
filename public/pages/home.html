@@ -79,7 +79,7 @@
             </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="game in gameArray track by $index" ng-click="addPlayer(game)">
+                <tr ng-repeat="game in gameArray track by $index" ng-click="addPlayer(game)" style="cursor: pointer">
                     <td width="10%">{{getSlots(game)}}</td>
                     <td width="15%">{{game.mode}}</td>
                     <td width="35%">

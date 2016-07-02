@@ -1,6 +1,7 @@
 body {
     background-color: #1a1a1a;
     margin-left: 1em;
+    min-width: 1620px;
 }
 
 .wrap-text {
@@ -222,4 +223,30 @@ table.table-fixedheader>thead tr th, table.table-fixedheader>tbody tr td {
 
 .highlight-black {
     background-color:hsla(60,100%,50%,0.6);
+}
+.promotion_piece {
+    width: 62px;
+    height: 62px;
+    display: block;
+    cursor: pointer;
+    border-radius: 50%;
+    background-color: #b0b0b0;
+    box-shadow: inset 0 0 25px 3px #808080;
+    transition: all .2s ease;
+}
+.promotion_piece:hover {
+    cursor: pointer;
+    box-shadow: inset 0 0 48px 8px #d85000;
+    border-radius: 0;
+}
+.promotion_box {
+    position: absolute;
+    z-index: 1000;
+    width: 62px;
+}
+#white_promotion {
+    display: none;
+}
+#black_promotion {
+    display: none;
 }

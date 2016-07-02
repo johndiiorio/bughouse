@@ -50,6 +50,9 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     var rightCount = 1;
     var board1;
     var board2;
+    var tmpPromotionPiece = null;
+    var tmpSourceSquare = null;
+    var tmpTargetSquare = null;
 
     jQuery(function ($) {
         yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
@@ -85,6 +88,48 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             }
         };
         var onDrop = function (source, target, piece) {
+            // check if move is a pawn promotion
+            if (source != "spare" && piece.charAt(1).toLowerCase() == 'p' && (target.charAt(1) == 1 || target.charAt(1) == 8)) {
+                function getTargetColumn(letter) {
+                    if (letter == 'a') return 1;
+                    else if (letter == 'b') return 2;
+                    else if (letter == 'c') return 3;
+                    else if (letter == 'd') return 4;
+                    else if (letter == 'e') return 5;
+                    else if (letter == 'f') return 6;
+                    else if (letter == 'g') return 7;
+                    else return 8;
+                }
+                // Check if promotion is allowed here
+                var move = game.move({
+                    from: source,
+                    to: target,
+                    promotion: "q"
+                });
+                game.undo();
+                if (move != null) { // promotion is allowed, display popup to select piece
+                    var targetColumn = getTargetColumn(target.charAt(0));
+                    if (piece.charAt(0) == 'w') {
+                        $("#white_promotion").css({"display": "block"});
+                        $('#white_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
+                    }
+                    else {
+                        targetColumn = 9 - targetColumn;
+                        $("#black_promotion").css({"display": "block"});
+                        $('#black_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
+                    }
+                    tmpSourceSquare = source;
+                    tmpTargetSquare = target;
+                    deletePieceFromSquare(tmpSourceSquare);
+                }
+                return 'snapback'; // remove the pawn being promoted or snapback the invalid piece move
+            }
+            // not a promotion, handle move normally
+            else {
+                handleMove(source, target, piece);
+            }
+        };
+        var handleMove = function (source, target, piece) {
             // see if the move is legal
             var move;
             if (source == "spare") {
@@ -93,7 +138,7 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                 move = game.move({
                     from: source,
                     to: target,
-                    promotion: 'q' // NOTE: always promote to a queen for example simplicity
+                    promotion: tmpPromotionPiece // NOTE: always promote to a queen for example simplicity
                 });
             }
 
@@ -184,10 +229,27 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             yourTimer.toggle();
             updateStatus();
         };
-        var onSnapEnd = function () {
+        $scope.selectPromotionPiece = function (piece) {
+            tmpPromotionPiece = piece.charAt(1).toLowerCase();
+            addPieceToSquare(tmpTargetSquare, piece);
+            $("#white_promotion").css({"display": "none"});
+            $("#black_promotion").css({"display": "none"});
+            handleMove(tmpSourceSquare, tmpTargetSquare, piece);
+        }
+        var addPieceToSquare = function(square, piece) {
+            var newPosition = board1.position();
+            newPosition[square] = piece;
+            board1.position(newPosition);
+        };
+        var deletePieceFromSquare = function(square) {
+            var newPosition = board1.position();
+            delete newPosition[square];
+            board1.position(newPosition);
+        };
+        var onSnapEnd = function() {
             board1.position(game.fen());
         };
-        var updateStatus = function () {
+        var updateStatus = function() {
             $('#pgn').html(moves);
         };
         var removeHighlights = function(color) {
@@ -198,6 +260,8 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             position: 'start',
             sparePieces: true,
             showNotation: false,
+            snapbackSpeed: 0,
+            snapSpeed: 0,
             onDragStart: onDragStart,
             onDrop: onDrop,
             onSnapEnd: onSnapEnd

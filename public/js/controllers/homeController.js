@@ -6,16 +6,6 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
     $scope.gameArray = [];
 
     $(document).ready(function () {
-        //Hide the login notifications
-        $("#notificationLoginSuccess").hide();
-        $("#notificationLoginFailed").hide();
-        $("#notificationRegisterSuccess").hide();
-        $("#notificationRegisterFailed").hide();
-
-        $('.dropdown-menu input').click(function (event) {
-            event.stopPropagation();
-        });
-
         //Create the sliders and switches
         $('#minutesSlider').slider().on('slide', function (ev) {
             $('#minutesDisplay').text("Minutes: " + ev.value);
@@ -128,8 +118,16 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         return openSlots;
     };
     $scope.addPlayer = function (game) {
-        if (!$scope.$parent.currentUser) return;
-
+        if (!$scope.$parent.currentUser) {
+            notif({
+                msg: "<b>Error:</b> Please log in to join a game",
+                type: "error",
+                position: "center",
+                width: "all",
+                timeout: 2000
+            });
+            return;
+        }
         if (game.join_random) {
             var openSlots = $scope.getOpenSlots(game);
             var slot = openSlots[Math.floor(Math.random() * openSlots.length)];
@@ -293,6 +291,7 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
                 $('[data-toggle="tooltip"]').tooltip();
             });
         }).error(function () {
+            $("#loginPassword").val('');
             notif({
                 msg: "<b>Error:</b> Invalid username/password combination",
                 type: "error",
