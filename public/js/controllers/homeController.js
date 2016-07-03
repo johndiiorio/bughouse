@@ -287,7 +287,9 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
             $window.localStorage.setItem("token", data.token);
             userID = data.user.user_id;
             $("#myNavbar").load("pages/navbar.html #loadNavbar", function () {
-                $("#profileName").text($scope.$parent.currentUser.username + " (" + $scope.$parent.currentUser.ratingBullet + ", " + $scope.$parent.currentUser.ratingBlitz + ", " + $scope.$parent.currentUser.ratingClassical + ")");
+                var title = "";
+                if ($scope.$parent.currentUser.title != null) title = $scope.$parent.currentUser.title + " ";
+                $("#profileName").text(title + $scope.$parent.currentUser.username + " (" + $scope.$parent.currentUser.ratingBullet + ", " + $scope.$parent.currentUser.ratingBlitz + ", " + $scope.$parent.currentUser.ratingClassical + ")");
                 $('[data-toggle="tooltip"]').tooltip();
             });
         }).error(function () {

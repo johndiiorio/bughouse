@@ -1,5 +1,4 @@
 var express = require('express');
-var mysql = require('mysql');
 var pool = require('./pool.js').pool;
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');

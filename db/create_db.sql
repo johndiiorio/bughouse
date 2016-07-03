@@ -22,9 +22,12 @@ CREATE TABLE IF NOT EXISTS `bughouse_db`.`users` (
   `username` VARCHAR(25) NOT NULL COMMENT '',
   `password_hash` CHAR(60) NOT NULL COMMENT '',
   `title` VARCHAR(2) NULL COMMENT '',
-  `ratingBullet` INT NULL DEFAULT 1200 COMMENT '',
-  `ratingBlitz` INT NULL DEFAULT 1200 COMMENT '',
-  `ratingClassical` INT NULL DEFAULT 1200 COMMENT '',
+  `ratingBullet` INT NOT NULL DEFAULT 1500 COMMENT '',
+  `rdBullet` INT NOT NULL DEFAULT 350 COMMENT '',
+  `ratingBlitz` INT NOT NULL DEFAULT 1500 COMMENT '',
+  `rdBlitz` INT NOT NULL DEFAULT 350 COMMENT '',
+  `ratingClassical` INT NOT NULL DEFAULT 1500 COMMENT '',
+  `rdClassical` INT NOT NULL DEFAULT 350 COMMENT '',
   PRIMARY KEY (`user_id`)  COMMENT '',
   UNIQUE INDEX `username_UNIQUE` (`username` ASC)  COMMENT '')
 ENGINE = InnoDB;
