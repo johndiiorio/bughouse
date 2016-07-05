@@ -121,10 +121,10 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         if (!$scope.$parent.currentUser) {
             notif({
                 msg: "<b>Error:</b> Please log in to join a game",
-                type: "error",
+                type: "warning",
                 position: "center",
                 width: "all",
-                timeout: 2000
+                timeout: 3000
             });
             return;
         }

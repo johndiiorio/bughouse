@@ -1604,6 +1604,20 @@ var Chess = function (fen) {
             return dropPieceFromReserve(piece, square);
         },
 
+        getSourceDestinationSquares: function(move) {
+            var moves = generate_moves();
+            var move_obj;
+            var move_replaced = move.replace(/=/, '').replace(/[+#]?[?!]*$/, '');
+
+            for (var i = 0, len = moves.length; i < len; i++) {
+                if (move_replaced === move_to_san(moves[i]).replace(/=/, '').replace(/[+#]?[?!]*$/, '')) {
+                    move_obj = moves[i];
+                    break;
+                }
+            }
+            return {source: algebraic(move_obj.from), destination: algebraic(move_obj.to)};
+        },
+
         fen: function () {
             return generate_fen();
         },

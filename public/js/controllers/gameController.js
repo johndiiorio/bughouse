@@ -46,10 +46,13 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
         teammateAcrossDisplay = $('#teammateTime');
 
     var moves = [];
-    var leftCount = 1;
-    var rightCount = 1;
+    var moveCount = 1;
     var board1;
     var board2;
+    var game1 = new Chess();
+    var game2 = new Chess();
+    var boardEl1 = $('#board1');
+    var boardEl2 = $('#board2');
     var tmpPromotionPiece = null;
     var tmpSourceSquare = null;
     var tmpTargetSquare = null;
@@ -78,12 +81,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     });
 
     var gameLeft = function () {
-        var boardEl = $('#board1'), game = new Chess(), squareToHighlight;
-
         var onDragStart = function (source, piece, position, orientation) {
-            if (game.game_over() === true ||
-                (game.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            if (game1.game_over() === true ||
+                (game1.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game1.turn() === 'b' && piece.search(/^w/) !== -1)) {
                 return false;
             }
         };
@@ -101,12 +102,12 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                     else return 8;
                 }
                 // Check if promotion is allowed here
-                var move = game.move({
+                var move = game1.move({
                     from: source,
                     to: target,
                     promotion: "q"
                 });
-                game.undo();
+                game1.undo();
                 if (move != null) { // promotion is allowed, display popup to select piece
                     var targetColumn = getTargetColumn(target.charAt(0));
                     if (piece.charAt(0) == 'w') {
@@ -133,24 +134,26 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             // see if the move is legal
             var move;
             if (source == "spare") {
-                move = game.move(piece.charAt(1) + "@" + target);
+                move = game1.move(piece.charAt(1) + "@" + target);
             } else {
-                move = game.move({
+                move = game1.move({
                     from: source,
                     to: target,
-                    promotion: tmpPromotionPiece // NOTE: always promote to a queen for example simplicity
+                    promotion: tmpPromotionPiece
                 });
             }
-
             // illegal move
             if (move === null) return 'snapback';
 
             //Update move history
-            if (game.turn() === 'b') {
-                moves.push(" " + leftCount + "A. " + game.history());
+            if (fkNum == 1) {
+                moves.push(moveCount + "A. " + game1.history());
+            } else if (fkNum == 2) {
+                moves.push(moveCount + "a. " + game1.history());
+            } else if (fkNum == 3) {
+                moves.push(moveCount + "B. " + game1.history());
             } else {
-                moves.push(" " + leftCount + "a. " + game.history());
-                leftCount += 1;
+                moves.push(moveCount + "b. " + game1.history());
             }
 
             // Update moves via socket
@@ -160,51 +163,51 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             //Update spare pieces
             var sparePiecesLeftArr = [];
             var putReserveData = [];
-            if (game.turn() === 'b') {
+            if (game1.turn() === 'b') {
                 //var sparePiecesArr = [];
-                for (var i = 0; i < game.reserve_white.length; i++) {
-                    if (game.reserve_white[i].type == 'p') {
+                for (var i = 0; i < game1.reserve_white.length; i++) {
+                    if (game1.reserve_white[i].type == 'p') {
                         sparePiecesLeftArr.push('bP');
                     }
-                    else if (game.reserve_white[i].type == 'n') {
+                    else if (game1.reserve_white[i].type == 'n') {
                         sparePiecesLeftArr.push('bN');
                     }
-                    else if (game.reserve_white[i].type == 'b'){
+                    else if (game1.reserve_white[i].type == 'b'){
                         sparePiecesLeftArr.push('bB');
                     }
-                    else if (game.reserve_white[i].type == 'r') {
+                    else if (game1.reserve_white[i].type == 'r') {
                         sparePiecesLeftArr.push('bR');
                     }
-                    else if (game.reserve_white[i].type == 'q') {
+                    else if (game1.reserve_white[i].type == 'q') {
                         sparePiecesLeftArr.push('bQ');
                     }
                 }
                 board2.updateSparePieces("black", sparePiecesLeftArr);
-                for (var i = 0; i < game.reserve_white.length; i++) {
-                    putReserveData[i] = JSON.stringify(game.reserve_white[i]);
+                for (var i = 0; i < game1.reserve_white.length; i++) {
+                    putReserveData[i] = JSON.stringify(game1.reserve_white[i]);
                 }
             } else {
-                for (var i = 0; i < game.reserve_black.length; i++) {
-                    if (game.reserve_black[i].type == 'p') {
+                for (var i = 0; i < game1.reserve_black.length; i++) {
+                    if (game1.reserve_black[i].type == 'p') {
                         sparePiecesLeftArr.push('wP');
                     }
-                    else if (game.reserve_black[i].type == 'n') {
+                    else if (game1.reserve_black[i].type == 'n') {
                         sparePiecesLeftArr.push('wN');
                     }
-                    else if (game.reserve_black[i].type == 'b') {
+                    else if (game1.reserve_black[i].type == 'b') {
                         sparePiecesLeftArr.push('wB');
                     }
-                    else if (game.reserve_black[i].type == 'r') {
+                    else if (game1.reserve_black[i].type == 'r') {
                         sparePiecesLeftArr.push('wR');
                     }
-                    else if (game.reserve_black[i].type == 'q') {
+                    else if (game1.reserve_black[i].type == 'q') {
                         sparePiecesLeftArr.push('wQ');
                     }
                 }
                 board2.updateSparePieces("white", sparePiecesLeftArr);
 
-                for (var i = 0; i < game.reserve_black.length; i++) {
-                    putReserveData[i] = JSON.stringify(game.reserve_black[i]);
+                for (var i = 0; i < game1.reserve_black.length; i++) {
+                    putReserveData[i] = JSON.stringify(game1.reserve_black[i]);
                 }
             }
 
@@ -215,14 +218,14 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             var updateReserveData = {game_id: $scope.game.game_id, pieces: putReserveData.toString(), reserve: reserveLocation};
             socket.emit('update reserve', updateReserveData);
 
-            if(game.turn() === 'w') {
-                removeHighlights('white');
-                boardEl.find('.square-' + source).addClass('highlight-black');
-                boardEl.find('.square-' + target).addClass('highlight-black');
+            if(game1.turn() === 'w') {
+                $scope.removeHighlights(boardEl1, 'white');
+                boardEl1.find('.square-' + source).addClass('highlight-black');
+                boardEl1.find('.square-' + target).addClass('highlight-black');
             } else {
-                removeHighlights('black');
-                boardEl.find('.square-' + source).addClass('highlight-white');
-                boardEl.find('.square-' + target).addClass('highlight-white');
+                $scope.removeHighlights(boardEl1, 'black');
+                boardEl1.find('.square-' + source).addClass('highlight-white');
+                boardEl1.find('.square-' + target).addClass('highlight-white');
             }
 
             yourOpponentTimer.toggle();
@@ -247,13 +250,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             board1.position(newPosition);
         };
         var onSnapEnd = function() {
-            board1.position(game.fen());
+            board1.position(game1.fen());
         };
         var updateStatus = function() {
             $('#pgn').html(moves);
-        };
-        var removeHighlights = function(color) {
-            boardEl.find('.square-55d63').removeClass('highlight-' + color);
         };
         var cfg = {
             draggable: true,
@@ -270,26 +270,22 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
         updateStatus();
     };
     var gameRight = function () {
-        var boardEl = $('#board2'), game = new Chess(), squareToHighlight;
         var onSnapEnd = function () {
-            board2.position(game.fen());
+            board2.position(game2.fen());
         };
         var updateStatus = function () {
-            if(game.turn() === 'w') {
-                removeHighlights('white');
-                boardEl.find('.square-' + source).addClass('highlight-black');
-                boardEl.find('.square-' + target).addClass('highlight-black');
+            if(game2.turn() === 'w') {
+                $scope.removeHighlights(boardEl2, 'white');
+                boardEl2.find('.square-' + source).addClass('highlight-black');
+                boardEl2.find('.square-' + target).addClass('highlight-black');
             } else {
-                removeHighlights('black');
-                boardEl.find('.square-' + source).addClass('highlight-white');
-                boardEl.find('.square-' + target).addClass('highlight-white');
+                $scope.removeHighlights(boardEl2, 'black');
+                boardEl2.find('.square-' + source).addClass('highlight-white');
+                boardEl2.find('.square-' + target).addClass('highlight-white');
             }
             opponentAcrossTimer.toggle();
             teammateTimer.toggle();
             $('#pgn').html(moves);
-        };
-        var removeHighlights = function(color) {
-            boardEl.find('.square-55d63').removeClass('highlight-' + color);
         };
         var cfg = {
             draggable: false,
@@ -323,24 +319,80 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             else return user.ratingClassical;
         }
     };
+    $scope.removeHighlights = function(boardEl, color) {
+        boardEl.find('.square-55d63').removeClass('highlight-' + color);
+    };
 
-    // TODO: Update moves via socket
     socket.on('update moves', function(data) {
-        console.log('Incoming message: ' + data);
-        //var dataMoves = data[0].moves;
-        //if (dataMoves) {
-        //    dataMoves = dataMoves.split(",");
-        //    console.log(moves);
-        //    console.log(dataMoves);
-        //    if (!arraysEqual(dataMoves, moves)) {
-        //        moves = dataMoves;
-        //    }
-        //}
+        console.log('Incoming message moves: ' + data);
+        var arrMoves = data.split(",");
+        var diffMoves = $(arrMoves).not(moves).get();
+
+        for (var i = 0; i < diffMoves.length; i++) {
+            var moveStr = diffMoves[i].substring(diffMoves[i].indexOf(" ") + 1);
+            var boardLetter = diffMoves[i].charAt(diffMoves[i].indexOf(" ") - 2);
+            // 2    3
+            // 1    4
+            var boardNum = 1;
+            if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'A') boardNum = 2;
+            else if (boardLetter == boardLetter.toUpperCase() && boardLetter.toUpperCase() == 'B') boardNum = 3;
+            else if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'B') boardNum = 4;
+            var promotionPiece = 'q';
+            if (moveStr.indexOf("=") != -1) {
+                promotionPiece = moveStr.charAt(moveStr.indexOf("=") + 1);
+            }
+
+            function updateState(boardSideToUpdate) {
+                if (boardSideToUpdate == 1) {
+                    var sourceDestObj1 = game1.getSourceDestinationSquares(moveStr);
+                    // Update UI
+                    board1.move(sourceDestObj1.source + "-" + sourceDestObj1.destination);
+                    //Update internal game state
+                    if (!sourceDestObj1.source) {
+                        game1.move(moveStr.charAt(1) + "@" + sourceDestObj1.destination);
+                    } else {
+                        game1.move({
+                            from: sourceDestObj1.source,
+                            to: sourceDestObj1.destination,
+                            promotion: promotionPiece
+                        });
+                    }
+                } else {
+                    var sourceDestObj2 = game2.getSourceDestinationSquares(moveStr);
+                    // Update UI
+                    board2.move(sourceDestObj2.source + "-" + sourceDestObj2.destination);
+                    //Update internal game state
+                    if (!sourceDestObj2.source) {
+                        game2.move(moveStr.charAt(1) + "@" + sourceDestObj2.destination);
+                    } else {
+                        game2.move({
+                            from: sourceDestObj2.source,
+                            to: sourceDestObj2.destination,
+                            promotion: promotionPiece
+                        });
+                    }
+                }
+            }
+            if (fkNum == 1 || fkNum == 2) {
+                if (boardNum == 1 || boardNum == 2) {
+                    updateState(1);
+                } else {
+                    updateState(2);
+                }
+            } else {
+                if (boardNum == 1 || boardNum == 2) {
+                    updateState(2);
+                } else {
+                    updateState(1);
+                }
+            }
+        }
+        moves = arrMoves;
     });
 
     // TODO: Update reserve via socket
     socket.on('update reserve', function(data) {
-        console.log('Incoming message: ' + data);
+        console.log('Incoming message reserve: ' + data);
         //board1/2.updateSparePieces("white"/"black", data.pieces);
     });
 
