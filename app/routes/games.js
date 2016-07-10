@@ -1,6 +1,7 @@
 var express = require('express');
-var pool = require('./pool.js').pool;
-var authentication = require('./authenticator');
+var pool = require('../../models/pool.js').pool;
+var authentication = require('../controllers/authenticator');
+var Bug = require('../controllers/bug');
 var router = express.Router();
 
 /* Get all games */
@@ -151,7 +152,49 @@ router.post('/', function (req, res) {
     });
 });
 
-router.use(authentication);
+//router.use(authentication);
+
+/* Check if pawn promotion is possible */
+router.put('/validate/pawnpromotion/:game_id', function (req, res) {
+    if (req.body.source == "spare" || req.body.piece.charAt(1).toLowerCase() != 'p' || (target.charAt(1) != 1 || target.charAt(1) != 8)) { // Not a valid promotion
+        res.json({valid: false});
+        return;
+    }
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            res.json({"code": 100, "status": "Error in connection database"});
+            return;
+        }
+        connection.query("SELECT * From Games WHERE game_id = ?", [req.params.game_id], function (err, rows) {
+            connection.release();
+            if (!err) {
+                var game;
+                if (req.body.fkNum == 1 || req.body.fkNum == 2) {
+                    game = new Bug(rows[0].left_fen);
+                } else {
+                    game = new Bug(rows[0].right_fen);
+                }
+                var move = game.move({
+                    from: req.body.source,
+                    to: req.body.target,
+                    promotion: 'q' // doesn't matter the promotion, user will decide later
+                });
+                if (move) {
+                    res.json({valid: true});
+                } else {
+                    res.json({valid: false});
+                }
+            }
+            else {
+                console.log('Error while performing query');
+            }
+        });
+        connection.on('error', function (err) {
+            res.json({"code": 100, "status": "Error in connection database"});
+        });
+    });
+});
 
 /* Update a game's moves */
 router.put('/update/moves/:game_id', function (req, res) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var Chess = function (fen) {
+var Bug = function (fen) {
 
     /* jshint indent: false */
 
@@ -1588,6 +1588,17 @@ var Chess = function (fen) {
             return rank(i);
         },
 
+        setReserves: function(pieces_white, pieces_black) {
+            if (!pieces_white) {
+                pieces_white = [];
+            }
+            if (!pieces_black) {
+                pieces_black = [];
+            }
+            reserve_white = pieces_white;
+            reserve_black = pieces_black;
+        },
+
         addPieceToReserve: function (piece) {
             return addPieceToReserve(piece);
         },
@@ -1988,10 +1999,11 @@ var Chess = function (fen) {
     };
 };
 
-/* export Chess object if using node or any other CommonJS compatible
+/* export Bug object if using node or any other CommonJS compatible
  * environment */
-if (typeof exports !== 'undefined') exports.Chess = Chess;
-/* export Chess object for any RequireJS compatible environment */
-if (typeof define !== 'undefined') define(function () {
-    return Chess;
-});
+//if (typeof exports !== 'undefined') exports.Bug = Bug;
+///* export Chess object for any RequireJS compatible environment */
+//if (typeof define !== 'undefined') define(function () {
+//    return Bug;
+//});
+module.exports = Bug;

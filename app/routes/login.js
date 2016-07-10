@@ -1,8 +1,8 @@
 var express = require('express');
-var pool = require('./pool.js').pool;
+var pool = require('./../../models/pool.js').pool;
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-var config = require('../config');
+var config = require('../../config');
 
 var router = express.Router();
 
@@ -20,6 +20,7 @@ router.post('/', function (req, res) {
                     var token = jwt.sign(user[0], config.token_secret, {
                         expiresIn: 86400 // expires in one day
                     });
+                    delete user[0].password_hash;
                     res.json({
                         user: user[0],
                         token: token
