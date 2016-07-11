@@ -57,7 +57,8 @@ router.get('/username/:username', function (req, res) {
         }
         connection.query("SELECT * FROM USERS WHERE username = ?", req.params.username, function (err, user) {
             connection.release();
-            delete user[0].password_hash;
+            if (user.length > 0) delete user[0].password_hash;
+            console.log(user);
             if (!err) {
                 res.json(user);
             }

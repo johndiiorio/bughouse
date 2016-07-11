@@ -156,7 +156,7 @@ router.post('/', function (req, res) {
 
 /* Check if pawn promotion is possible */
 router.put('/validate/pawnpromotion/:game_id', function (req, res) {
-    if (req.body.source == "spare" || req.body.piece.charAt(1).toLowerCase() != 'p' || (target.charAt(1) != 1 || target.charAt(1) != 8)) { // Not a valid promotion
+    if (req.body.source == "spare" || req.body.piece.charAt(1).toLowerCase() != 'p' || (req.body.target.charAt(1) != 1 && req.body.target.charAt(1) != 8)) { // Not a valid promotion
         res.json({valid: false});
         return;
     }

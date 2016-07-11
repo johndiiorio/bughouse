@@ -96,7 +96,7 @@ module.exports = function(io) {
                     for (; beginNum < loopSubstring.length; beginNum++) {
                         if (!isNaN(loopSubstring[beginNum])) break;
                     }
-                    moveCount = moves.substring(lastSpace + beginNum + 1, lastPlayerLetter);
+                    moveCount = parseInt(moves.substring(lastSpace + beginNum + 1, lastPlayerLetter)) + 1;
                 }
                 if (fkNum == 1) {
                     moves += moveCount + "A. " + game.history() + " ";
@@ -137,7 +137,7 @@ module.exports = function(io) {
                         }
                         if (move) { // Not an illegal move
                             var queryString = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
-                            var queryArgs, arg_moves = "", arg_reserve_white = [], arg_reserve_black = [], arg_fen = game.fen();
+                            var queryArgs, arg_moves = "", arg_reserve_white = [], arg_reserve_black = [], arg_fen = game.fen(), capture = false;
                             var boardNum;
                             arg_moves = newMoveString(rows[0].moves, data.fkNum, game);
                             for (var i = 0; i < game.reserve_white; i++) {
@@ -153,10 +153,22 @@ module.exports = function(io) {
                                 boardNum = 2;
                                 queryArgs = ['right_fen', arg_fen, 'right_reserve_white', arg_reserve_white.toString(), 'right_reserve_black', arg_reserve_black.toString(), 'moves', arg_moves, data.game_id];
                             }
+                            if (game.history()[0].indexOf('x') != -1) {
+                                capture = true;
+                            }
                             connection.query(queryString, queryArgs, function (err) {
                                 connection.release();
                                 if (!err) { // update everyone in game
-                                    var emitData = {fen: arg_fen, reserve_white: arg_reserve_white, reserve_black: arg_reserve_black, turn: game.turn(), boardNum: boardNum, move: data.move, moves: arg_moves};
+                                    var emitData = {
+                                        fen: arg_fen,
+                                        reserve_white: arg_reserve_white,
+                                        reserve_black: arg_reserve_black,
+                                        turn: game.turn(),
+                                        boardNum: boardNum,
+                                        move: data.move,
+                                        moves: arg_moves,
+                                        capture: capture
+                                    };
                                     gameSocket.in(socket.room).emit('update game', emitData);
                                 } else {
                                     console.log('Error while performing update query in socket.js');

@@ -39,13 +39,12 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     }
 
     var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
-
     var yourDisplay = $('#yourTime'),
         yourOpponentDisplay = $('#yourOpponentTime'),
         opponentAcrossDisplay = $('#opponentAcrossTime'),
         teammateAcrossDisplay = $('#teammateTime');
 
-    var moves = [];
+    $scope.movesArray = [];
     var board1;
     var board2;
     var boardEl1 = $('#board1');
@@ -138,12 +137,11 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                 addPieceToSquare(target, piece);
             }
 
-            var putData = {game_id: $scope.game.game_id, fkNum: fkNum, move: {source: source, target: target, piece: piece }};
+            var putData = {game_id: $scope.game.game_id, fkNum: fkNum, move: {source: source, target: target, piece: piece, promotion: tmpPromotionPiece}};
             socket.emit('update game', putData);
 
             yourOpponentTimer.toggle();
             yourTimer.toggle();
-            updateStatus();
         };
         $scope.selectPromotionPiece = function (piece) {
             tmpPromotionPiece = piece.charAt(1).toLowerCase();
@@ -162,9 +160,6 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             delete newPosition[square];
             board1.position(newPosition);
         };
-        var updateStatus = function() {
-            $('#pgn').html(moves);
-        };
         var cfg = {
             draggable: true,
             position: 'start',
@@ -177,7 +172,6 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             onDrop: onDrop
         };
         board1 = ChessBoard('board1', cfg);
-        updateStatus();
     };
     var gameRight = function () {
         var cfg = {
@@ -222,37 +216,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
         }
     };
 
-    socket.on('update moves', function(data) {
-        var arrMoves = data.split(",");
-        var diffMoves = $(arrMoves).not(moves).get();
-
-        for (var i = 0; i < diffMoves.length; i++) {
-            var moveStr = diffMoves[i].substring(diffMoves[i].indexOf(" ") + 1);
-            var boardLetter = diffMoves[i].charAt(diffMoves[i].indexOf(" ") - 2);
-            // 2    3
-            // 1    4
-            var boardNum = 1;
-            if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'A') boardNum = 2;
-            else if (boardLetter == boardLetter.toUpperCase() && boardLetter.toUpperCase() == 'B') boardNum = 3;
-            else if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'B') boardNum = 4;
-            var promotionPiece = 'q';
-            if (moveStr.indexOf("=") != -1) {
-                promotionPiece = moveStr.charAt(moveStr.indexOf("=") + 1);
-            }
-        }
-        moves = arrMoves;
-    });
-
-    // TODO: Update reserve via socket
-    socket.on('update reserve', function(data) {
-        console.log('Incoming message reserve: ' + data);
-        //board1/2.updateSparePieces("white"/"black", data.pieces);
-    });
-
     socket.on('update game', function(data) {
+        // TODO: Update reserve via socket
         // board1/2.updateSparePieces("white"/"black", sparePiecesFromData);
         //  e.g.  if (game1.reserve_white[i].type == 'p') { sparePiecesLeftArr.push('bP'); }
-        console.log(data);
         if (fkNum == 1 || fkNum == 2) {
             if (data.boardNum == 1) {
                 board1.position(data.fen);
@@ -262,6 +229,7 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                 } else {
                     $scope.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
                 }
+                data.capture ? playSound('capture') : playSound('move');
             } else {
                 board2.position(data.fen);
                 if(data.turn === 'w') {
@@ -286,9 +254,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                 } else {
                     $scope.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
                 }
+                data.capture ? playSound('capture') : playSound('move');
             }
         }
-        moves = data.moves;
+        updateMoves(data.moves);
     });
 
     socket.on('snapback move', function(data) { // invalid move, 'snapback' move
@@ -300,15 +269,55 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
         $location.path('/gameViewer');
     });
 
-    function arraysEqual(arr1, arr2) {
-        if(arr1.length !== arr2.length)
-            return false;
-        for(var i = arr1.length; i--;) {
-            if(arr1[i] !== arr2[i])
-                return false;
+    function updateMoves(moves) {
+        var arrMoves = moves.trim().split(" ");
+        for (var i = 0; i < arrMoves.length; i+=2) {
+            var playerLetter = arrMoves[i].charAt(arrMoves[i].length-2);
+            var moveNumber = arrMoves[i].substring(0, arrMoves[i].length-2);
+            var moveStr = arrMoves[i+1];
+            if (!$scope.movesArray[parseInt(moveNumber) - 1]) {
+                $scope.movesArray[parseInt(moveNumber) - 1] = {};
+            }
+            $scope.movesArray[parseInt(moveNumber) - 1].number = moveNumber;
+            if (playerLetter == 'A') {
+                $scope.movesArray[moveNumber - 1].player1 = moveStr;
+            } else if (playerLetter == 'a') {
+                $scope.movesArray[moveNumber - 1].player2 = moveStr;
+            } else if (playerLetter == 'B') {
+                $scope.movesArray[moveNumber - 1].player3 = moveStr;
+            } else {
+                $scope.movesArray[moveNumber - 1].player4 = moveStr;
+            }
         }
-        return true;
+        $scope.$apply();
     }
+
+    function playSound(name) {
+        function sound(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function(){
+                this.sound.play();
+            }
+            this.stop = function(){
+                this.sound.pause();
+            }
+        }
+        var soundObj;
+        if (name === 'move') {
+            soundObj = new sound('../../sound/move.mp3');
+        } else if (name === 'capture') {
+            soundObj = new sound('../../sound/capture.mp3');
+        } else {
+            soundObj = new sound('../../sound/notify.mp3');
+        }
+        soundObj.play();
+    }
+
     function getForeignKeyNumber() {
         for(var i = 1; i <= 4; i++) {
             if (eval(String("$scope.game.fk_player" + i + "_id")) == $scope.currentUser.user_id) {
