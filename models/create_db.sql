@@ -39,6 +39,8 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `bughouse_db`.`games` (
   `game_id` VARCHAR(12) NOT NULL COMMENT '',
   `moves` VARCHAR(10000) NULL COMMENT '',
+  `left_fen` VARCHAR(80) NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' COMMENT '',
+  `right_fen` VARCHAR(80) NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' COMMENT '',
   `left_reserve_white` VARCHAR(100) NULL COMMENT '',
   `left_reserve_black` VARCHAR(100) NULL COMMENT '',
   `right_reserve_white` VARCHAR(100) NULL COMMENT '',

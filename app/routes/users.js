@@ -1,7 +1,7 @@
 var express = require('express');
-var pool = require('./pool.js').pool;
+var pool = require('./../../models/pool.js').pool;
 var bcrypt = require('bcryptjs');
-var authentication = require('./authenticator');
+var authentication = require('./../controllers/authenticator');
 var glicko = require('glicko2');
 var router = express.Router();
 
@@ -37,6 +37,7 @@ router.get('/:user_id', function (req, res) {
         }
         connection.query("SELECT * FROM USERS WHERE user_id = ?", req.params.user_id, function (err, user) {
             connection.release();
+            delete user[0].password_hash;
             if (!err) {
                 res.json(user);
             }
@@ -56,6 +57,8 @@ router.get('/username/:username', function (req, res) {
         }
         connection.query("SELECT * FROM USERS WHERE username = ?", req.params.username, function (err, user) {
             connection.release();
+            if (user.length > 0) delete user[0].password_hash;
+            console.log(user);
             if (!err) {
                 res.json(user);
             }

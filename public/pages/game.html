@@ -1,6 +1,6 @@
 <div class="container-fluid" style="margin-top: 2em">
-    <div id="infoPanel" class="col-md-3">
-        <div id="infoPlayers" style="text-align:  center">
+    <div id="infoPanel" class="col-md-4">
+        <div id="infoPlayers" style="text-align: center">
             <h4 class="brighter-color" style="text-decoration: underline">{{game.minutes + '+' + game.increment + ', ' +
                 getInfoFormat(game.minutes) + ', ' + game.mode}}</h4>
             <div>
@@ -20,9 +20,27 @@
             </div>
         </div>
         <br>
-        <div id="infoPGN">
-            <p class="brighter-color" style="text-decoration: underline">Moves:</p>
-            <p class="brighter-color wrap-text" id="pgn"></p>
+        <div id="movesTable">
+            <table class="table-container">
+                <thead>
+                    <tr>
+                        <th><h1>#</h1></th>
+                        <th><h1>{{game.player1.username}}</h1></th>
+                        <th><h1>{{game.player2.username}}</h1></th>
+                        <th><h1>{{game.player3.username}}</h1></th>
+                        <th><h1>{{game.player4.username}}</h1></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="move in movesArray track by $index">
+                        <td>{{move.number}}</td>
+                        <td>{{move.player1}}</td>
+                        <td>{{move.player2}}</td>
+                        <td>{{move.player3}}</td>
+                        <td>{{move.player4}}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div id="game-left" class="col-md-4">
@@ -52,7 +70,7 @@
             <h3 id="yourTime" class="left-game-clock">{{getDurationFormat(game.minutes * 60)}}</h3>
         </div>
     </div>
-    <div id="game-right" class="col-xs-5">
+    <div id="game-right" class="col-md-4">
         <div class="container-fluid align-name-clock-top">
             <h3 class="right-game-top-username">
                 {{display.player3.username + ' (' + getRating(display.player3, game) + ')'}}</h3>

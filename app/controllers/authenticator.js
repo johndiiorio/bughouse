@@ -1,5 +1,5 @@
 var express = require('express');
-var config = require('../config');
+var config = require('../../config');
 var jwt = require('jsonwebtoken');
 
 module.exports = function (req, res, next) {

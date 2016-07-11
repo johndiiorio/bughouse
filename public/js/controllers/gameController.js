@@ -39,20 +39,18 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     }
 
     var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
-
     var yourDisplay = $('#yourTime'),
         yourOpponentDisplay = $('#yourOpponentTime'),
         opponentAcrossDisplay = $('#opponentAcrossTime'),
         teammateAcrossDisplay = $('#teammateTime');
 
-    var moves = [];
-    var moveCount = 1;
+    $scope.movesArray = [];
     var board1;
     var board2;
-    var game1 = new Chess();
-    var game2 = new Chess();
     var boardEl1 = $('#board1');
     var boardEl2 = $('#board2');
+    var board1Turn = 'w';
+    var gameOver = false;
     var tmpPromotionPiece = null;
     var tmpSourceSquare = null;
     var tmpTargetSquare = null;
@@ -82,48 +80,48 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
 
     var gameLeft = function () {
         var onDragStart = function (source, piece, position, orientation) {
-            if (game1.game_over() === true ||
-                (game1.turn() === 'w' && piece.search(/^b/) !== -1) ||
-                (game1.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            // check if moving piece is allowed
+            if (((fkNum == 1 || fkNum == 3) && piece.charAt(0) != 'w') || ((fkNum == 2 || fkNum == 4) && piece.charAt(0) != 'b') || (board1Turn != piece.charAt(0)) || gameOver) {
                 return false;
             }
         };
         var onDrop = function (source, target, piece) {
-            // check if move is a pawn promotion
+            // check if move is a pawn promotion, validate on server
             if (source != "spare" && piece.charAt(1).toLowerCase() == 'p' && (target.charAt(1) == 1 || target.charAt(1) == 8)) {
-                function getTargetColumn(letter) {
-                    if (letter == 'a') return 1;
-                    else if (letter == 'b') return 2;
-                    else if (letter == 'c') return 3;
-                    else if (letter == 'd') return 4;
-                    else if (letter == 'e') return 5;
-                    else if (letter == 'f') return 6;
-                    else if (letter == 'g') return 7;
-                    else return 8;
-                }
-                // Check if promotion is allowed here
-                var move = game1.move({
-                    from: source,
-                    to: target,
-                    promotion: "q"
+                $http({
+                    method: 'PUT',
+                    url: '/api/games/validate/pawnpromotion/' + $scope.game.game_id,
+                    data: {source: source, target: target, piece: piece, fkNum: fkNum}
+                }).success(function (data) {
+                    if (data.valid) {  // promotion is allowed, display popup to select piece
+                        function getTargetColumn(letter) {
+                            if (letter == 'a') return 1;
+                            else if (letter == 'b') return 2;
+                            else if (letter == 'c') return 3;
+                            else if (letter == 'd') return 4;
+                            else if (letter == 'e') return 5;
+                            else if (letter == 'f') return 6;
+                            else if (letter == 'g') return 7;
+                            else return 8;
+                        }
+                        var targetColumn = getTargetColumn(target.charAt(0));
+                        if (piece.charAt(0) == 'w') {
+                            $("#white_promotion").css({"display": "block"});
+                            $('#white_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
+                        }
+                        else {
+                            targetColumn = 9 - targetColumn;
+                            $("#black_promotion").css({"display": "block"});
+                            $('#black_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
+                        }
+                        tmpSourceSquare = source;
+                        tmpTargetSquare = target;
+                        deletePieceFromSquare(tmpSourceSquare);
+                    }
+                    return 'snapback'; // remove the pawn being promoted or snapback the invalid piece move
+                }).error(function () {
+                    console.log("Error validating pawn promotion");
                 });
-                game1.undo();
-                if (move != null) { // promotion is allowed, display popup to select piece
-                    var targetColumn = getTargetColumn(target.charAt(0));
-                    if (piece.charAt(0) == 'w') {
-                        $("#white_promotion").css({"display": "block"});
-                        $('#white_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
-                    }
-                    else {
-                        targetColumn = 9 - targetColumn;
-                        $("#black_promotion").css({"display": "block"});
-                        $('#black_promotion').css('transform', 'translate(' + (targetColumn * 62 - 60) + 'px, 64px)');
-                    }
-                    tmpSourceSquare = source;
-                    tmpTargetSquare = target;
-                    deletePieceFromSquare(tmpSourceSquare);
-                }
-                return 'snapback'; // remove the pawn being promoted or snapback the invalid piece move
             }
             // not a promotion, handle move normally
             else {
@@ -131,106 +129,19 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             }
         };
         var handleMove = function (source, target, piece) {
-            // see if the move is legal
-            var move;
-            if (source == "spare") {
-                move = game1.move(piece.charAt(1) + "@" + target);
+            // Update UI without validating
+            if (source === "spare") {
+                addPieceToSquare(target, piece);
             } else {
-                move = game1.move({
-                    from: source,
-                    to: target,
-                    promotion: tmpPromotionPiece
-                });
-            }
-            // illegal move
-            if (move === null) return 'snapback';
-
-            //Update move history
-            if (fkNum == 1) {
-                moves.push(moveCount + "A. " + game1.history());
-            } else if (fkNum == 2) {
-                moves.push(moveCount + "a. " + game1.history());
-            } else if (fkNum == 3) {
-                moves.push(moveCount + "B. " + game1.history());
-            } else {
-                moves.push(moveCount + "b. " + game1.history());
+                deletePieceFromSquare(source);
+                addPieceToSquare(target, piece);
             }
 
-            // Update moves via socket
-            var updateMovesData = {game_id: $scope.game.game_id, moves: moves.join()};
-            socket.emit('update moves', updateMovesData);
-
-            //Update spare pieces
-            var sparePiecesLeftArr = [];
-            var putReserveData = [];
-            if (game1.turn() === 'b') {
-                //var sparePiecesArr = [];
-                for (var i = 0; i < game1.reserve_white.length; i++) {
-                    if (game1.reserve_white[i].type == 'p') {
-                        sparePiecesLeftArr.push('bP');
-                    }
-                    else if (game1.reserve_white[i].type == 'n') {
-                        sparePiecesLeftArr.push('bN');
-                    }
-                    else if (game1.reserve_white[i].type == 'b'){
-                        sparePiecesLeftArr.push('bB');
-                    }
-                    else if (game1.reserve_white[i].type == 'r') {
-                        sparePiecesLeftArr.push('bR');
-                    }
-                    else if (game1.reserve_white[i].type == 'q') {
-                        sparePiecesLeftArr.push('bQ');
-                    }
-                }
-                board2.updateSparePieces("black", sparePiecesLeftArr);
-                for (var i = 0; i < game1.reserve_white.length; i++) {
-                    putReserveData[i] = JSON.stringify(game1.reserve_white[i]);
-                }
-            } else {
-                for (var i = 0; i < game1.reserve_black.length; i++) {
-                    if (game1.reserve_black[i].type == 'p') {
-                        sparePiecesLeftArr.push('wP');
-                    }
-                    else if (game1.reserve_black[i].type == 'n') {
-                        sparePiecesLeftArr.push('wN');
-                    }
-                    else if (game1.reserve_black[i].type == 'b') {
-                        sparePiecesLeftArr.push('wB');
-                    }
-                    else if (game1.reserve_black[i].type == 'r') {
-                        sparePiecesLeftArr.push('wR');
-                    }
-                    else if (game1.reserve_black[i].type == 'q') {
-                        sparePiecesLeftArr.push('wQ');
-                    }
-                }
-                board2.updateSparePieces("white", sparePiecesLeftArr);
-
-                for (var i = 0; i < game1.reserve_black.length; i++) {
-                    putReserveData[i] = JSON.stringify(game1.reserve_black[i]);
-                }
-            }
-
-            var reserveLocation = "right_reserve_black";
-            if (fkNum == 2) { reserveLocation = "right_reserve_white"; }
-            else if(fkNum == 3) { reserveLocation = "left_reserve_black";}
-            else if (fkNum == 4) { reserveLocation = "left_reserve_white";}
-            var updateReserveData = {game_id: $scope.game.game_id, pieces: putReserveData.toString(), reserve: reserveLocation};
-            socket.emit('update reserve', updateReserveData);
-
-            if(game1.turn() === 'w') {
-                $scope.removeHighlights(boardEl1, 'white');
-                boardEl1.find('.square-' + source).addClass('highlight-black');
-                boardEl1.find('.square-' + target).addClass('highlight-black');
-            } else {
-                $scope.removeHighlights(boardEl1, 'black');
-                boardEl1.find('.square-' + source).addClass('highlight-white');
-                boardEl1.find('.square-' + target).addClass('highlight-white');
-            }
+            var putData = {game_id: $scope.game.game_id, fkNum: fkNum, move: {source: source, target: target, piece: piece, promotion: tmpPromotionPiece}};
+            socket.emit('update game', putData);
 
             yourOpponentTimer.toggle();
             yourTimer.toggle();
-            updateStatus();
         };
         $scope.selectPromotionPiece = function (piece) {
             tmpPromotionPiece = piece.charAt(1).toLowerCase();
@@ -249,12 +160,6 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             delete newPosition[square];
             board1.position(newPosition);
         };
-        var onSnapEnd = function() {
-            board1.position(game1.fen());
-        };
-        var updateStatus = function() {
-            $('#pgn').html(moves);
-        };
         var cfg = {
             draggable: true,
             position: 'start',
@@ -262,37 +167,18 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             showNotation: false,
             snapbackSpeed: 0,
             snapSpeed: 0,
+            appearSpeed: 0,
             onDragStart: onDragStart,
-            onDrop: onDrop,
-            onSnapEnd: onSnapEnd
+            onDrop: onDrop
         };
         board1 = ChessBoard('board1', cfg);
-        updateStatus();
     };
     var gameRight = function () {
-        var onSnapEnd = function () {
-            board2.position(game2.fen());
-        };
-        var updateStatus = function () {
-            if(game2.turn() === 'w') {
-                $scope.removeHighlights(boardEl2, 'white');
-                boardEl2.find('.square-' + source).addClass('highlight-black');
-                boardEl2.find('.square-' + target).addClass('highlight-black');
-            } else {
-                $scope.removeHighlights(boardEl2, 'black');
-                boardEl2.find('.square-' + source).addClass('highlight-white');
-                boardEl2.find('.square-' + target).addClass('highlight-white');
-            }
-            opponentAcrossTimer.toggle();
-            teammateTimer.toggle();
-            $('#pgn').html(moves);
-        };
         var cfg = {
             draggable: false,
             position: 'start',
             sparePieces: true,
-            showNotation: false,
-            onSnapEnd: onSnapEnd
+            showNotation: false
         };
         board2 = ChessBoard('board2', cfg);
     };
@@ -319,92 +205,119 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             else return user.ratingClassical;
         }
     };
-    $scope.removeHighlights = function(boardEl, color) {
+    $scope.updateHighlights = function(boardEl, color, source, target) {
         boardEl.find('.square-55d63').removeClass('highlight-' + color);
+        if (color == 'white') {
+            boardEl.find('.square-' + source).addClass('highlight-black');
+            boardEl.find('.square-' + target).addClass('highlight-black');
+        } else {
+            boardEl.find('.square-' + source).addClass('highlight-white');
+            boardEl.find('.square-' + target).addClass('highlight-white');
+        }
     };
 
-    socket.on('update moves', function(data) {
-        console.log('Incoming message moves: ' + data);
-        var arrMoves = data.split(",");
-        var diffMoves = $(arrMoves).not(moves).get();
-
-        for (var i = 0; i < diffMoves.length; i++) {
-            var moveStr = diffMoves[i].substring(diffMoves[i].indexOf(" ") + 1);
-            var boardLetter = diffMoves[i].charAt(diffMoves[i].indexOf(" ") - 2);
-            // 2    3
-            // 1    4
-            var boardNum = 1;
-            if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'A') boardNum = 2;
-            else if (boardLetter == boardLetter.toUpperCase() && boardLetter.toUpperCase() == 'B') boardNum = 3;
-            else if (boardLetter == boardLetter.toLowerCase() && boardLetter.toUpperCase() == 'B') boardNum = 4;
-            var promotionPiece = 'q';
-            if (moveStr.indexOf("=") != -1) {
-                promotionPiece = moveStr.charAt(moveStr.indexOf("=") + 1);
-            }
-
-            function updateState(boardSideToUpdate) {
-                if (boardSideToUpdate == 1) {
-                    var sourceDestObj1 = game1.getSourceDestinationSquares(moveStr);
-                    // Update UI
-                    board1.move(sourceDestObj1.source + "-" + sourceDestObj1.destination);
-                    //Update internal game state
-                    if (!sourceDestObj1.source) {
-                        game1.move(moveStr.charAt(1) + "@" + sourceDestObj1.destination);
-                    } else {
-                        game1.move({
-                            from: sourceDestObj1.source,
-                            to: sourceDestObj1.destination,
-                            promotion: promotionPiece
-                        });
-                    }
+    socket.on('update game', function(data) {
+        // TODO: Update reserve via socket
+        // board1/2.updateSparePieces("white"/"black", sparePiecesFromData);
+        //  e.g.  if (game1.reserve_white[i].type == 'p') { sparePiecesLeftArr.push('bP'); }
+        if (fkNum == 1 || fkNum == 2) {
+            if (data.boardNum == 1) {
+                board1.position(data.fen);
+                board1Turn = data.turn;
+                if(data.turn === 'w') {
+                    $scope.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
                 } else {
-                    var sourceDestObj2 = game2.getSourceDestinationSquares(moveStr);
-                    // Update UI
-                    board2.move(sourceDestObj2.source + "-" + sourceDestObj2.destination);
-                    //Update internal game state
-                    if (!sourceDestObj2.source) {
-                        game2.move(moveStr.charAt(1) + "@" + sourceDestObj2.destination);
-                    } else {
-                        game2.move({
-                            from: sourceDestObj2.source,
-                            to: sourceDestObj2.destination,
-                            promotion: promotionPiece
-                        });
-                    }
+                    $scope.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
+                }
+                data.capture ? playSound('capture') : playSound('move');
+            } else {
+                board2.position(data.fen);
+                if(data.turn === 'w') {
+                    $scope.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
+                } else {
+                    $scope.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
                 }
             }
-            if (fkNum == 1 || fkNum == 2) {
-                if (boardNum == 1 || boardNum == 2) {
-                    updateState(1);
+        } else {
+            if (data.boardNum == 1) {
+                board2.position(data.fen);
+                if(data.turn === 'w') {
+                    $scope.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
                 } else {
-                    updateState(2);
+                    $scope.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
                 }
             } else {
-                if (boardNum == 1 || boardNum == 2) {
-                    updateState(2);
+                board1.position(data.fen);
+                board1Turn = data.turn;
+                if(data.turn === 'w') {
+                    $scope.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
                 } else {
-                    updateState(1);
+                    $scope.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
                 }
+                data.capture ? playSound('capture') : playSound('move');
             }
         }
-        moves = arrMoves;
+        updateMoves(data.moves);
     });
 
-    // TODO: Update reserve via socket
-    socket.on('update reserve', function(data) {
-        console.log('Incoming message reserve: ' + data);
-        //board1/2.updateSparePieces("white"/"black", data.pieces);
+    socket.on('snapback move', function(data) { // invalid move, 'snapback' move
+       board1.position(data.fen);
     });
 
-    function arraysEqual(arr1, arr2) {
-        if(arr1.length !== arr2.length)
-            return false;
-        for(var i = arr1.length; i--;) {
-            if(arr1[i] !== arr2[i])
-                return false;
+    socket.on('game over', function(data) {
+        gameOver = true;
+        $location.path('/gameViewer');
+    });
+
+    function updateMoves(moves) {
+        var arrMoves = moves.trim().split(" ");
+        for (var i = 0; i < arrMoves.length; i+=2) {
+            var playerLetter = arrMoves[i].charAt(arrMoves[i].length-2);
+            var moveNumber = arrMoves[i].substring(0, arrMoves[i].length-2);
+            var moveStr = arrMoves[i+1];
+            if (!$scope.movesArray[parseInt(moveNumber) - 1]) {
+                $scope.movesArray[parseInt(moveNumber) - 1] = {};
+            }
+            $scope.movesArray[parseInt(moveNumber) - 1].number = moveNumber;
+            if (playerLetter == 'A') {
+                $scope.movesArray[moveNumber - 1].player1 = moveStr;
+            } else if (playerLetter == 'a') {
+                $scope.movesArray[moveNumber - 1].player2 = moveStr;
+            } else if (playerLetter == 'B') {
+                $scope.movesArray[moveNumber - 1].player3 = moveStr;
+            } else {
+                $scope.movesArray[moveNumber - 1].player4 = moveStr;
+            }
         }
-        return true;
+        $scope.$apply();
     }
+
+    function playSound(name) {
+        function sound(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function(){
+                this.sound.play();
+            }
+            this.stop = function(){
+                this.sound.pause();
+            }
+        }
+        var soundObj;
+        if (name === 'move') {
+            soundObj = new sound('../../sound/move.mp3');
+        } else if (name === 'capture') {
+            soundObj = new sound('../../sound/capture.mp3');
+        } else {
+            soundObj = new sound('../../sound/notify.mp3');
+        }
+        soundObj.play();
+    }
+
     function getForeignKeyNumber() {
         for(var i = 1; i <= 4; i++) {
             if (eval(String("$scope.game.fk_player" + i + "_id")) == $scope.currentUser.user_id) {
