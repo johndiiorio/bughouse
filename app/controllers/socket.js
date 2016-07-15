@@ -118,6 +118,10 @@ module.exports = function(io) {
                 connection.query("SELECT * FROM Games WHERE game_id = ?", [data.game_id], function (err, rows) {
                     if (err) { console.log('Error while performing SELECT Games query in socket.js'); }
                     else {
+                        rows[0].left_reserve_white = rows[0].left_reserve_white ? JSON.parse(rows[0].left_reserve_white) : [];
+                        rows[0].left_reserve_black = rows[0].left_reserve_black ? JSON.parse(rows[0].left_reserve_black) : [];
+                        rows[0].right_reserve_white = rows[0].right_reserve_white ? JSON.parse(rows[0].right_reserve_white) : [];
+                        rows[0].right_reserve_black = rows[0].right_reserve_black ? JSON.parse(rows[0].right_reserve_black) : [];
                         var game, move;
                         if (data.fkNum == 1 || data.fkNum == 2) { // Create game for left board
                             game = new Bug(rows[0].left_fen);
@@ -136,27 +140,39 @@ module.exports = function(io) {
                             });
                         }
                         if (move) { // Not an illegal move
-                            var queryString = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
-                            var queryArgs, arg_moves = "", arg_reserve_white = [], arg_reserve_black = [], arg_fen = game.fen(), capture = false;
-                            var boardNum;
+                            var query_string = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
+                            var args_query, boardNum, arg_moves = "", arg_reserve_white = [], arg_reserve_black = [], arg_other_reserve_white = [], arg_other_reserve_black = [], arg_fen = game.fen(), capture = false;
+                            var newReserves = game.getReserves();
                             arg_moves = newMoveString(rows[0].moves, data.fkNum, game);
-                            for (var i = 0; i < game.reserve_white; i++) {
-                                arg_reserve_white[i] = JSON.stringify(game.reserve_white[i]);
-                            }
-                            for (var j = 0; j < game.reserve_black; j++) {
-                                arg_reserve_black[i] = JSON.stringify(game.reserve_black[i]);
-                            }
+                            arg_reserve_white = JSON.stringify(newReserves.reserve_white);
+                            arg_reserve_black = JSON.stringify(newReserves.reserve_black);
                             if (data.fkNum == 1 || data.fkNum == 2) {
                                 boardNum = 1;
-                                queryArgs = ['left_fen', arg_fen, 'left_reserve_white', arg_reserve_white.toString(), 'left_reserve_black', arg_reserve_black.toString(), 'moves', arg_moves, data.game_id];
+                                arg_other_reserve_white = JSON.stringify(rows[0].right_reserve_white.concat(newReserves.other_reserve_white));
+                                arg_other_reserve_black = JSON.stringify(rows[0].right_reserve_black.concat(newReserves.other_reserve_black));
+                                args_query = ['left_fen', arg_fen,
+                                    'left_reserve_white', arg_reserve_white,
+                                    'left_reserve_black', arg_reserve_black,
+                                    'right_reserve_white', arg_other_reserve_white,
+                                    'right_reserve_black', arg_other_reserve_black,
+                                    'moves', arg_moves,
+                                    data.game_id];
                             } else {
                                 boardNum = 2;
-                                queryArgs = ['right_fen', arg_fen, 'right_reserve_white', arg_reserve_white.toString(), 'right_reserve_black', arg_reserve_black.toString(), 'moves', arg_moves, data.game_id];
+                                arg_other_reserve_white = JSON.stringify(rows[0].left_reserve_white.concat(newReserves.other_reserve_white));
+                                arg_other_reserve_black = JSON.stringify(rows[0].left_reserve_black.concat(newReserves.other_reserve_black));
+                                args_query = ['right_fen', arg_fen,
+                                    'right_reserve_white', arg_reserve_white,
+                                    'right_reserve_black', arg_reserve_black,
+                                    'left_reserve_white', arg_other_reserve_white,
+                                    'left_reserve_black', arg_other_reserve_black,
+                                    'moves', arg_moves,
+                                    data.game_id];
                             }
                             if (game.history()[0].indexOf('x') != -1) {
                                 capture = true;
                             }
-                            connection.query(queryString, queryArgs, function (err) {
+                            connection.query(query_string, args_query, function (err) {
                                 connection.release();
                                 if (!err) { // update everyone in game
                                     var emitData = {
