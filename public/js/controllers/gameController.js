@@ -290,6 +290,7 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             }
         }
         $scope.$apply();
+        $("#movesTableContainer tbody").scrollTop($('#movesTableContainer tbody').height());
     }
 
     function playSound(name) {

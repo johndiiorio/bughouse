@@ -211,6 +211,8 @@ var Bug = function (fen) {
     var header = {};
     var reserve_white = [];
     var reserve_black = [];
+    var other_reserve_white = [];
+    var other_reserve_black = [];
 
     /* if the user passes in a fen string, load it, else default to
      * starting position
@@ -547,13 +549,6 @@ var Bug = function (fen) {
             }
         }
         return false;
-    }
-
-    function addPieceToReserve(piece) {
-        piece.color === 'w' ? reserve_black.push({
-            type: piece.type,
-            color: BLACK
-        }) : reserve_white.push({type: piece.type, color: WHITE});
     }
 
     function dropPieceFromReserve(piece, square) {
@@ -1133,11 +1128,6 @@ var Bug = function (fen) {
         board[move.to] = board[move.from];
         board[move.from] = null;
 
-        /* Add piece to reserve if captured */
-        if (move.flags & BITS.CAPTURE) {
-            addPieceToReserve({type: move.captured, color: them});
-        }
-
         /* drop from reserve */
         if (move.flags & BITS.DROP_RESERVE) {
             dropPieceFromReserve(move.piece, move.to);
@@ -1599,8 +1589,13 @@ var Bug = function (fen) {
             reserve_black = pieces_black;
         },
 
-        addPieceToReserve: function (piece) {
-            return addPieceToReserve(piece);
+        getReserves: function() {
+            return {
+                reserve_white: reserve_white,
+                reserve_black: reserve_black,
+                other_reserve_white: other_reserve_white,
+                other_reserve_black: other_reserve_black
+            };
         },
 
         removePieceFromReserve: function (piece) {
@@ -1936,6 +1931,14 @@ var Bug = function (fen) {
             reserve_black = tmp_reserve_black;
             make_move(move_obj);
 
+            if (move_obj.captured) {
+                if (move_obj.color == 'w') {
+                    other_reserve_black.push({type: move_obj.captured, color: BLACK})
+                } else {
+                    other_reserve_white.push({type: move_obj.captured, color: WHITE})
+                }
+            }
+
             return pretty_move;
         },
 
@@ -1999,11 +2002,4 @@ var Bug = function (fen) {
     };
 };
 
-/* export Bug object if using node or any other CommonJS compatible
- * environment */
-//if (typeof exports !== 'undefined') exports.Bug = Bug;
-///* export Chess object for any RequireJS compatible environment */
-//if (typeof define !== 'undefined') define(function () {
-//    return Bug;
-//});
 module.exports = Bug;
