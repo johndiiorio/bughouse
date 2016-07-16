@@ -23,19 +23,16 @@ app.use('/api/login', login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
-// production error handler
-// no stacktraces leaked to user
+// production error handler, no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+    res.status(err.status || 500);
+    if (err.status == 404) res.send('<h1>' + err.status + ' Not found</h1>');
+    else res.send('<h1>' + err.status + ' Server Error</h1>');
 });
 
 module.exports = app;

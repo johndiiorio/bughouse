@@ -217,9 +217,6 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     };
 
     socket.on('update game', function(data) {
-        // TODO: Update reserve via socket
-        // board1/2.updateSparePieces("white"/"black", sparePiecesFromData);
-        //  e.g.  if (game1.reserve_white[i].type == 'p') { sparePiecesLeftArr.push('bP'); }
         if (fkNum == 1 || fkNum == 2) {
             if (data.boardNum == 1) {
                 board1.position(data.fen);
@@ -238,6 +235,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                     $scope.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
                 }
             }
+            board1.updateSparePieces('white', data.left_reserve_white);
+            board1.updateSparePieces('black', data.left_reserve_black);
+            board2.updateSparePieces('white', data.right_reserve_white);
+            board2.updateSparePieces('black', data.right_reserve_black);
         } else {
             if (data.boardNum == 1) {
                 board2.position(data.fen);
@@ -256,6 +257,10 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                 }
                 data.capture ? playSound('capture') : playSound('move');
             }
+            board1.updateSparePieces('white', data.right_reserve_white);
+            board1.updateSparePieces('black', data.right_reserve_black);
+            board2.updateSparePieces('white', data.left_reserve_white);
+            board2.updateSparePieces('black', data.left_reserve_black);
         }
         updateMoves(data.moves);
     });

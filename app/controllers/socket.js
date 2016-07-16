@@ -21,7 +21,7 @@ module.exports = function(io) {
             socket.join(room);
         });
         socket.on('begin game', function () {
-            socket.broadcast.emit('begin game');
+            socket.broadcast.emit('begin game'); // make sure all users have joined
         });
     });
     gameSocket.on('connection', function(socket) {
@@ -109,6 +109,14 @@ module.exports = function(io) {
                 }
                 return moves;
             }
+            function convertReserveToSparePieces(reserve) {
+                var convertedArray = [];
+                reserve = JSON.parse(reserve);
+                for (var i = 0; i < reserve.length; i++) {
+                    convertedArray.push(reserve[i].color + reserve[i].type.toUpperCase());
+                }
+                return convertedArray;
+            }
             pool.getConnection(function (err, connection) {
                 if (err) {
                     connection.release();
@@ -130,7 +138,7 @@ module.exports = function(io) {
                             game = new Bug(rows[0].right_fen);
                             game.setReserves(rows[0].right_reserve_white, rows[0].right_reserve_black);
                         }
-                        if (data.source == "spare") {
+                        if (data.move.source == "spare") {
                             move = game.move(data.move.piece.charAt(1) + "@" + data.move.target);
                         } else {
                             move = game.move({
@@ -141,11 +149,20 @@ module.exports = function(io) {
                         }
                         if (move) { // Not an illegal move
                             var query_string = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
-                            var args_query, boardNum, arg_moves = "", arg_reserve_white = [], arg_reserve_black = [], arg_other_reserve_white = [], arg_other_reserve_black = [], arg_fen = game.fen(), capture = false;
+                            var args_query,
+                                boardNum,
+                                emitData,
+                                arg_other_reserve_white = [],
+                                arg_other_reserve_black = [],
+                                arg_fen = game.fen(),
+                                capture = false;
+                            if (game.history()[0].indexOf('x') != -1) {
+                                capture = true;
+                            }
                             var newReserves = game.getReserves();
-                            arg_moves = newMoveString(rows[0].moves, data.fkNum, game);
-                            arg_reserve_white = JSON.stringify(newReserves.reserve_white);
-                            arg_reserve_black = JSON.stringify(newReserves.reserve_black);
+                            var arg_moves = newMoveString(rows[0].moves, data.fkNum, game);
+                            var arg_reserve_white = JSON.stringify(newReserves.reserve_white);
+                            var arg_reserve_black = JSON.stringify(newReserves.reserve_black);
                             if (data.fkNum == 1 || data.fkNum == 2) {
                                 boardNum = 1;
                                 arg_other_reserve_white = JSON.stringify(rows[0].right_reserve_white.concat(newReserves.other_reserve_white));
@@ -157,6 +174,18 @@ module.exports = function(io) {
                                     'right_reserve_black', arg_other_reserve_black,
                                     'moves', arg_moves,
                                     data.game_id];
+                                emitData = {
+                                    fen: arg_fen,
+                                    left_reserve_white: convertReserveToSparePieces(arg_reserve_white),
+                                    left_reserve_black: convertReserveToSparePieces(arg_reserve_black),
+                                    right_reserve_white: convertReserveToSparePieces(arg_other_reserve_white),
+                                    right_reserve_black: convertReserveToSparePieces(arg_other_reserve_black),
+                                    turn: game.turn(),
+                                    boardNum: boardNum,
+                                    move: data.move,
+                                    moves: arg_moves,
+                                    capture: capture
+                                };
                             } else {
                                 boardNum = 2;
                                 arg_other_reserve_white = JSON.stringify(rows[0].left_reserve_white.concat(newReserves.other_reserve_white));
@@ -168,23 +197,22 @@ module.exports = function(io) {
                                     'left_reserve_black', arg_other_reserve_black,
                                     'moves', arg_moves,
                                     data.game_id];
-                            }
-                            if (game.history()[0].indexOf('x') != -1) {
-                                capture = true;
+                                emitData = {
+                                    fen: arg_fen,
+                                    left_reserve_white: convertReserveToSparePieces(arg_other_reserve_white),
+                                    left_reserve_black: convertReserveToSparePieces(arg_other_reserve_black),
+                                    right_reserve_white: convertReserveToSparePieces(arg_reserve_white),
+                                    right_reserve_black: convertReserveToSparePieces(arg_reserve_black),
+                                    turn: game.turn(),
+                                    boardNum: boardNum,
+                                    move: data.move,
+                                    moves: arg_moves,
+                                    capture: capture
+                                };
                             }
                             connection.query(query_string, args_query, function (err) {
                                 connection.release();
                                 if (!err) { // update everyone in game
-                                    var emitData = {
-                                        fen: arg_fen,
-                                        reserve_white: arg_reserve_white,
-                                        reserve_black: arg_reserve_black,
-                                        turn: game.turn(),
-                                        boardNum: boardNum,
-                                        move: data.move,
-                                        moves: arg_moves,
-                                        capture: capture
-                                    };
                                     gameSocket.in(socket.room).emit('update game', emitData);
                                 } else {
                                     console.log('Error while performing update query in socket.js');

@@ -72,16 +72,18 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
                 var maxRange = parseInt(data[i].rating_range.substring(data[i].rating_range.indexOf(',') + 1));
                 var passBool = false;
 
-                if(!$scope.$parent.currentUser) { // User not signed in
-                    //Anonymous users can see all games
-                    passBool = true;
-                } else { // check that the user can view
-                    if (data[i].minutes < 3 && $scope.$parent.currentUser.ratingBullet >= minRange && $scope.$parent.currentUser.ratingBullet <= maxRange) {
+                if ($scope.$parent) {
+                    if (!$scope.$parent.currentUser) { // User not signed in
+                        //Anonymous users can see all games
                         passBool = true;
-                    } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.$parent.currentUser.ratingBlitz >= minRange && $scope.$parent.currentUser.ratingBlitz <= maxRange) {
-                        passBool = true;
-                    } else if (data[i].minutes > 8 && $scope.$parent.currentUser.ratingClassical >= minRange && $scope.$parent.currentUser.ratingClassical <= maxRange) {
-                        passBool = true;
+                    } else { // check that the user can view
+                        if (data[i].minutes < 3 && $scope.$parent.currentUser.ratingBullet >= minRange && $scope.$parent.currentUser.ratingBullet <= maxRange) {
+                            passBool = true;
+                        } else if (data[i].minutes >= 3 && data[i].minutes <= 8 && $scope.$parent.currentUser.ratingBlitz >= minRange && $scope.$parent.currentUser.ratingBlitz <= maxRange) {
+                            passBool = true;
+                        } else if (data[i].minutes > 8 && $scope.$parent.currentUser.ratingClassical >= minRange && $scope.$parent.currentUser.ratingClassical <= maxRange) {
+                            passBool = true;
+                        }
                     }
                 }
                 if (passBool) {
