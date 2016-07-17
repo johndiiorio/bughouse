@@ -21,7 +21,7 @@ module.exports = function(io) {
             socket.join(room);
         });
         socket.on('begin game', function () {
-            socket.broadcast.emit('begin game'); // make sure all users have joined
+            socket.broadcast.emit('begin game');
         });
     });
     gameSocket.on('connection', function(socket) {
@@ -81,6 +81,12 @@ module.exports = function(io) {
         });
         /* Validate move and update game */
         socket.on('update game', function (data) {
+            /*  Beware all ye who enter here
+                Untold evils and unspeakable creatures live here
+                Enter at your own risk and clutch tight your sanity
+                "The oldest and strongest emotion of mankind is fear,
+                and the oldest and strongest kind of fear is fear of the unknown.
+                If you know the enemy and know yourself you need not fear the results of the God Function." */
             function newMoveString(moves, fkNum, game) {
                 if (!moves) moves = "";
                 var moveCount, lastPlayerLetter;
@@ -216,6 +222,7 @@ module.exports = function(io) {
                                     gameSocket.in(socket.room).emit('update game', emitData);
                                 } else {
                                     console.log('Error while performing update query in socket.js');
+                                    socket.emit('snapback move', {fen: game.fen()});
                                 }
                                 // TODO add game over support
                                 if (game.game_over()) {
@@ -230,6 +237,7 @@ module.exports = function(io) {
                 });
                 connection.on('error', function (err) {
                     console.log('Error in connection to database in socket.js');
+                    socket.emit('snapback move', {fen: game.fen()});
                 });
             });
         });

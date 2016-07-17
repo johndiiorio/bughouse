@@ -213,6 +213,8 @@ var Bug = function (fen) {
     var reserve_black = [];
     var other_reserve_white = [];
     var other_reserve_black = [];
+    var tmp_reserve_white = [];
+    var tmp_reserve_black = [];
 
     /* if the user passes in a fen string, load it, else default to
      * starting position
@@ -827,7 +829,7 @@ var Bug = function (fen) {
             }
         }
         /* check if dropping piece from reserve is legal */
-        if (turn === 'w' && reserve_white.length > 0) {
+        if (turn === 'w') {
             if (reserve_white.length > 0) {
                 for (var i = 0; i < reserve_white.length; i++) {
                     for (var j = first_sq; j <= last_sq; j++) {
@@ -844,7 +846,6 @@ var Bug = function (fen) {
                         }
                         /* check if there if square is empty */
                         if (get(square) == null && !((piece.type == 'p') && (square.charAt(1) == 1 || square.charAt(1) == 8))) {
-                            //add_move(board, moves, square, square, BITS.DROP_RESERVE);
                             moves.push(build_drop_move(board, square, square, BITS.DROP_RESERVE, piece));
                         }
                     }
@@ -1242,13 +1243,8 @@ var Bug = function (fen) {
         }
         board[move.to] = null;
 
-        /* undo add to reserve */
-        if (move.flags & BITS.CAPTURE) {
-            removePieceFromReserve({type: move.captured, color: turn});
-        }
         /* undo drop from reserve */
         if (move.flags & BITS.DROP_RESERVE) {
-            removePieceFromReserve(move.piece);
             move.piece.color === 'w' ? reserve_white.push({
                 type: move.piece.type,
                 color: WHITE
@@ -1880,15 +1876,15 @@ var Bug = function (fen) {
         move: function (move) {
             /* The move function can be called with in the following parameters:
              *
-             * .move('Nxb7')      <- where 'move' is a case-sensitive SAN string
+             * .move('P@b7')      <- where 'move' is a case-sensitive SAN string
              *
              * .move({ from: 'h7', <- where the 'move' is a move object (additional
              *         to :'h8',      fields are ignored)
              *         promotion: 'q',
              *      })
              */
-            var tmp_reserve_white = reserve_white;
-            var tmp_reserve_black = reserve_black;
+            tmp_reserve_white = reserve_white;
+            tmp_reserve_black = reserve_black;
             var currFEN = generate_fen();
             var move_obj = null;
             var moves = generate_moves();
