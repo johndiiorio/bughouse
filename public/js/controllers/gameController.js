@@ -117,6 +117,8 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
                         tmpSourceSquare = source;
                         tmpTargetSquare = target;
                         deletePieceFromSquare(tmpSourceSquare);
+                    } else {
+                        board1.position(data.fen);
                     }
                     return 'snapback'; // remove the pawn being promoted or snapback the invalid piece move
                 }).error(function () {
@@ -360,6 +362,12 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             $scope.display.player3 = $scope.game.player2;
             $scope.display.player4 = $scope.game.player1;
             board1.flip();
+        }
+        if (fkNum == 2 || fkNum == 3) {
+            $(".left-game-top-username").css("color", "#46BCDE");
+            $(".left-game-bottom-username").css("color", "#FB667A");
+            $(".right-game-top-username").css("color", "#46BCDE");
+            $(".right-game-bottom-username").css("color", "#FB667A");
         }
     }
 });

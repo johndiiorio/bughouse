@@ -35,7 +35,7 @@ router.get('/open', function (req, res) {
             res.json({"code": 100, "status": "Error in connection database"});
             return;
         }
-        connection.query("SELECT * FROM games WHERE status = 'open'", function (err, rows) {
+        connection.query("SELECT * FROM games WHERE status = 'open' ORDER by timestamp ASC", function (err, rows) {
             connection.release();
             if (!err) {
                 res.json(rows);
@@ -183,7 +183,7 @@ router.put('/validate/pawnpromotion/:game_id', function (req, res) {
                 if (move) {
                     res.json({valid: true});
                 } else {
-                    res.json({valid: false});
+                    res.json({valid: false, fen: game.fen()});
                 }
             }
             else {

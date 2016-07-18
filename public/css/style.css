@@ -17,7 +17,7 @@ body {
 }
 
 .red-color {
-    color: #B33D4D;
+    color: #FB667A;
 }
 
 .noBottomMargin {
@@ -172,6 +172,17 @@ body {
 #infoPanel {
     position: relative;
     text-align: center;
+    padding-top: 4em;
+}
+
+#infoPlayers {
+    text-align: center;
+    width: 450px;
+    background-color: #262626;
+    margin: 0 auto;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    border: 1px solid #3d3d3d;
 }
 
 .align-player-info {
@@ -193,7 +204,7 @@ body {
 
 .left-game-top-username {
     float: left;
-    color: #B33D4D;
+    color: #FB667A;
 }
 
 .left-game-bottom-username {
@@ -203,7 +214,7 @@ body {
 
 .right-game-top-username {
     float: right;
-    color: #B33D4D;
+    color: #FB667A;
 }
 
 .right-game-bottom-username {
@@ -222,9 +233,11 @@ body {
 }
 
 /* Moves Table */
+
 #movesTable {
     color:#A7A1AE;
     display: inline-block;
+    border: 1px solid #3d3d3d;
 }
 
 #movesTable .table-container {
@@ -240,28 +253,26 @@ body {
 }
 
 #movesTable table.table-container tbody td:nth-child(1), #movesTable table.table-container thead th:nth-child(1) {
-    width: 30px;
+    width: 34px;
 }
 
 #movesTable table.table-container tbody td:not(:first-child), #movesTable table.table-container thead th:not(:first-child) {
-    width: 102px;
+    width: 104px;
 }
 
 #movesTable table.table-container thead, #movesTable table.table-container tbody {
     float: left;
-    width: 100%;
 }
 
 #movesTable .table-container td, #movesTable .table-container th {
     padding-bottom: .5%;
     padding-top: .5%;
-    padding-left:.5%;
+    padding-left: .5%;
 }
 
 #movesTable .table-container th h1 {
     font-weight: bold;
     font-size: 1em;
-    color: #278fbe;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -273,17 +284,17 @@ body {
     background-color: #2b2b2b;
 }
 
-#movesTable .table-container th:nth-child(odd) h1 {
-    color: #278fbe;
-}
-
-#movesTable .table-container th:nth-child(even) h1 {
-    color: #FB667A;
-}
-
 #movesTable .table-container th:nth-child(1) h1 {
     color: white;
     width: 30px;
+}
+
+#movesTable .table-container th:nth-child(2) h1, #movesTable .table-container th:nth-child(5) h1 {
+    color: #46BCDE;
+}
+
+#movesTable .table-container th:nth-child(3) h1, #movesTable .table-container th:nth-child(4) h1 {
+    color: #FB667A;
 }
 
 #movesTable .table-container td {
