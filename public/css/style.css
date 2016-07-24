@@ -1,7 +1,16 @@
+@font-face {
+    font-family: 'Comfortaa Regular';
+    src: url('../fonts/NotoSans-Regular.ttf'),
+         url('../fonts/NotoSans-Bold.ttf'),
+         url('../fonts/NotoSans-Italic.ttf'),
+         url('../fonts/NotoSans-BoldItalic.ttf')
+}
+
 body {
     background-color: #1a1a1a;
     margin-left: 1em;
     min-width: 1620px;
+    font-family: 'Noto Sans', sans-serif;
 }
 
 .wrap-text {

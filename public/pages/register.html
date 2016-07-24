@@ -13,7 +13,7 @@
                    class="help-block">Username is too short.</p>
                 <p class="red-color" ng-show="registerForm.registerUsername.$error.maxlength && registerForm.registerUsername.$touched"
                    class="help-block">Username is too long.</p>
-                <p id="usernameAvailability" class="red-color" ng-show="!registerForm.registerUsername.$error.minlength
+                <p style="margin-top: 5px; margin-bottom: 0" id="usernameAvailability" class="red-color" ng-show="!registerForm.registerUsername.$error.minlength
                  && !registerForm.registerUsername.$error.maxlength">Username not available</p>
             </div>
         </div>
