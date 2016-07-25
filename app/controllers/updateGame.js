@@ -34,7 +34,7 @@ module.exports = function(data, socket, gameSocket, io) {
         } else {
             moves += moveCount + "b. " + game.history() + " ";
         }
-        return moves;
+        return {moves: moves, moveNum: moveCount};
     }
     function convertReserveToSparePieces(reserve) {
         var convertedArray = [];
@@ -44,11 +44,6 @@ module.exports = function(data, socket, gameSocket, io) {
         }
         return convertedArray;
     }
-    function setInitialTime (connection, game_id, currentTime, side) {
-        connection.query("UPDATE Games SET ?? = ? WHERE game_id = ?", [side, currentTime, game_id], function (err) {
-            if (err) { console.log('Error while setting first move for ' + side); }
-        });
-    }
     pool.getConnection(function (err, connection) {
         if (err) {
             connection.release();
@@ -57,19 +52,20 @@ module.exports = function(data, socket, gameSocket, io) {
         }
         connection.query("SELECT * FROM Games WHERE game_id = ?", [data.game_id], function (err, rows) {
             var currentTime = Date.now();
+            var row = rows[0];
             if (err) { console.log('Error while performing SELECT Games query in socket.js'); }
             else {
-                rows[0].left_reserve_white = rows[0].left_reserve_white ? JSON.parse(rows[0].left_reserve_white) : [];
-                rows[0].left_reserve_black = rows[0].left_reserve_black ? JSON.parse(rows[0].left_reserve_black) : [];
-                rows[0].right_reserve_white = rows[0].right_reserve_white ? JSON.parse(rows[0].right_reserve_white) : [];
-                rows[0].right_reserve_black = rows[0].right_reserve_black ? JSON.parse(rows[0].right_reserve_black) : [];
+                row.left_reserve_white = row.left_reserve_white ? JSON.parse(row.left_reserve_white) : [];
+                row.left_reserve_black = row.left_reserve_black ? JSON.parse(row.left_reserve_black) : [];
+                row.right_reserve_white = row.right_reserve_white ? JSON.parse(row.right_reserve_white) : [];
+                row.right_reserve_black = row.right_reserve_black ? JSON.parse(row.right_reserve_black) : [];
                 var game, move;
                 if (data.fkNum == 1 || data.fkNum == 2) { // Create game for left board
-                    game = new Bug(rows[0].left_fen);
-                    game.setReserves(rows[0].left_reserve_white, rows[0].left_reserve_black);
+                    game = new Bug(row.left_fen);
+                    game.setReserves(row.left_reserve_white, row.left_reserve_black);
                 } else { // Create game for right board
-                    game = new Bug(rows[0].right_fen);
-                    game.setReserves(rows[0].right_reserve_white, rows[0].right_reserve_black);
+                    game = new Bug(row.right_fen);
+                    game.setReserves(row.right_reserve_white, row.right_reserve_black);
                 }
                 if (data.move.source == "spare") {
                     move = game.move(data.move.piece.charAt(1) + "@" + data.move.target);
@@ -81,10 +77,11 @@ module.exports = function(data, socket, gameSocket, io) {
                     });
                 }
                 if (move) { // Not an illegal move
-                    var query_string = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
+                    var query_string = "UPDATE Games SET ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ?, ?? = ? WHERE game_id = ?";
                     var args_query,
                         boardNum,
                         emitData,
+                        diffTime,
                         arg_other_reserve_white = [],
                         arg_other_reserve_black = [],
                         arg_fen = game.fen(),
@@ -92,29 +89,33 @@ module.exports = function(data, socket, gameSocket, io) {
                     if (game.history()[0].indexOf('x') != -1) { // Move is a capture
                         capture = true;
                     }
-                    // Set start time if first move
-                    if ((data.fkNum == 1 || data.fkNum == 2) && rows[0].start_time_left == null) {
-                        setInitialTime(connection, data.game_id, currentTime, 'start_time_left');
-                        rows[0].start_time_left = currentTime;
-                    }
-                    else if ((data.fkNum == 3 || data.fkNum == 4) && rows[0].start_time_right == null) {
-                        setInitialTime(connection, data.game_id, currentTime, 'start_time_right');
-                        rows[0].start_time_right = currentTime;
-                    }
                     var newReserves = game.getReserves();
-                    var arg_moves = newMoveString(rows[0].moves, data.fkNum, game);
+                    var moveInfo = newMoveString(row.moves, data.fkNum, game);
+                    var arg_moves = moveInfo.moves;
+                    var moveNum = moveInfo.moveNum;
                     var arg_reserve_white = JSON.stringify(newReserves.reserve_white);
                     var arg_reserve_black = JSON.stringify(newReserves.reserve_black);
+                    var arrClocks = row.clocks.split(',').map(Number);
+                    row.increment *= 1000; // convert seconds to milliseconds
                     if (data.fkNum == 1 || data.fkNum == 2) {
                         boardNum = 1;
-                        arg_other_reserve_white = JSON.stringify(rows[0].right_reserve_white.concat(newReserves.other_reserve_white));
-                        arg_other_reserve_black = JSON.stringify(rows[0].right_reserve_black.concat(newReserves.other_reserve_black));
+                        arg_other_reserve_white = JSON.stringify(row.right_reserve_white.concat(newReserves.other_reserve_white));
+                        arg_other_reserve_black = JSON.stringify(row.right_reserve_black.concat(newReserves.other_reserve_black));
+                        diffTime = moveNum != 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
+                        if (data.fkNum == 1) {
+                            arrClocks[0] += diffTime - row.increment;
+                        } else {
+                            arrClocks[1] += diffTime - row.increment;
+                        }
+                        row.clocks = arrClocks.join();
                         args_query = ['left_fen', arg_fen,
                             'left_reserve_white', arg_reserve_white,
                             'left_reserve_black', arg_reserve_black,
                             'right_reserve_white', arg_other_reserve_white,
                             'right_reserve_black', arg_other_reserve_black,
+                            'last_time_left', currentTime,
                             'moves', arg_moves,
+                            'clocks', row.clocks,
                             data.game_id];
                         emitData = {
                             fen: arg_fen,
@@ -127,19 +128,27 @@ module.exports = function(data, socket, gameSocket, io) {
                             move: data.move,
                             moves: arg_moves,
                             capture: capture,
-                            startTimeLeft: rows[0].start_time_left,
-                            startTimeRight: rows[0].start_time_right
+                            clocks: row.clocks
                         };
                     } else {
                         boardNum = 2;
-                        arg_other_reserve_white = JSON.stringify(rows[0].left_reserve_white.concat(newReserves.other_reserve_white));
-                        arg_other_reserve_black = JSON.stringify(rows[0].left_reserve_black.concat(newReserves.other_reserve_black));
+                        arg_other_reserve_white = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
+                        arg_other_reserve_black = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
+                        diffTime = moveNum != 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
+                        if (data.fkNum == 3) {
+                            arrClocks[2] += diffTime - row.increment;
+                        } else {
+                            arrClocks[3] += diffTime - row.increment;
+                        }
+                        row.clocks = arrClocks.join();
                         args_query = ['right_fen', arg_fen,
                             'right_reserve_white', arg_reserve_white,
                             'right_reserve_black', arg_reserve_black,
                             'left_reserve_white', arg_other_reserve_white,
                             'left_reserve_black', arg_other_reserve_black,
                             'moves', arg_moves,
+                            'last_time_right', currentTime,
+                            'clocks', row.clocks,
                             data.game_id];
                         emitData = {
                             fen: arg_fen,
@@ -152,8 +161,7 @@ module.exports = function(data, socket, gameSocket, io) {
                             move: data.move,
                             moves: arg_moves,
                             capture: capture,
-                            startTimeLeft: rows[0].start_time_left,
-                            startTimeRight: rows[0].start_time_right
+                            clocks: row.clocks
                         };
                     }
                     connection.query(query_string, args_query, function (err) {
