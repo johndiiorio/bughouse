@@ -8,13 +8,9 @@ This web application is designed for the purpose for chess players to play [Bugh
 
 1. Install Node and npm
 2. Clone this repository
-3. Run    ```
-    npm install
-    ```
+3. Run ```npm install```
 4. Install MySQL, create the database using models/create_db.sql, and start the server.
-5. Run    ```
-    npm start
-    ```
+5. Run ```npm start```
 
 ### Contact: ###
 
