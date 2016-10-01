@@ -38,45 +38,19 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
         $location.path('/');
     }
 
-    var yourTimer, yourOpponentTimer, opponentAcrossTimer, teammateTimer;
+    $scope.movesArray = [];
+    var timer1, timer2, timer3, timer4;
     var yourDisplay = $('#yourTime'),
         yourOpponentDisplay = $('#yourOpponentTime'),
         opponentAcrossDisplay = $('#opponentAcrossTime'),
         teammateAcrossDisplay = $('#teammateTime');
-
-    $scope.movesArray = [];
-    var board1;
-    var board2;
-    var boardEl1 = $('#board1');
-    var boardEl2 = $('#board2');
+    var board1, board2;
+    var boardEl1 = $('#board1'), boardEl2 = $('#board2');
     var board1Turn = 'w';
     var gameOver = false;
     var tmpPromotionPiece = null;
     var tmpSourceSquare = null;
     var tmpTargetSquare = null;
-
-    jQuery(function ($) {
-        yourTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
-        yourOpponentTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
-        opponentAcrossTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
-        teammateTimer = new CountDownTimer($scope.game.minutes * 60, $scope.game.increment);
-
-        yourTimer.onTick(format(yourDisplay));
-        yourOpponentTimer.onTick(format(yourOpponentDisplay));
-        opponentAcrossTimer.onTick(format(opponentAcrossDisplay));
-        teammateTimer.onTick(format(teammateAcrossDisplay));
-
-        yourTimer.start();
-        opponentAcrossTimer.start();
-
-        function format(display) {
-            return function (minutes, seconds) {
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                display.text(minutes + ':' + seconds);
-            };
-        }
-    });
 
     var gameLeft = function () {
         var onDragStart = function (source, piece, position, orientation) {
@@ -142,8 +116,8 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             var putData = {game_id: $scope.game.game_id, fkNum: fkNum, move: {source: source, target: target, piece: piece, promotion: tmpPromotionPiece}};
             socket.emit('update game', putData);
 
-            yourOpponentTimer.toggle();
-            yourTimer.toggle();
+            //yourOpponentTimer.toggle();
+            //yourTimer.toggle();
         };
         $scope.selectPromotionPiece = function (piece) {
             tmpPromotionPiece = piece.charAt(1).toLowerCase();
@@ -196,7 +170,6 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
     $scope.getDurationFormat = function (duration) {
         var minutes = Math.floor(duration / 60);
         var seconds = duration % 60;
-        minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return minutes + ":" + seconds;
     };
@@ -368,6 +341,23 @@ app.controller('gameController', function ($scope, $http, $window, $location) {
             $(".left-game-bottom-username").css("color", "#FB667A");
             $(".right-game-top-username").css("color", "#46BCDE");
             $(".right-game-bottom-username").css("color", "#FB667A");
+        }
+        var duration = $scope.game.minutes * 60 * 1000, increment = $scope.game.increment * 60 * 1000;
+        timer1 = new Clock(duration, increment);
+        timer2 = new Clock(duration, increment);
+        timer3 = new Clock(duration, increment);
+        timer4 = new Clock(duration, increment);
+
+        timer1.onTick(format(yourDisplay));
+        timer2.onTick(format(yourOpponentDisplay));
+        timer3.onTick(format(opponentAcrossDisplay));
+        timer4.onTick(format(teammateAcrossDisplay));
+
+        function format(display) {
+            return function (minutes, seconds, deciseconds) {
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                minutes < 1 ? display.text(minutes + ':' + seconds + ':' + deciseconds) : display.text(minutes + ':' + seconds);
+            };
         }
     }
 });
