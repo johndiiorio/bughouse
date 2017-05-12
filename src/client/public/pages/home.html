@@ -1,0 +1,155 @@
+<div class="container-fluid" style="margin-top: 2em">
+    <div id="createPanel" class="col-md-3" ng-show="$parent.currentUser">
+        <h3 class="brighter-color" style="text-decoration: underline">Create a new game:</h3>
+        <p class="brighter-color" type="text" id="minutesDisplay">Minutes: 5</p>
+        <input type="text" id="minutesSlider" class="span2" value="" data-slider-min="1" data-slider-max="20"
+               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
+               data-slider-selection="after"
+               data-slider-tooltip="hide">
+        <br>
+        <p class="brighter-color" type="text" id="incrementDisplay">Increment (seconds): 5</p>
+        <input type="text" id="incrementSlider" class="span2" value="" data-slider-min="0" data-slider-max="30"
+               data-slider-step="1" data-slider-value="5" data-slider-orientation="horizontal"
+               data-slider-selection="after"
+               data-slider-tooltip="hide">
+        <br>
+        <p class="brighter-color" type="text" id="ratingDisplay">Rating Range: 500 - 2500</p>
+        <div id="ratingSliderDiv">
+            <input type="text" id="ratingSlider" class="span4" value="" data-slider-min="0" data-slider-max="3000"
+                   data-slider-step="50" data-slider-value="[500, 2500]" data-slider-orientation="horizontal"
+                   data-slider-selection="after"
+                   data-slider-tooltip="hide">
+        </div>
+        <br>
+        <p class="brighter-color" class="noBottomMargin">Players join random sides?</p>
+        <input type="checkbox" id="randomSwitch" checked>
+        <br><br>
+        <p class="noBottomMargin brighter-color">Rated game?</p>
+        <input type="checkbox" id="modeSwitch" checked>
+        <br><br>
+        <p class="brighter-color">Choose your side and create game!</p>
+        <div class="btn-group" role="group">
+            <button class="btn btn-secondary" ng-click="createGame('white')">White</button>
+            <button class="btn btn-secondary" ng-click="createGame('random')">Random</button>
+            <button class="btn btn-secondary" ng-click="createGame('black')">Black</button>
+        </div>
+    </div>
+    <div id="loginPanel" class="col-md-2" ng-show="!$parent.currentUser">
+        <h3 class="brighter-color" style="text-decoration: underline">Login:</h3>
+        <div style="background-color: #383838; padding-bottom: 10px">
+            <form ng-submit="userLogIn()">
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <h5 class="brighter-color">Username</h5>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="text" class="form-control input-sm" id="loginUsername" ng-model="login.username" />
+                    </div>
+                </div>
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <h5 class="brighter-color">Password</h5>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="password" class="form-control input-sm" id="loginPassword" ng-model="login.password"/>
+                    </div>
+                </div>
+                <br>
+                <div class="row" style="margin: auto">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-secondary">Sign in
+                            <span class="glyphicon glyphicon-log-in"></span></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-1" ng-show="!$parent.currentUser"></div>
+    <div id="lobbyPanel" class="col-md-8">
+        <h3 class="brighter-color" style="text-decoration: underline">Lobby:</h3>
+        <div id="lobbyTable">
+            <table class="table table-hover brighter-color table-condensed table-fixedheader">
+                <thead>
+                <tr>
+                    <th width="10%">Slots</th>
+                    <th width="15%">Mode</th>
+                    <th width="35%">Players</th>
+                    <th width="15%">Time Control</th>
+                    <th width="15%">Rating Range</th>
+                    <th width="10%">Join Random</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="game in gameArray track by $index" ng-click="addPlayer(game)" style="cursor: pointer">
+                        <td width="10%">{{getSlots(game)}}</td>
+                        <td width="15%">{{game.mode}}</td>
+                        <td width="35%">
+                            <div class="row">
+                                <div class="col-xs-6 {{formatColor(game.player2)}}">{{formatPlayer(game.player2, game)}}
+                                </div>
+                                <div class="col-xs-6 {{formatColor(game.player3)}}">{{formatPlayer(game.player3, game)}}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 {{formatColor(game.player1)}}">{{formatPlayer(game.player1, game)}}
+                                </div>
+                                <div class="col-xs-6 {{formatColor(game.player4)}}">{{formatPlayer(game.player4, game)}}
+                                </div>
+                            </div>
+                        </td>
+                        <td width="15%">{{game.minutes + "+" + game.increment}}</td>
+                        <td width="15%">{{formatRange(game)}}</td>
+                        <td width="10%">{{formatRandom(game)}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+<div class="modal fade" id="gameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 class="modal-title" id="myModalLabel">Join this game</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button type="button" id="joinPlayer2" class="btn btn-secondary centerDiv"
+                                ng-click="joinPlayer($event)">Join this side
+                        </button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" id="joinPlayer3" class="btn btn-secondary centerDiv"
+                                ng-click="joinPlayer($event)">Join this side
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <img class="centerDiv" style="margin-top: 3px; margin-bottom: 3px"
+                             src="../../app/static/img/assets/initialBoardWhite.png" alt="Chess Board" width="100px" height="100px">
+                    </div>
+                    <div class="col-xs-6">
+                        <img class="centerDiv" style="margin-top: 3px; margin-bottom: 3px"
+                             src="../../app/static/img/assets/initialBoardBlack.png" alt="Chess Board" width="100px" height="100px">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button type="button" id="joinPlayer1" class="btn btn-secondary centerDiv"
+                                ng-click="joinPlayer($event)">Join this side
+                        </button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" id="joinPlayer4" class="btn btn-secondary centerDiv"
+                                ng-click="joinPlayer($event)">Join this side
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
