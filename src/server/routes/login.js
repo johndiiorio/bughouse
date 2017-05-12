@@ -1,38 +1,26 @@
 const express = require('express');
-const pool = require('../models/pool.js').pool;
-const bcrypt = require('bcryptjs');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const config = require('../../config');
+const secretToken = require('../config').secretToken;
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-	pool.getConnection((err, connection) => {
-		if (err) {
-			connection.release();
-			res.json({ code: 100, status: 'Error in connection database' });
-			return;
+router.post('/', async (req, res) => {
+	try {
+		const user = await User.validatePassword(req.body.username, req.body.password);
+		if (user) {
+			const token = jwt.sign(user, secretToken, { expiresIn: 86400 });
+			res.json({
+				user: user,
+				token: token
+			});
+		} else {
+			res.status(500).send({ error: 'Failed to login' });
 		}
-		connection.query('SELECT * FROM USERS WHERE username = ?', req.body.username, (err, user) => {
-			connection.release();
-			if (!err && user.length > 0) {
-				if (bcrypt.compareSync(req.body.password, user[0].password_hash)) {
-					const token = jwt.sign(user[0], config.token_secret, {
-						expiresIn: 86400 // expires in one day
-					});
-					delete user[0].password_hash;
-					res.json({
-						user: user[0],
-						token: token
-					});
-				} else {
-					res.status(500).send({ error: 'error' });
-				}
-			} else {
-				res.status(500).send({ error: 'error' });
-			}
-		});
-	});
+	} catch (err) {
+		console.error(`Error while performing POST login: ${err}`);
+		res.status(500).send({ error: 'Failed to login' });
+	}
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 UPDATE games
 SET
-	player1 = ${player1ID},
-	player2 = ${player2ID},
-	player3 = ${player3ID},
-	player4 = ${player4ID}
+	player1 = ${player1},
+	player2 = ${player2},
+	player3 = ${player3},
+	player4 = ${player4}
 WHERE id = ${gameID};

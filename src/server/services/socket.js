@@ -1,4 +1,4 @@
-const pool = require('../models/pool').pool;
+// const pool = require('../models/pool').pool;
 const updateGame = require('./updateGame');
 
 module.exports = function (io) {

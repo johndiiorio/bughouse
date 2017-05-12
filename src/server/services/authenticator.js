@@ -1,19 +1,18 @@
-const express = require('express');
-const config = require('../../config');
+const secretToken = require('../config').secretToken;
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-	const token = req.headers['x-access-token'] || req.body.token || req.query.token;
+	const token = req.headers.token || req.body.token || req.query.token;
 	if (token) {
-		jwt.verify(token, config.token_secret, (err, decoded) => {
+		jwt.verify(token, secretToken, (err, decoded) => {
 			if (err) {
-				return res.json({ success: false, message: 'Failed to authenticate token.' });
+				res.status(401).json({ success: false, message: 'Failed to authenticate token.' });
 			}
 			req.decoded = decoded;
 			next();
 		});
 	} else {
-		return res.status(403).send({
+		res.status(403).send({
 			success: false,
 			message: 'No token provided.'
 		});

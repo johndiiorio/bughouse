@@ -1,1 +1,1 @@
-SELECT * FROM games WHERE id = ${gameID};
+SELECT * FROM games WHERE id = ${id};

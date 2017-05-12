@@ -10,4 +10,4 @@ SELECT
 	ratingClassical,
 	rdClassical
 FROM users
-WHERE username = ${username};
+WHERE email = ${email};

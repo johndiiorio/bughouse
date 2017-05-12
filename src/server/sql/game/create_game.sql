@@ -7,10 +7,11 @@ VALUES (
 	${ratingRange},
 	${mode},
 	${status},
-	${timestamp},
+	now(),
 	${joinRandom},
 	${player1},
 	${player2},
 	${player3},
 	${player$}
-);
+)
+ON CONFLICT DO NOTHING;

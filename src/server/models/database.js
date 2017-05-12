@@ -14,12 +14,12 @@ function sqlFile(filePath) {
 	return loadedSqlFiles[sqlFilePath];
 }
 
-/**
- * Returns a promise to create the database schema.
- * @return {Promise<void>}
- */
 async function createSchema() {
-
+	/* eslint-disable global-require */
+	const User = require('./User');
+	const Game = require('./Game');
+	await User.createTable();
+	await Game.createTable();
 }
 
 function stopDB() {

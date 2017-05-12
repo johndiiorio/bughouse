@@ -1,4 +1,4 @@
-const pool = require('../models/pool').pool;
+// const pool = require('../models/pool').pool;
 const Bug = require('./bug');
 
 module.exports = (data, socket, gameSocket, io) => {
