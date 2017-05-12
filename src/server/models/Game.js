@@ -4,7 +4,7 @@ const db = database.db;
 const sqlFile = database.sqlFile;
 
 class Game {
-	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, timestamp, joinRandom) {
+	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
 		this.id = id;
 		this.player1 = player1;
 		this.player2 = player2;
@@ -15,7 +15,6 @@ class Game {
 		this.ratingRange = ratingRange;
 		this.mode = mode;
 		this.status = status;
-		this.timestamp = timestamp;
 		this.joinRandom = joinRandom;
 	}
 

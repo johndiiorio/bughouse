@@ -1,5 +1,5 @@
+/* eslint-disable */
 'use strict';
-
 var Bug = function (fen) {
 
     /* jshint indent: false */

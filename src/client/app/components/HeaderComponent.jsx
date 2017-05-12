@@ -20,7 +20,7 @@ export default function HeaderComponent() {
 		display: !localStorage.getItem('token') ? 'inline' : 'none'
 	};
 
-	return(
+	return (
 		<div className="container-fluid" style={headerStyle}>
 			<div className="col-md-4">
 				<Link to="/"><img src="app/static/img/assets/bug-text.png" alt="Bughouse Chess" width="223px" height="60px" /></Link>
@@ -32,7 +32,7 @@ export default function HeaderComponent() {
 							<li><Link to="/about">About</Link></li>
 							<li style={loggedInStyle}><Link to="/register">Register</Link></li>
 							<li style={loggedOutStyle}><Link to="/profile" data-toggle="tooltip" data-placement="bottom" title="Bullet, Blitz, Classical">My Profile</Link></li>
-							<li style={loggedInStyle}><Link to="/logout"><span className="glyphicon glyphicon-log-out"></span> Logout</Link></li>
+							<li style={loggedInStyle}><Link to="/logout"><span className="glyphicon glyphicon-log-out" />Logout</Link></li>
 						</ul>
 					</div>
 				</div>
