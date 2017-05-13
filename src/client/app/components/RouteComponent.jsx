@@ -1,13 +1,13 @@
 import React from 'react';
 import { Router, Route, browserHistory } from 'react-router';
 import axios from 'axios';
-import HomeComponent from './HomeComponent';
-import AboutComponent from './AboutComponent';
+import HomeComponent from './home/HomeComponent';
+import AboutComponent from './header/AboutComponent';
 import NotFoundComponent from './NotFoundComponent';
-import RegisterComponent from './RegisterComponent';
-import GameComponent from './GameComponent';
-import GameReviewComponent from './GameReviewComponent';
-import ProfileComponent from './ProfileComponent';
+import RegisterComponent from './header/RegisterComponent';
+import GameComponent from './game/GameComponent';
+import GameReviewComponent from './game/GameReviewComponent';
+import ProfileComponent from './header/ProfileComponent';
 
 function requireAuth(nextState, replace) {
 	function redirectRoute() {

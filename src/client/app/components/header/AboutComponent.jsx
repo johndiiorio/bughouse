@@ -41,11 +41,11 @@ export default function AboutComponent() {
 			<div className="col-md-12">
 				<h3>About the Site</h3>
 				<p>
-					This website is designed for the purpose of for chess players to play <a href="https://en.wikipedia.org/wiki/Bughouse_chess" target="_blank">Bughouse chess</a>. It is written
+					This website is designed for the purpose of for chess players to play <a href="https://en.wikipedia.org/wiki/Bughouse_chess" target="_blank" rel="noopener noreferrer">Bughouse chess</a>. It is written
 					with an Angular.js + jQuery + Bootstrap 3 front-end with a Node.js (Express.js) + Socket.io + MySQL (Node-MySQL) backend. This
-					site also utilizes heavily modified versions of jhlywa&apos;s <a href="https://github.com/jhlywa/chess.js/blob/master/README.md" target="_blank">Chess.js</a> and
-					the <a href="http://chessboardjs.com/" target="_blank">chessboard.js</a> library. The game notation is specified by the
-					<a href="http://bughousedb.com/Lieven_BPGN_Standard.txt" target="_blank">Bughouse Portable Game Notation standard</a>.
+					site also utilizes heavily modified versions of jhlywa&apos;s <a href="https://github.com/jhlywa/chess.js/blob/master/README.md" target="_blank" rel="noopener noreferrer">Chess.js</a> and
+					the <a href="http://chessboardjs.com/" target="_blank" rel="noopener noreferrer">chessboard.js</a> library. The game notation is specified by the
+					<a href="http://bughousedb.com/Lieven_BPGN_Standard.txt" target="_blank" rel="noopener noreferrer">Bughouse Portable Game Notation standard</a>.
 				</p>
 				<br />
 			</div>

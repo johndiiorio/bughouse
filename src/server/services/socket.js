@@ -1,7 +1,7 @@
-// const pool = require('../models/pool').pool;
+const Game = require('../models/Game');
 const updateGame = require('./updateGame');
 
-module.exports = function (io) {
+module.exports = io => {
 	const lobbySocket = io.of('/lobby');
 	const loadingSocket = io.of('/loading');
 	const gameSocket = io.of('/game');
@@ -34,48 +34,24 @@ module.exports = function (io) {
 			socket.room = room;
 			socket.join(room);
 		});
-        /* Update a game's moves */
-		socket.on('update moves', data => {
-			pool.getConnection((err, connection) => {
-				if (err) {
-					connection.release();
-					console.log('Error in connection to database via Socket.io');
-					return;
-				}
-				connection.query('UPDATE Games SET moves = ? WHERE game_id = ?', [data.moves, data.game_id], err => {
-					connection.release();
-					if (!err) {
-						socket.broadcast.to(socket.room).emit('update moves', data.moves);
-					} else {
-						console.log('Error while performing query via Socket.io');
-					}
-				});
-				connection.on('error', err => {
-					console.log('Error in connection to database via Socket.io');
-				});
-			});
+		/* Update a game's moves */
+		socket.on('update moves', async data => {
+			try {
+				await Game.updateGameMoves(data.id, data.moves);
+				socket.broadcast.to(socket.room).emit('update moves', data.moves);
+			} catch (err) {
+				console.log(`Error while performing update moves via Socket.io: ${err}`);
+			}
 		});
         /* Update a game's reserve */
-		socket.on('update reserve', data => {
-			pool.getConnection((err, connection) => {
-				if (err) {
-					connection.release();
-					console.log('Error in connection to database via Socket.io');
-					return;
-				}
-				connection.query('UPDATE Games SET ?? = ? WHERE game_id = ?', [data.reserve, data.pieces, data.game_id], err => {
-					connection.release();
-					if (!err) {
-                        // send to all clients in 'game' room(channel) except sender
-						socket.broadcast.to(socket.room).emit('update reserve', data);
-					} else {
-						console.log('Error while performing query via Socket.io');
-					}
-				});
-				connection.on('error', err => {
-					console.log('Error in connection to database via Socket.io');
-				});
-			});
+		socket.on('update reserve', async data => {
+			try {
+				await Game.updateGameReserve(data.id, data.reserve, data.pieces);
+				// send to all clients in 'game' room(channel) except sender
+				socket.broadcast.to(socket.room).emit('update reserve', data);
+			} catch (err) {
+				console.log(`Error while performing update reserve via Socket.io: ${err}`);
+			}
 		});
         /* Validate move and update game */
 		socket.on('update game', data => {

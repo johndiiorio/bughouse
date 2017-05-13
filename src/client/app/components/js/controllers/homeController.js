@@ -231,36 +231,7 @@ app.controller('homeController', function ($scope, $http, $route, $window, $loca
         });
     };
     $scope.createGame = function (side) {
-        var postData = {};
-        postData.minutes = $('#minutesSlider').val() ? $('#minutesSlider').val() : 5;
-        postData.increment = $('#incrementSlider').val() ? $('#incrementSlider').val() : 5;
-        postData.join_random = $('#randomSwitch').bootstrapSwitch('state') == true ? 1 : 0;
-        postData.status = "open";
-        postData.mode = $('#modeSwitch').bootstrapSwitch('state') == true ? "Rated" : "Casual";
-        postData.rating_range = $('#ratingSlider').val() ? $('#ratingSlider').val() : "500,2500";
-        if (side == 'random') {
-            Math.floor(Math.random() * 2) == 0 ? side = 'white' : side = 'black';
-        }
-        if (side == 'white') {
-            postData.player1 = $scope.$parent.currentUser.user_id;
-            postData.player2 = null;
-            postData.player3 = null;
-            postData.player4 = null;
-        } else {
-            postData.player1 = null;
-            postData.player2 = $scope.$parent.currentUser.user_id;
-            postData.player3 = null;
-            postData.player4 = null;
-        }
-        $http({
-            method: 'POST',
-            url: '/api/games',
-            data: postData
-        }).success(function (game_id) {
-            $scope.switchToLoadingScreen(game_id);
-        }).error(function () {
-            console.log("Error creating game");
-        });
+
     };
     $scope.startGame = function (game) {
         $http({

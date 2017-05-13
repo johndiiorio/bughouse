@@ -4,6 +4,8 @@ const app = require('../server/app');
 const debug = require('debug')('Bughouse:server');
 const http = require('http');
 
+const serverPort = require('../server/config').serverPort;
+
 function normalizePort(val) {
 	const portParsed = parseInt(val);
 	if (isNaN(portParsed)) {
@@ -15,7 +17,7 @@ function normalizePort(val) {
 	return false;
 }
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(serverPort || '3000');
 app.set('port', port);
 
 const server = http.createServer(app);
