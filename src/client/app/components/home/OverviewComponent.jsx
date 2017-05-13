@@ -4,7 +4,7 @@ import JoinGameModalComponent from './JoinGameModalComponent';
 import LoginComponent from './LoginComponent';
 import LobbyComponent from './LobbyComponent';
 
-export default class GameOverviewComponent extends React.Component {
+export default class OverviewComponent extends React.Component {
 	constructor(props) {
 		super(props);
 	}

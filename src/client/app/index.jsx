@@ -10,11 +10,7 @@ import reducers from './reducers';
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 /* eslint-enable */
 
-// Creates and applies thunk middleware to the Redux store, which is defined from the Redux reducers
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)));
-
-// Renders the entire application, starting with RouteComponent, into the root div
-// Provides the Redux store to all child components
 render(
 	<Provider store={store}>
 		<RouteComponent />

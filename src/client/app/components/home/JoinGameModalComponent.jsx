@@ -30,11 +30,11 @@ export default class JoinGameModalComponent extends React.Component {
 							<div className="row">
 								<div className="col-xs-6">
 									<img className="centerDiv" style="margin-top: 3px; margin-bottom: 3px"
-										 src="../../app/static/img/assets/initialBoardWhite.png" alt="Chess Board" width="100px" height="100px">
+										 src="../../app/static/img/assets/initialBoardWhite.png" alt="Chess Board" width="100px" height="100px" />
 								</div>
 								<div className="col-xs-6">
 									<img className="centerDiv" style="margin-top: 3px; margin-bottom: 3px"
-										 src="../../app/static/img/assets/initialBoardBlack.png" alt="Chess Board" width="100px" height="100px">
+										 src="../../app/static/img/assets/initialBoardBlack.png" alt="Chess Board" width="100px" height="100px" />
 								</div>
 							</div>
 							<div className="row">

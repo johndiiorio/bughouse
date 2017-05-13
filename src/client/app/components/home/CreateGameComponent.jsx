@@ -97,9 +97,9 @@ export default class CreateGameComponent extends React.Component {
 				<br /><br />
 				<p className="brighter-color">Choose your side and create game!</p>
 				<div className="btn-group" role="group">
-					<button className="btn btn-secondary" onClick={createGame('white')}>White</button>
-					<button className="btn btn-secondary" onClick={createGame('random')}>Random</button>
-					<button className="btn btn-secondary" onClick={createGame('black')}>Black</button>
+					<button className="btn btn-secondary" onClick={this.createGame('white')}>White</button>
+					<button className="btn btn-secondary" onClick={this.createGame('random')}>Random</button>
+					<button className="btn btn-secondary" onClick={this.createGame('black')}>Black</button>
 				</div>
 			</div>
 		);

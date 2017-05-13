@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 
-
-export default function HeaderComponent() {
+export default function HeaderComponent(props) {
 	const headerStyle = {
 		marginTop: '1em'
 	};
@@ -13,11 +12,11 @@ export default function HeaderComponent() {
 	};
 
 	const loggedInStyle = {
-		display: localStorage.getItem('token') ? 'inline' : 'none'
+		display: props.isLoggedIn ? 'inline' : 'none'
 	};
 
 	const loggedOutStyle = {
-		display: !localStorage.getItem('token') ? 'inline' : 'none'
+		display: !props.isLoggedIn ? 'inline' : 'none'
 	};
 
 	return (

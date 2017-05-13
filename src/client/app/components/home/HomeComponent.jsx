@@ -1,12 +1,12 @@
 import React from 'react';
 import HeaderComponent from '../header/HeaderComponent';
-import GameOverviewComponent from './GameOverviewComponent';
+import OverviewComponent from './OverviewComponent';
 
 export default function HomeComponent() {
 	return (
 		<div>
 			<HeaderComponent />
-			<GameOverviewComponent />
+			<OverviewComponent />
 		</div>
 	);
 }
