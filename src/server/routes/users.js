@@ -42,8 +42,8 @@ router.get('/username/:username', async (req, res) => {
 router.post('/', async (req, res) => {
 	try {
 		const hash = bcrypt.hashSync(req.body.password, 10);
-		await new User(undefined, req.body.username, req.body.email, hash).insert();
-		res.end();
+		const id = await new User(undefined, req.body.username, req.body.email, hash).insert();
+		res.json(id);
 	} catch (err) {
 		console.error(`Error while performing POST create specific user: ${err}`);
 		res.status(400).send({ error: 'Failed to create new user' });

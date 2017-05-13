@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 				token: token
 			});
 		} else {
-			res.status(500).send({ error: 'Failed to login' });
+			res.status(401).send({ error: 'Failed to login' });
 		}
 	} catch (err) {
 		console.error(`Error while performing POST login: ${err}`);

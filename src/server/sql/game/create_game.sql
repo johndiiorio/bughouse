@@ -1,7 +1,7 @@
 INSERT INTO games
 (id, minutes, increment, rating_range, mode, status, timestamp, join_random, player1, player2, player3, player4)
 VALUES (
-	${gameID},
+	${id},
 	${minutes},
 	${increment},
 	${ratingRange},
@@ -12,6 +12,6 @@ VALUES (
 	${player1},
 	${player2},
 	${player3},
-	${player$}
+	${player4}
 )
 ON CONFLICT DO NOTHING;

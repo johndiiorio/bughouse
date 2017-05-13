@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../static/css/spinner.css';
 
 export default function LoadingComponent() {
 	return (

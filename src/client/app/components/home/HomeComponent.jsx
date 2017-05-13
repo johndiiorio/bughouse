@@ -1,12 +1,12 @@
 import React from 'react';
-import HeaderComponent from '../header/HeaderComponent';
-import OverviewComponent from './OverviewComponent';
+import HeaderContainer from '../../containers/header/HeaderContainer';
+import OverviewContainer from '../../containers/home/OverviewContainer';
 
 export default function HomeComponent() {
 	return (
 		<div>
-			<HeaderComponent />
-			<OverviewComponent />
+			<HeaderContainer />
+			<OverviewContainer />
 		</div>
 	);
 }

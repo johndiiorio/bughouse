@@ -10,36 +10,44 @@ class User {
 		this.id = id;
 		this.username = username;
 		this.email = email;
-		this.password_hash = passwordHash;
+		this.passwordHash = passwordHash;
 		this.title = title;
-		this.rating_bullet = ratingBullet;
-		this.rd_bullet = rdBullet;
-		this.rating_blitz = ratingBlitz;
-		this.rd_blitz = rdBlitz;
-		this.rating_classical = ratingClassical;
-		this.rd_classical = rdClassical;
+		this.ratingBullet = ratingBullet;
+		this.rdBullet = rdBullet;
+		this.ratingBlitz = ratingBlitz;
+		this.rdBlitz = rdBlitz;
+		this.ratingClassical = ratingClassical;
+		this.rdClassical = rdClassical;
 	}
 
 	static createTable() {
 		return db.none(sqlFile('user/create_users_table.sql'));
 	}
 
+	static mapRow(row) {
+		return new User(row.id, row.username, row.email, row.password_hash, row.title, row.rating_bullet, row.rd_bullet, row.rating_blitz, row.rd_blitz, row.rating_classical, row.rd_classical);
+	}
+
 	static async getAll() {
-		return await db.any(sqlFile('user/get_all_users.sql'));
+		const rows = await db.any(sqlFile('user/get_all_users.sql'));
+		return rows.map(User.mapRow);
 	}
 
 	static async getByID(id) {
-		return await db.one(sqlFile('user/get_user_by_id.sql'), { id: id });
+		const row = await db.one(sqlFile('user/get_user_by_id.sql'), { id: id });
+		return User.mapRow(row);
 	}
 
 	static async getByUsername(username) {
-		return await db.one(sqlFile('user/get_user_by_username.sql'), { username: username });
+		const row = await db.one(sqlFile('user/get_user_by_username.sql'), { username: username });
+		return User.mapRow(row);
 	}
 
 	static async validatePassword(username, password) {
-		const user = await db.oneOrNone(sqlFile('user/get_password_by_username.sql'), { username, password });
-		if (user) {
-			const isValid = await bcrypt.compare(password, user.password_hash);
+		console.log(username, password);
+		const row = await db.oneOrNone(sqlFile('user/get_password_by_username.sql'), { username });
+		if (row) {
+			const isValid = await bcrypt.compare(password, row.password_hash);
 			if (isValid) {
 				return await User.getByUsername(username);
 			}
@@ -48,7 +56,8 @@ class User {
 	}
 
 	static async getByEmail(email) {
-		return await db.one(sqlFile('user/get_user_by_email.sql'), { email: email });
+		const row = await db.one(sqlFile('user/get_user_by_email.sql'), { email: email });
+		return User.mapRow(row);
 	}
 
 	async insert() {
@@ -56,7 +65,8 @@ class User {
 		if (user.id !== undefined) {
 			throw new Error('Attempted to insert a user that already has an ID');
 		}
-		return await db.none(sqlFile('user/create_new_user.sql'), user);
+		const row = await db.one(sqlFile('user/create_new_user.sql'), user);
+		return row.id;
 	}
 
 	/**
@@ -71,7 +81,8 @@ class User {
 	 */
 	static async updateRatings(id1, id2, id3, id4, winner, mode) {
 		try {
-			const users = await db.one(sqlFile('user/get_associated_users.sql'), { id1, id2, id3, id4 });
+			const rows = await db.any(sqlFile('user/get_associated_users.sql'), { id1, id2, id3, id4 });
+			const users = rows.map(User.mapRow);
 			const settings = {
 				tau: 0.5,
 				rating: 1500,

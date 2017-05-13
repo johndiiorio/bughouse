@@ -1,8 +1,8 @@
 import React from 'react';
-import CreateGameComponent from './CreateGameComponent';
-import JoinGameModalComponent from './JoinGameModalComponent';
-import LoginComponent from './LoginComponent';
-import LobbyComponent from './LobbyComponent';
+import CreateGameContainer from '../../containers/home/CreateGameContainer';
+import JoinGameModalContainer from '../../containers/home/JoinGameModalContainer';
+import LoginContainer from '../../containers/home/LoginContainer';
+import LobbyContainer from '../../containers/home/LobbyContainer';
 
 export default class OverviewComponent extends React.Component {
 	constructor(props) {
@@ -10,21 +10,24 @@ export default class OverviewComponent extends React.Component {
 	}
 
 	componentWillMount() {
-		// TODO dispatch action to fetch open games
+		// TODO dispatch action to fetch open games using UPDATE_DISPLAYED_GAMES
 	}
 
 	render() {
 		const containerStyle = {
 			marginTop: '2em'
 		};
+		const showPaddingDivStyle = {
+			display: this.props.showPaddingDiv ? 'block' : 'none'
+		};
 		return (
 			<div className="container-fluid" style={containerStyle}>
-				<CreateGameComponent />
-				<LoginComponent />
-				<div className="col-md-1" ng-show="!$parent.currentUser" />
-				<LobbyComponent />
+				<CreateGameContainer />
+				<LoginContainer />
+				<div className="col-md-1" style={showPaddingDivStyle} />
+				<LobbyContainer />
 				<div className="col-md-1" />
-				<JoinGameModalComponent />
+				<JoinGameModalContainer />
 			</div>
 		);
 	}

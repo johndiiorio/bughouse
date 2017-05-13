@@ -22,16 +22,23 @@ class Game {
 		return db.none(sqlFile('game/create_games_table.sql'));
 	}
 
+	static mapRow(row) {
+		return new Game(row.id, row.player1, row.player2, row.player3, row.player4, row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random);
+	}
+
 	static async getAll() {
-		return await db.any(sqlFile('game/get_all_games.sql'));
+		const rows = await db.any(sqlFile('game/get_all_games.sql'));
+		return rows.map(Game.mapRow);
 	}
 
 	static async getAllOpen() {
-		return await db.any(sqlFile('game/get_all_open_games.sql'));
+		const rows = await db.any(sqlFile('game/get_all_open_games.sql'));
+		return rows.map(Game.mapRow);
 	}
 
 	static async getByID(id) {
-		return await db.one(sqlFile('user/get_game_by_id.sql'), { id: id });
+		const row = await db.one(sqlFile('user/get_game_by_id.sql'), { id: id });
+		return Game.mapRow(row);
 	}
 
 	static async updatePlayers(id, player1, player2, player3, player4) {
@@ -43,13 +50,15 @@ class Game {
 	}
 
 	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
-		const numGamesStart = await db.one(sqlFile('game/create_game.sql'));
+		const rowNumStart = await db.one(sqlFile('game/get_number_games.sql'));
+		const numGamesStart = rowNumStart.count;
 		let numGamesEnd = numGamesStart;
 		let id;
 		while (numGamesStart === numGamesEnd) {
 			id = (Math.random() + 1).toString(36).substr(2, 12);
 			await db.none(sqlFile('game/create_game.sql'), { id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom });
-			numGamesEnd = await db.one(sqlFile('game/create_game.sql'));
+			const rowNumEnd = await db.one(sqlFile('game/get_number_games.sql'));
+			numGamesEnd = rowNumEnd.count;
 		}
 		return id;
 	}
