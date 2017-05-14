@@ -1,13 +1,44 @@
 import React from 'react';
+import axios from 'axios';
+import _ from 'lodash';
+import NotificationSystem from 'react-notification-system';
 
 export default class LobbyComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.addPlayer = this.addPlayer.bind(this);
+		this.notificationSystem = null;
 	}
 
 	addPlayer(game) {
-
+		if (_.isEmpty(this.props.currentUser)) {
+			this.notificationSystem.addNotification({
+				message: 'Please log in to join a game',
+				level: 'error',
+				position: 'tl',
+				autoDismiss: 4
+			});
+		} else if (game.joinRandom) {
+			const openSlots = [];
+			if (typeof game.player1 === 'undefined') openSlots.push(1);
+			if (typeof game.player2 === 'undefined') openSlots.push(2);
+			if (typeof game.player3 === 'undefined') openSlots.push(3);
+			if (typeof game.player4 === 'undefined') openSlots.push(4);
+			const slot = openSlots[Math.floor(Math.random() * openSlots.length)];
+			const putData = {
+				id: game.id,
+				player: this.props.currentUser.id,
+				playerPosition: `player${slot}`
+			};
+			axios.put(`/api/games/open/${this.props.modalDisplayedGame.id}`, putData)
+					.then(() => {
+						this.props.updateSelectedGame(this.props.modalDisplayedGame);
+					})
+					.catch(console.error);
+		} else {
+			this.props.updateModalDisplayedGame(game);
+			this.props.toggleModalDisplay();
+		}
 	}
 
 	render() {
@@ -64,6 +95,7 @@ export default class LobbyComponent extends React.Component {
 		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		return (
 			<div className="col-md-8">
+				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<h3 className="brighter-color" style={underlineStyle}>Lobby:</h3>
 				<div id="lobbyTable">
 					<table className="table table-hover brighter-color table-condensed table-fixedheader">

@@ -1,48 +1,56 @@
 import axios from 'axios';
+import { browserHistory } from 'react-router';
+import io from 'socket.io-client';
+
+const socketLobby = io('/lobby');
 
 export const UPDATE_SELECTED_GAME = 'UPDATE_SELECTED_GAME';
-export const UPDATE_DISPLAYED_GAMES = 'UPDATE_DISPLAYED_GAMES';
+export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
+export const TOGGLE_MODAL_DISPLAY = 'TOGGLE_MODAL_DISPLAY';
 export const REQUEST_CREATE_GAME = 'REQUEST_CREATE_GAME';
-export const RECEIVE_CREATE_GAME = 'REQUEST_CREATE_GAME';
-export const REQUEST_UPDATE_PLAYERS_FOR_OPEN_GAME = 'REQUEST_UPDATE_PLAYERS_FOR_OPEN_GAME';
-export const RECEIVE_UPDATE_PLAYERS_FOR_OPEN_GAME = 'RECEIVE_UPDATE_PLAYERS_FOR_OPEN_GAME';
+export const REQUEST_GAMES_INFO = 'REQUEST_GAMES_INFO';
+export const RECEIVE_GAMES_INFO = 'RECEIVE_GAMES_INFO';
 
 export function updateSelectedGame(game) {
+	socketLobby.emit('update game list');
+	browserHistory.push('/loading');
 	return { type: UPDATE_SELECTED_GAME, game };
 }
 
-export function updateDisplayedGames(games) {
-	return { type: UPDATE_DISPLAYED_GAMES, games };
+export function updateModalDisplayedGame(game) {
+	return { type: UPDATE_MODAL_DISPLAYED_GAME, game };
+}
+
+export function toggleModalDisplay() {
+	return { type: TOGGLE_MODAL_DISPLAY };
+}
+
+function requestGamesInfo() {
+	return { type: REQUEST_GAMES_INFO };
+}
+
+function receiveGamesInfo(data) {
+	return { type: RECEIVE_GAMES_INFO, data };
 }
 
 function requestCreateGame() {
 	return { type: REQUEST_CREATE_GAME };
 }
 
-function receiveCreateGame(data) {
-	return { type: RECEIVE_CREATE_GAME, data };
-}
-
-function requestUpdatePlayersForOpenGame() {
-	return { type: REQUEST_UPDATE_PLAYERS_FOR_OPEN_GAME };
-}
-
-function receiveUpdatePlayersForOpenGame(data) {
-	return { type: RECEIVE_UPDATE_PLAYERS_FOR_OPEN_GAME, data };
-}
-
 export function createGame(postData) {
 	return dispatch => {
 		dispatch(requestCreateGame());
 		return axios.post('/api/games', postData)
-			.then(response => dispatch(receiveCreateGame(response.data)));
+			.then(response => dispatch(updateSelectedGame(response.data))
+			.catch(console.error));
 	};
 }
 
-export function updatePlayersForOpenGame(id, putData) {
+export function updateDisplayedGames() {
 	return dispatch => {
-		dispatch(requestUpdatePlayersForOpenGame());
-		return axios.put(`/api/games/${id}`, putData)
-			.then(response => dispatch(receiveUpdatePlayersForOpenGame(response.data)));
+		dispatch(requestGamesInfo());
+		return axios.get('/api/games/')
+			.then(response => dispatch(receiveGamesInfo(response.data))
+			.catch(console.error));
 	};
 }

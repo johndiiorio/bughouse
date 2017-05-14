@@ -1,59 +1,30 @@
 import React from 'react';
+import axios from 'axios';
 import { Modal } from 'react-bootstrap';
 
 export default class JoinGameModalComponent extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { showModal: false };
-		this.openModal = this.openModal.bind(this);
-		this.closeModal = this.closeModal.bind(this);
+		this.toggleModal = this.toggleModal(this);
 		this.joinPlayer = this.joinPlayer.bind(this);
 	}
 
-	openModal() {
-		this.setState({ showModal: true });
-	}
-
-	closeModal() {
-		this.setState({ showModal: false });
+	toggleModal() {
+		this.props.toggleModalDisplay();
 	}
 
 	joinPlayer(e) {
-		this.closeModal();
-		const slot = e.target.id.substring(e.target.id.length - 1);
-		let player1;
-		let	player2;
-		let	player3;
-		let	player4;
-
-		player1 = this.props.selectedGame.player1;
-		player2 = this.props.selectedGame.player2;
-		player3 = this.props.selectedGame.player3;
-		player4 = this.props.selectedGame.player4;
-
-		if (slot === 1) {
-			player1 = this.props.selectedGame.currentUser.id;
-		} else if (slot === 2) {
-			player2 = this.props.selectedGame.currentUser.id;
-		} else if (slot === 3) {
-			player3 = this.props.selectedGame.currentUser.id;
-		} else {
-			player4 = this.props.selectedGame.currentUser.id;
-		}
-
-		const putData = { player1, player2, player3, player4 };
-		$http({
-			method: 'PUT',
-			url: `/api/games/open/${this.props.selectedGame.game_id}`,
-			data: putData
-		}).success(() => {
-			$scope.switchToLoadingScreen(this.props.selectedGame.id);
-			if ($scope.getOpenSlots(this.props.selectedGame).length <= 1) {
-				$scope.startGame(this.props.selectedGame);
-			}
-		}).error(() => {
-			console.log('Error updating game');
-		});
+		this.toggleModal();
+		const putData = {
+			id: this.props.modalDisplayedGame.id,
+			player: this.props.currentUser.id,
+			playerPosition: `player${e.target.id.substring(e.target.id.length - 1)}`
+		};
+		return axios.put(`/api/games/open/${this.props.modalDisplayedGame.id}`, putData)
+			.then(() => {
+				this.props.updateSelectedGame(this.props.modalDisplayedGame);
+			})
+			.catch(console.error);
 	}
 
 	render() {
@@ -61,20 +32,32 @@ export default class JoinGameModalComponent extends React.Component {
 			marginTop: '3px',
 			marginBottom: '3px'
 		};
+		const joinPlayer1Style = {
+			display: this.props.modalDisplayedGame.player1 !== undefined ? 'inline' : 'block'
+		};
+		const joinPlayer2Style = {
+			display: this.props.modalDisplayedGame.player2 !== undefined ? 'inline' : 'block'
+		};
+		const joinPlayer3Style = {
+			display: this.props.modalDisplayedGame.player3 !== undefined ? 'inline' : 'block'
+		};
+		const joinPlayer4Style = {
+			display: this.props.modalDisplayedGame.player4 !== undefined ? 'inline' : 'block'
+		};
 		return (
-			<Modal show={this.state.showModal} onHide={this.closeModal}>
+			<Modal show={this.props.modalDisplay} onHide={this.toggleModal}>
 				<Modal.Header closeButton>
 					<Modal.Title>Join this game</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<div className="row">
 						<div className="col-xs-6">
-							<button type="button" id="joinPlayer2" className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<button type="button" style={joinPlayer2Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
 								Join this side
 							</button>
 						</div>
 						<div className="col-xs-6">
-							<button type="button" id="joinPlayer3" className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<button type="button" style={joinPlayer3Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
 								Join this side
 							</button>
 						</div>
@@ -89,12 +72,12 @@ export default class JoinGameModalComponent extends React.Component {
 					</div>
 					<div className="row">
 						<div className="col-xs-6">
-							<button type="button" id="joinPlayer1" className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<button type="button" style={joinPlayer1Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
 								Join this side
 							</button>
 						</div>
 						<div className="col-xs-6">
-							<button type="button" id="joinPlayer4" className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<button type="button" style={joinPlayer4Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
 								Join this side
 							</button>
 						</div>

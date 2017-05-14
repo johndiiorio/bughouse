@@ -12,7 +12,6 @@ export default class LobbyComponent extends React.Component {
 		};
 		this.handleUsernameChange = this.handleUsernameChange.bind(this);
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
-		this.addNotification = this.addNotification.bind(this);
 		this.notificationSystem = null;
 	}
 

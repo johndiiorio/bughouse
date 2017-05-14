@@ -1,4 +1,5 @@
 const database = require('./database');
+const User = require('./User');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -37,12 +38,37 @@ class Game {
 	}
 
 	static async getByID(id) {
-		const row = await db.one(sqlFile('user/get_game_by_id.sql'), { id: id });
+		const row = await db.one(sqlFile('game/get_game_by_id.sql'), { id: id });
 		return Game.mapRow(row);
 	}
 
-	static async updatePlayers(id, player1, player2, player3, player4) {
-		return await db.none(sqlFile('game/update_players_open_game.sql'), { id, player1, player2, player3, player4 });
+	static async updatePlayer(id, playerPosition, player) {
+		try {
+			const user = await User.getByID(player);
+			const game = await Game.getByID(id);
+			let userRating;
+			const gameRatingRange = game.ratingRange.split(' - ');
+			if (game.minutes < 3) {
+				userRating = user.ratingBullet;
+			} else if (game.minutes >= 3 && game.minutes <= 8) {
+				userRating = user.ratingBlitz;
+			} else {
+				userRating = user.ratingClassical;
+			}
+			const playerNum = parseInt(player);
+			// Check if player is not already in the game
+			if (playerNum !== game.player1 && playerNum !== game.player2 && playerNum !== game.player3 && playerNum !== game.player4) {
+				console.log('Got here');
+				// Check if player's rating is within game rating range and not overriding other player
+				if (userRating >= gameRatingRange[0] && userRating <= gameRatingRange[1] && game[playerPosition] === null) {
+					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player });
+					return 0;
+				}
+			}
+		} catch (err) {
+			return 1;
+		}
+		return 1;
 	}
 
 	static async startGame(id) {

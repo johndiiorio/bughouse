@@ -1,9 +1,10 @@
 import * as lobbyActions from '../actions/lobby';
 
 const defaultState = {
-	gameID: null,
+	displayedGames: [],
 	selectedGame: {},
-	displayedGames: []
+	modalDisplayedGame: {},
+	modalDisplay: false
 };
 
 export default function user(state = defaultState, action) {
@@ -13,19 +14,20 @@ export default function user(state = defaultState, action) {
 				...state,
 				selectedGame: action.game
 			};
-		case lobbyActions.UPDATE_DISPLAYED_GAMES:
+		case lobbyActions.UPDATE_MODAL_DISPLAYED_GAME:
 			return {
 				...state,
-				displayedGames: action.games
+				modalDisplayedGame: action.game
 			};
-		case lobbyActions.RECEIVE_CREATE_GAME:
+		case lobbyActions.TOGGLE_MODAL_DISPLAY:
 			return {
 				...state,
-				gameID: action.data.id
+				modalDisplay: !state.modalDisplay
 			};
-		case lobbyActions.RECEIVE_UPDATE_PLAYERS_FOR_OPEN_GAME:
+		case lobbyActions.RECEIVE_GAMES_INFO:
 			return {
-				// TODO
+				...state,
+				displayedGames: action.data
 			};
 		default:
 			return state;

@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
 		res.json(rows);
 	} catch (err) {
 		console.error(`Error while performing GET all games: ${err}`);
-		res.status(400).send({ error: 'Failed to get all games' });
+		res.status(500).send({ error: 'Failed to get all games' });
 	}
 });
 
@@ -23,7 +23,7 @@ router.get('/open', async (req, res) => {
 		res.json(rows);
 	} catch (err) {
 		console.error(`Error while performing GET all open games: ${err}`);
-		res.status(400).send({ error: 'Failed to get all open games' });
+		res.status(500).send({ error: 'Failed to get all open games' });
 	}
 });
 
@@ -34,23 +34,34 @@ router.get('/:id', async (req, res) => {
 		res.json(row);
 	} catch (err) {
 		console.error(`Error while performing GET game by id: ${err}`);
-		res.status(400).send({ error: 'Failed to get game by id' });
+		res.status(500).send({ error: 'Failed to get game by id' });
 	}
 });
 
-/* Update players for an open game */
+/**
+ * Update player for an open game
+ *
+ * @param {string} id Game ID
+ * @param {string} playerPosition Can be either player1, player2, player3, player4
+ * @param {int} player Player ID
+ */
 router.put('/open/:id', async (req, res) => {
 	try {
-		await Game.updatePlayers(req.params.id, req.body.player1, req.body.player2, req.body.player3, req.body.player4);
+		const result = await Game.updatePlayer(req.params.id, req.body.playerPosition, req.body.player);
+		if (result === 1) {
+			res.status(400).send({ error: 'Failed to update player for open game' });
+		} else {
+			res.end();
+		}
 		res.end();
 	} catch (err) {
 		console.error(`Error while performing PUT update players for open game: ${err}`);
-		res.status(400).send({ error: 'Failed to update players for open game' });
+		res.status(500).send({ error: 'Failed to update players for open game' });
 	}
 });
 
 /* Start a game */
-router.put('/start/:game_id', async (req, res) => {
+router.put('/start/:id', async (req, res) => {
 	try {
 		await Game.startGame(req.params.id);
 		res.end();

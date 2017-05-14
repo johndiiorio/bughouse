@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import LobbyComponent from '../../components/home/LobbyComponent';
-import { updateSelectedGame } from '../../actions/lobby';
+import { updateSelectedGame, updateModalDisplayedGame, toggleModalDisplay } from '../../actions/lobby';
 
 function mapStateToProps(state) {
 	return {
@@ -13,6 +13,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		updateSelectedGame: game => dispatch(updateSelectedGame(game)),
+		updateModalDisplayedGame: game => dispatch(updateModalDisplayedGame(game)),
+		toggleModalDisplay: () => dispatch(toggleModalDisplay())
 	};
 }
 
