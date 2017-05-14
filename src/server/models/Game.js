@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const database = require('./database');
 const User = require('./User');
 
@@ -34,7 +35,30 @@ class Game {
 
 	static async getAllOpen() {
 		const rows = await db.any(sqlFile('game/get_all_open_games.sql'));
-		return rows.map(Game.mapRow);
+		return rows.map(row => {
+			const mappedObj = {
+				player1: {},
+				player2: {},
+				player3: {},
+				player4: {},
+			};
+			_.forOwn(row, (value, key) => {
+				if (key.substring(0, 6) === 'player') {
+					if (key[6] === '1') {
+						mappedObj.player1[key.substring(7)] = value;
+					} else if (key[6] === '2') {
+						mappedObj.player2[key.substring(7)] = value;
+					} else if (key[6] === '3') {
+						mappedObj.player3[key.substring(7)] = value;
+					} else {
+						mappedObj.player4[key.substring(7)] = value;
+					}
+				} else {
+					mappedObj[key] = value;
+				}
+			});
+			return mappedObj;
+		});
 	}
 
 	static async getByID(id) {
@@ -58,7 +82,6 @@ class Game {
 			const playerNum = parseInt(player);
 			// Check if player is not already in the game
 			if (playerNum !== game.player1 && playerNum !== game.player2 && playerNum !== game.player3 && playerNum !== game.player4) {
-				console.log('Got here');
 				// Check if player's rating is within game rating range and not overriding other player
 				if (userRating >= gameRatingRange[0] && userRating <= gameRatingRange[1] && game[playerPosition] === null) {
 					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player });

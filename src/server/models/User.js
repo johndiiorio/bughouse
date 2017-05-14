@@ -44,7 +44,6 @@ class User {
 	}
 
 	static async validatePassword(username, password) {
-		console.log(username, password);
 		const row = await db.oneOrNone(sqlFile('user/get_password_by_username.sql'), { username });
 		if (row) {
 			const isValid = await bcrypt.compare(password, row.password_hash);

@@ -10,7 +10,7 @@ export default class OverviewComponent extends React.Component {
 	}
 
 	componentWillMount() {
-		// TODO dispatch action to fetch open games using UPDATE_DISPLAYED_GAMES
+		this.props.updateDisplayedGames();
 	}
 
 	render() {

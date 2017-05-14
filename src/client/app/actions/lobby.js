@@ -49,7 +49,7 @@ export function createGame(postData) {
 export function updateDisplayedGames() {
 	return dispatch => {
 		dispatch(requestGamesInfo());
-		return axios.get('/api/games/')
+		return axios.get('/api/games/open')
 			.then(response => dispatch(receiveGamesInfo(response.data))
 			.catch(console.error));
 	};

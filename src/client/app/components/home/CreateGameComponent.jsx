@@ -12,7 +12,7 @@ export default class CreateGameComponent extends React.Component {
 		this.state = {
 			minutes: 5,
 			increment: 5,
-			ratingRange: 0,
+			ratingRange: 250,
 			randomSwitch: true,
 			mode: true
 		};
@@ -22,6 +22,8 @@ export default class CreateGameComponent extends React.Component {
 		this.handleRandomSwitchChange = this.handleRandomSwitchChange.bind(this);
 		this.handleModeSwitchChange = this.handleModeSwitchChange.bind(this);
 		this.handleRatingRangeChange = this.handleRatingRangeChange.bind(this);
+		this.formatRatingRange = this.formatRatingRange.bind(this);
+		this.getUserRating = this.getUserRating.bind(this);
 	}
 
 	handleMinutesChange(value) {
@@ -44,27 +46,48 @@ export default class CreateGameComponent extends React.Component {
 		this.setState({ mode: e.target.checked });
 	}
 
+	getUserRating() {
+		let userRating;
+		if (this.state.minutes < 3) {
+			userRating = this.props.currentUser.ratingBullet;
+		} else if (this.state.minutes >= 3 && this.state.minutes <= 8) {
+			userRating = this.props.currentUser.ratingBlitz;
+		} else {
+			userRating = this.props.currentUser.ratingClassical;
+		}
+		return userRating;
+	}
+
+	formatRatingRange() {
+		const userRating = this.getUserRating();
+		if (this.state.ratingRange === 0) {
+			return `Rating range: ${userRating}`;
+		}
+		return `Rating range: ${userRating - this.state.ratingRange} to ${userRating + this.state.ratingRange}`;
+	}
+
 	/**
 	 * @param {string} side Can be 'white', 'black', or 'random'
 	 */
 	createGame(side) {
+		const userRating = this.getUserRating();
 		const gameInfo = {
 			minutes: this.state.minutes,
 			increment: this.state.increment,
 			joinRandom: this.state.randomSwitch,
 			status: 'open',
 			mode: this.state.mode ? 'Rated' : 'Casual',
-			ratingRange: this.state.ratingRange
+			ratingRange: `${userRating - this.state.ratingRange} - ${userRating + this.state.ratingRange}`
 		};
 		if (side === 'random') {
 			side = Math.floor(Math.random() * 2) === 0 ? 'white' : 'black';
 		}
 		if (side === 'white') {
-			gameInfo.player1 = this.props.currentUser;
+			gameInfo.player1 = this.props.currentUser.id;
 			gameInfo.player2 = null;
 		} else {
 			gameInfo.player1 = null;
-			gameInfo.player2 = this.props.currentUser;
+			gameInfo.player2 = this.props.currentUser.id;
 		}
 		gameInfo.player3 = null;
 		gameInfo.player4 = null;
@@ -82,13 +105,13 @@ export default class CreateGameComponent extends React.Component {
 			<div className="col-md-3" style={createGameContainerStyle}>
 				<h3 className="brighter-color" style={underlineStyle}>Create a new game:</h3>
 				<p className="brighter-color" type="text" id="minutesDisplay">Minutes: {this.state.minutes}</p>
-				<Slider min={1} max={20} value={this.state.minutes} onChange={this.handleMinutesChange} />
+				<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />
 				<br />
-				<p className="brighter-color" type="text" id="incrementDisplay">Increment (seconds): 5</p>
-				<Slider min={1} max={30} value={this.state.increment} onChange={this.handleIncrementChange} />
+				<p className="brighter-color" type="text" id="incrementDisplay">Increment (seconds): {this.state.increment}</p>
+				<Slider min={1} max={30} tooltip={false} value={this.state.increment} onChange={this.handleIncrementChange} />
 				<br />
-				<p className="brighter-color" type="text" id="ratingDisplay">Rating Range: {this.state.rating}</p>
-				<Slider min={-500} max={500} step={10} value={this.state.ratingRange} onChange={this.handleRatingRangeChange} />
+				<p className="brighter-color" type="text" id="ratingDisplay">{this.formatRatingRange()}</p>
+				<Slider min={0} max={500} step={10} tooltip={false} value={this.state.ratingRange} onChange={this.handleRatingRangeChange} />
 				<br />
 				<p className="brighter-color noBottomMargin">Players join random sides?</p>
 				<Toggle defaultChecked={this.state.randomSwitch} icons={false} onChange={this.handleRandomSwitchChange}	/>
