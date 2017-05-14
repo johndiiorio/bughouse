@@ -9,7 +9,7 @@ export default function user(state = defaultState, action) {
 		case userActions.UPDATE_CURRENT_USER:
 			return {
 				...state,
-				currentUser: action.currentUser
+				currentUser: action.user
 			};
 		default:
 			return state;

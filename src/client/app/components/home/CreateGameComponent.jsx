@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Slider from 'react-rangeslider';
 import Toggle from 'react-toggle';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import 'react-rangeslider/lib/index.css';
 import 'react-toggle/style.css';
 
@@ -96,11 +97,11 @@ export default class CreateGameComponent extends React.Component {
 				<Toggle defaultChecked={this.state.mode} icons={false} onChange={this.handleModeSwitchChange} />
 				<br /><br />
 				<p className="brighter-color">Choose your side and create game!</p>
-				<div className="btn-group" role="group">
-					<button className="btn btn-secondary" onClick={this.createGame('white')}>White</button>
-					<button className="btn btn-secondary" onClick={this.createGame('random')}>Random</button>
-					<button className="btn btn-secondary" onClick={this.createGame('black')}>Black</button>
-				</div>
+				<ButtonGroup>
+					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('white')}>White</Button>
+					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('random')}>Random</Button>
+					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('black')}>Black</Button>
+				</ButtonGroup>
 			</div>
 		);
 	}

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS games (
 	last_time_right BIGINT NULL,
 	clocks TEXT NULL DEFAULT '0,0,0,0',
 	termination TEXT NULL,
-	join_random SMALLINT NULL DEFAULT 1,
+	join_random BOOLEAN NULL DEFAULT TRUE,
 	player1 INT NULL REFERENCES users (id),
 	player2 INT NULL REFERENCES users (id),
 	player3 INT NULL REFERENCES users (id),

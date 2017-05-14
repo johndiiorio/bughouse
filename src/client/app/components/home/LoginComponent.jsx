@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import NotificationSystem from 'react-notification-system';
+import { Button } from 'react-bootstrap';
 
 export default class LobbyComponent extends React.Component {
 	constructor(props) {
@@ -12,6 +13,7 @@ export default class LobbyComponent extends React.Component {
 		};
 		this.handleUsernameChange = this.handleUsernameChange.bind(this);
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 		this.notificationSystem = null;
 	}
 
@@ -41,7 +43,7 @@ export default class LobbyComponent extends React.Component {
 				autoDismiss: 2
 			});
 		});
-		this.setState({ email: '', password: '' });
+		this.setState({ username: '', password: '' });
 	}
 
 	render() {
@@ -83,9 +85,9 @@ export default class LobbyComponent extends React.Component {
 						<br />
 						<div className="row" style={marginStyle}>
 							<div className="col-md-12">
-								<button type="submit" className="btn btn-secondary">Sign in
+								<Button type="submit" bsClass="btn btn-secondary"> Sign in
 									<span className="glyphicon glyphicon-log-in" />
-								</button>
+								</Button>
 							</div>
 						</div>
 					</form>

@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { Modal } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 
 export default class JoinGameModalComponent extends React.Component {
 	constructor(props) {
 		super(props);
-		this.toggleModal = this.toggleModal(this);
+		this.toggleModal = this.toggleModal.bind(this);
 		this.joinPlayer = this.joinPlayer.bind(this);
 	}
 
@@ -52,14 +52,14 @@ export default class JoinGameModalComponent extends React.Component {
 				<Modal.Body>
 					<div className="row">
 						<div className="col-xs-6">
-							<button type="button" style={joinPlayer2Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer2Style} onClick={this.joinPlayer}>
 								Join this side
-							</button>
+							</Button>
 						</div>
 						<div className="col-xs-6">
-							<button type="button" style={joinPlayer3Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer3Style} onClick={this.joinPlayer}>
 								Join this side
-							</button>
+							</Button>
 						</div>
 					</div>
 					<div className="row">
@@ -72,14 +72,14 @@ export default class JoinGameModalComponent extends React.Component {
 					</div>
 					<div className="row">
 						<div className="col-xs-6">
-							<button type="button" style={joinPlayer1Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer1Style} onClick={this.joinPlayer}>
 								Join this side
-							</button>
+							</Button>
 						</div>
 						<div className="col-xs-6">
-							<button type="button" style={joinPlayer4Style} className="btn btn-secondary centerDiv" onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer4Style} onClick={this.joinPlayer}>
 								Join this side
-							</button>
+							</Button>
 						</div>
 					</div>
 				</Modal.Body>

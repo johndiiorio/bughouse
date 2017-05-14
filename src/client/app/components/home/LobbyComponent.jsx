@@ -111,7 +111,7 @@ export default class LobbyComponent extends React.Component {
 						</thead>
 						<tbody>
 							{this.props.displayedGames.map((game, index) =>
-								<tr onClick={this.addPlayer(game)} key={index} style={cursorStyle}>
+								<tr onClick={() => this.addPlayer(game)} key={index} style={cursorStyle}>
 									<td width="10%">{getSlots(game)}</td>
 									<td width="15%">{game.mode}</td>
 									<td width="35%">
