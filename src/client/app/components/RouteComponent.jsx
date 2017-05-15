@@ -4,7 +4,8 @@ import axios from 'axios';
 import HomeComponent from './home/HomeComponent';
 import AboutComponent from './header/AboutComponent';
 import NotFoundComponent from './NotFoundComponent';
-import RegisterComponent from './header/RegisterComponent';
+import RegisterContainer from '../containers/header/RegisterContainer';
+import LoadingComponent from './game/LoadingComponent';
 import GameComponent from './game/GameComponent';
 import GameReviewComponent from './game/GameReviewComponent';
 import ProfileComponent from './header/ProfileComponent';
@@ -33,14 +34,17 @@ function requireAuth(nextState, replace) {
 
 export default function RouteComponent() {
 	return (
-		<Router history={browserHistory}>
-			<Route path="/" component={HomeComponent} />
-			<Route path="/about" component={AboutComponent} />
-			<Route path="/profile" component={ProfileComponent} />
-			<Route path="/register" component={RegisterComponent} />
-			<Route path="/game" component={GameComponent} />
-			<Route path="/review" component={GameReviewComponent} />
-			<Route path="*" component={NotFoundComponent} />
-		</Router>
+		<div>
+			<Router history={browserHistory}>
+				<Route path="/" component={HomeComponent} />
+				<Route path="/about" component={AboutComponent} />
+				<Route path="/profile" component={ProfileComponent} />
+				<Route path="/register" component={RegisterContainer} />
+				<Route path="/loading" component={LoadingComponent} />
+				<Route path="/game" component={GameComponent} />
+				<Route path="/review" component={GameReviewComponent} />
+				<Route path="*" component={NotFoundComponent} />
+			</Router>
+		</div>
 	);
 }

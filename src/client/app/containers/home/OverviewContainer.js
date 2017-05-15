@@ -1,13 +1,6 @@
 import { connect } from 'react-redux';
-import _ from 'lodash';
 import OverviewComponent from '../../components/home/OverviewComponent';
 import { updateDisplayedGames } from '../../actions/lobby';
-
-function mapStateToProps(state) {
-	return {
-		showPaddingDiv: _.isEmpty(state.user.currentUser)
-	};
-}
 
 function mapDispatchToProps(dispatch) {
 	return {
@@ -15,4 +8,4 @@ function mapDispatchToProps(dispatch) {
 	};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(OverviewComponent);
+export default connect(null, mapDispatchToProps)(OverviewComponent);

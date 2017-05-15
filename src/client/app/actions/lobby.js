@@ -41,8 +41,7 @@ export function createGame(postData) {
 	return dispatch => {
 		dispatch(requestCreateGame());
 		return axios.post('/api/games', postData)
-			.then(response => dispatch(updateSelectedGame(response.data))
-			.catch(console.error));
+			.then(response => dispatch(updateSelectedGame(response.data)));
 	};
 }
 
@@ -50,7 +49,6 @@ export function updateDisplayedGames() {
 	return dispatch => {
 		dispatch(requestGamesInfo());
 		return axios.get('/api/games/open')
-			.then(response => dispatch(receiveGamesInfo(response.data))
-			.catch(console.error));
+			.then(response => dispatch(receiveGamesInfo(response.data)));
 	};
 }

@@ -5,35 +5,34 @@ export default function HeaderComponent(props) {
 	const headerStyle = {
 		marginTop: '1em'
 	};
-
-	const navbarCollapseStyle = {
-		paddingTop: '5px',
-		paddingBottom: '5px'
+	const linksContainerStyle = {
+		marginTop: '5px',
+		marginRight: '20px'
 	};
-
+	const displayAlwaysStyle = {
+		marginLeft: '30px',
+		display: 'inline'
+	};
 	const loggedInStyle = {
+		marginLeft: '30px',
 		display: props.isLoggedIn ? 'inline' : 'none'
 	};
-
 	const loggedOutStyle = {
+		marginLeft: '30px',
 		display: !props.isLoggedIn ? 'inline' : 'none'
 	};
 
 	return (
 		<div className="container-fluid" style={headerStyle}>
-			<div className="col-md-4">
+			<div className="col-md-1">
 				<Link to="/"><img src="app/static/img/assets/bug-text.png" alt="Bughouse Chess" width="223px" height="60px" /></Link>
 			</div>
-			<div className="col-md-7">
-				<div className="collapse" style={navbarCollapseStyle}>
-					<div className="navbar-right" id="myNavbar">
-						<ul className="nav navbar-nav navbar-right">
-							<li><Link to="/about">About</Link></li>
-							<li style={loggedInStyle}><Link to="/register">Register</Link></li>
-							<li style={loggedOutStyle}><Link to="/profile" data-toggle="tooltip" data-placement="bottom" title="Bullet, Blitz, Classical">My Profile</Link></li>
-							<li style={loggedInStyle}><Link to="/logout"><span className="glyphicon glyphicon-log-out" />Logout</Link></li>
-						</ul>
-					</div>
+			<div className="col-md-10" style={linksContainerStyle}>
+				<div className="pull-right">
+					<h4 style={displayAlwaysStyle}><Link to="/about">About</Link></h4>
+					<h4 style={loggedOutStyle}><Link to="/register">Register</Link></h4>
+					<h4 style={loggedInStyle}><Link to="/profile">My Profile</Link></h4>
+					<h4 style={loggedInStyle}><Link to="/logout">Logout</Link></h4>
 				</div>
 			</div>
 		</div>

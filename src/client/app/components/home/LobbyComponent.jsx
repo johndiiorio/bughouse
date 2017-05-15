@@ -15,7 +15,7 @@ export default class LobbyComponent extends React.Component {
 			this.notificationSystem.addNotification({
 				message: 'Please log in to join a game',
 				level: 'error',
-				position: 'tl',
+				position: 'tc',
 				autoDismiss: 4
 			});
 		} else if (game.joinRandom) {
@@ -94,7 +94,7 @@ export default class LobbyComponent extends React.Component {
 		}
 		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		return (
-			<div className="col-md-8">
+			<div className="col-md-9">
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<h3 className="brighter-color" style={underlineStyle}>Lobby:</h3>
 				<div id="lobbyTable">

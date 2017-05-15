@@ -3,8 +3,8 @@ import _ from 'lodash';
 import Slider from 'react-rangeslider';
 import Toggle from 'react-toggle';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import 'react-rangeslider/lib/index.css';
-import 'react-toggle/style.css';
+import '../../static/css/react-toggle-custom.css';
+import '../../static/css/react-rangeslider-custom.css';
 
 export default class CreateGameComponent extends React.Component {
 	constructor(props) {
@@ -102,7 +102,7 @@ export default class CreateGameComponent extends React.Component {
 			textDecoration: 'underline'
 		};
 		return (
-			<div className="col-md-3" style={createGameContainerStyle}>
+			<div className="col-md-2" style={createGameContainerStyle}>
 				<h3 className="brighter-color" style={underlineStyle}>Create a new game:</h3>
 				<p className="brighter-color" type="text" id="minutesDisplay">Minutes: {this.state.minutes}</p>
 				<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />

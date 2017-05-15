@@ -40,17 +40,19 @@ export default function AboutComponent() {
 							time or are checkmated simultaneously.
 						</p>
 					<br />
-				</div>
-				<div className="col-md-12">
 					<h3>About the Site</h3>
 					<p>
-						This website is designed for the purpose of for chess players to play <a href="https://en.wikipedia.org/wiki/Bughouse_chess" target="_blank" rel="noopener noreferrer">Bughouse chess</a>. It is written
-						with an Angular.js + jQuery + Bootstrap 3 front-end with a Node.js (Express.js) + Socket.io + MySQL (Node-MySQL) backend. This
+						This web app is designed for the purpose of for chess players to play <a href="https://en.wikipedia.org/wiki/Bughouse_chess" target="_blank" rel="noopener noreferrer">Bughouse chess</a>. It is written
+						with React + Redux + Bootstrap front-end with a Node.js (Express.js) + Socket.io + PostgreSQL backend. This
 						site also utilizes heavily modified versions of jhlywa&apos;s <a href="https://github.com/jhlywa/chess.js/blob/master/README.md" target="_blank" rel="noopener noreferrer">Chess.js</a> and
 						the <a href="http://chessboardjs.com/" target="_blank" rel="noopener noreferrer">chessboard.js</a> library. The game notation is specified by the
 						<a href="http://bughousedb.com/Lieven_BPGN_Standard.txt" target="_blank" rel="noopener noreferrer"> Bughouse Portable Game Notation standard</a>.
 					</p>
 					<br />
+					<h3>Contribute and Contact</h3>
+					<p>
+						The source code of this web app is located <a href="https://github.com/johndiiorio/bughouse" target="_blank" rel="noopener noreferrer">here</a>. Send me an email, open a GitHub issue, or make a pull request.
+					</p>
 				</div>
 			</div>
 		</div>

@@ -6,6 +6,6 @@ export default function NotFoundComponent() {
 		paddingLeft: '15px'
 	};
 	return (
-		<h1 style={textStyle}>404 Not Found</h1>
+		<h1 className="brighter-color text-center" style={textStyle}>404 Not Found</h1>
 	);
 }

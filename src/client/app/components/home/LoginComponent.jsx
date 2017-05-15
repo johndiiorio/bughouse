@@ -39,7 +39,7 @@ export default class LobbyComponent extends React.Component {
 			this.notificationSystem.addNotification({
 				message: 'Invalid username/password combination',
 				level: 'error',
-				position: 'tl',
+				position: 'tc',
 				autoDismiss: 2
 			});
 		});
@@ -63,7 +63,7 @@ export default class LobbyComponent extends React.Component {
 		return (
 			<div className="col-md-2" style={containerStyle}>
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
-				<h3 className="brighter-color" style={underlineStyle}>Login:</h3>
+				<h3 className="brighter-color" style={underlineStyle}>Log in:</h3>
 				<div style={loginStyle}>
 					<form onSubmit={this.handleSubmit}>
 						<div className="row" style={marginStyle}>

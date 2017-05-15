@@ -1,38 +1,73 @@
 import React from 'react';
+import { browserHistory } from 'react-router';
+import axios from 'axios';
+import { Button, Form, FormGroup, FormControl, HelpBlock, Col } from 'react-bootstrap';
+import HeaderContainer from '../../containers/header/HeaderContainer';
 
 export default class RegisterComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			username: '',
+			usernameValid: null,
+			usernameHelpBlock: '',
 			password: '',
+			passwordValid: null,
+			passwordHelpBlock: '',
 			email: ''
 		};
-
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChangeUsername = this.handleChangeUsername.bind(this);
 		this.handleChangePassword = this.handleChangePassword.bind(this);
 		this.handleChangeEmail = this.handleChangeEmail.bind(this);
 	}
 
-	componentWillMount() {
-
+	handleChangeUsername(e) {
+		this.setState({ username: e.target.value });
+		if (e.target.value === '') {
+			this.setState({ usernameValid: null, usernameHelpBlock: '' });
+		} else if (e.target.value.length > 15) {
+			this.setState({ usernameValid: 'error', usernameHelpBlock: 'Username is too long' });
+		} else {
+			axios.get(`/api/users/username/${e.target.value}`)
+				.then(() => this.setState({ usernameValid: 'error', usernameHelpBlock: 'This username is not available' }))
+				.catch(() => this.setState({ usernameValid: 'success', usernameHelpBlock: '' }));
+		}
 	}
 
-	handleChangeUsername() {
-		// check username availability
+	handleChangePassword(e) {
+		this.setState({ password: e.target.value });
+		if (e.target.value === '') {
+			this.setState({ passwordValid: null, passwordHelpBlock: '' });
+		} else if (e.target.value.length < 6) {
+			this.setState({ passwordValid: 'error', passwordHelpBlock: 'Password is too short' });
+		} else if (e.target.value.length > 50) {
+			this.setState({ passwordValid: 'error', passwordHelpBlock: 'Password is too long' });
+		} else {
+			this.setState({ passwordValid: 'success', passwordHelpBlock: '' });
+		}
 	}
 
-	handleChangePassword() {
-
+	handleChangeEmail(e) {
+		this.setState({ email: e.target.value });
 	}
 
-	handleChangeEmail() {
-
-	}
-
-	handleSubmit() {
-
+	handleSubmit(e) {
+		e.preventDefault();
+		const postData = {
+			username: this.state.username,
+			password: this.state.password,
+			email: this.state.email
+		};
+		axios.post('/api/users/', postData)
+			.then(response => {
+				localStorage.setItem('token', response.data.token);
+				this.props.updateCurrentUser(response.data.user);
+				browserHistory.push('/');
+			})
+			.catch(() => {
+				// TODO add notification (using top-level notification system component)
+			});
 	}
 
 	render() {
@@ -40,24 +75,53 @@ export default class RegisterComponent extends React.Component {
 			textDecoration: 'underline'
 		};
 		return (
-			<div className="container-fluid brighter-color">
-				<h3 className="brighter-color" style={underlineStyle}>Register</h3>
-				<form onSubmit={this.handleSubmit}>
-					<label>
-						Username:
-						<input type="text" value={this.state.username} placeholder="Username" onChange={this.handleChangeUsername} />
-					</label>
-					<label>
-						Password:
-						<input type="password" value={this.state.password} placeholder="Password" onChange={this.handleChangeUsername} />
-					</label>
-					<label>
-						Email:
-						<input type="email" value={this.state.email} placeholder="Email" onChange={this.handleChangeUsername} />
-					</label>
-					<input type="submit" value="Submit" />
-				</form>
-
+			<div>
+				<HeaderContainer />
+				<div className="container-fluid brighter-color">
+					<h3 style={underlineStyle}>Register</h3>
+					<Form horizontal onSubmit={this.handleSubmit}>
+						<FormGroup validationState={this.state.usernameValid}>
+							<Col md={4}>
+								<FormControl
+									type="text"
+									value={this.state.username}
+									placeholder="Username"
+									onChange={this.handleChangeUsername}
+								/>
+								<FormControl.Feedback />
+								<HelpBlock>{this.state.usernameHelpBlock}</HelpBlock>
+							</Col>
+						</FormGroup>
+						<FormGroup validationState={this.state.passwordValid}>
+							<Col md={4}>
+								<FormControl
+									type="password"
+									value={this.state.password}
+									placeholder="Password"
+									onChange={this.handleChangePassword}
+								/>
+								<FormControl.Feedback />
+								<HelpBlock>{this.state.passwordHelpBlock}</HelpBlock>
+							</Col>
+						</FormGroup>
+						<FormGroup>
+							<Col md={4}>
+								<FormControl
+									type="email"
+									value={this.state.email}
+									placeholder="Email address"
+									onChange={this.handleChangeEmail}
+								/>
+								<FormControl.Feedback />
+							</Col>
+						</FormGroup>
+						<FormGroup>
+							<Col md={4}>
+								<Button bsStyle="primary" type="submit">Register</Button>
+							</Col>
+						</FormGroup>
+					</Form>
+				</div>
 			</div>
 		);
 	}

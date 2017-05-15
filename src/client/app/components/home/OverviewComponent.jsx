@@ -17,14 +17,10 @@ export default class OverviewComponent extends React.Component {
 		const containerStyle = {
 			marginTop: '2em'
 		};
-		const showPaddingDivStyle = {
-			display: this.props.showPaddingDiv ? 'block' : 'none'
-		};
 		return (
 			<div className="container-fluid" style={containerStyle}>
 				<CreateGameContainer />
 				<LoginContainer />
-				<div className="col-md-1" style={showPaddingDivStyle} />
 				<LobbyContainer />
 				<div className="col-md-1" />
 				<JoinGameModalContainer />
