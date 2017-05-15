@@ -49,24 +49,21 @@ export default class LobbyComponent extends React.Component {
 
 		function getSlots(game) {
 			let count = 0;
-			if (typeof game.player1 !== 'undefined' && game.player1.length > 0) count++;
-			if (typeof game.player2 !== 'undefined' && game.player2.length > 0) count++;
-			if (typeof game.player3 !== 'undefined' && game.player3.length > 0) count++;
-			if (typeof game.player4 !== 'undefined' && game.player4.length > 0) count++;
+			if (game.player1.id !== null) count++;
+			if (game.player2.id !== null) count++;
+			if (game.player3.id !== null) count++;
+			if (game.player4.id !== null) count++;
 			return `${count}/4`;
 		}
 
 		function formatColor(player) {
-			if (typeof player === 'undefined') {
-				return 'text-success';
-			}
-			if (player.length <= 0) {
+			if (player.id === null) {
 				return 'text-success';
 			}
 			return '';
 		}
 		function formatPlayer(player, game) {
-			if (typeof player !== 'undefined') {
+			if (player.id !== null) {
 				let returnString = player.username;
 				if (game.minutes < 3) {
 					returnString += ` (${player.ratingBullet})`;

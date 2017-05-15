@@ -14,11 +14,8 @@ export default class OverviewComponent extends React.Component {
 	}
 
 	render() {
-		const containerStyle = {
-			marginTop: '2em'
-		};
 		return (
-			<div className="container-fluid" style={containerStyle}>
+			<div className="container-fluid">
 				<CreateGameContainer />
 				<LoginContainer />
 				<LobbyContainer />

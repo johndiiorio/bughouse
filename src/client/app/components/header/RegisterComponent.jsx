@@ -20,6 +20,7 @@ export default class RegisterComponent extends React.Component {
 		this.handleChangeUsername = this.handleChangeUsername.bind(this);
 		this.handleChangePassword = this.handleChangePassword.bind(this);
 		this.handleChangeEmail = this.handleChangeEmail.bind(this);
+		this.formValidityForSubmitButton = this.formValidityForSubmitButton.bind(this);
 	}
 
 	handleChangeUsername(e) {
@@ -52,6 +53,10 @@ export default class RegisterComponent extends React.Component {
 		this.setState({ email: e.target.value });
 	}
 
+	formValidityForSubmitButton() {
+		return !(this.state.usernameValid === 'success' && this.state.passwordValid === 'success');
+	}
+
 	handleSubmit(e) {
 		e.preventDefault();
 		const postData = {
@@ -66,7 +71,12 @@ export default class RegisterComponent extends React.Component {
 				browserHistory.push('/');
 			})
 			.catch(() => {
-				// TODO add notification (using top-level notification system component)
+				this.props.sendNotification({
+					message: 'Failed to register',
+					level: 'error',
+					position: 'tc',
+					autoDismiss: 4
+				});
 			});
 	}
 
@@ -75,10 +85,10 @@ export default class RegisterComponent extends React.Component {
 			textDecoration: 'underline'
 		};
 		return (
-			<div>
+			<div className="col-md-12">
 				<HeaderContainer />
 				<div className="container-fluid brighter-color">
-					<h3 style={underlineStyle}>Register</h3>
+					<h3 style={underlineStyle}>Register:</h3>
 					<Form horizontal onSubmit={this.handleSubmit}>
 						<FormGroup validationState={this.state.usernameValid}>
 							<Col md={4}>
@@ -117,7 +127,7 @@ export default class RegisterComponent extends React.Component {
 						</FormGroup>
 						<FormGroup>
 							<Col md={4}>
-								<Button bsStyle="primary" type="submit">Register</Button>
+								<Button bsStyle="primary" type="submit" disabled={this.formValidityForSubmitButton()}>Register</Button>
 							</Col>
 						</FormGroup>
 					</Form>

@@ -19,7 +19,7 @@ module.exports = {
 		"no-console": 0,
 		"no-useless-constructor": ["warn"],
 		"no-param-reassign": 0,
-		"no-plusplus": ["warn", { "allowForLoopAfterthoughts": true }],
+		"no-plusplus": 0,
 		'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement'],
 		"react/jsx-indent": ["error", "tab"], // Still tabs, not spaces
 		"react/no-direct-mutation-state": ["error"],

@@ -9,7 +9,7 @@ router.post('/', async (req, res) => {
 	try {
 		const user = await User.validatePassword(req.body.username, req.body.password);
 		if (user) {
-			const token = jwt.sign(user, secretToken, { expiresIn: 86400 });
+			const token = jwt.sign(user, secretToken, { expiresIn: '7 days' });
 			res.json({ user: user, token: token });
 		} else {
 			res.status(401).send({ error: 'Failed to login' });

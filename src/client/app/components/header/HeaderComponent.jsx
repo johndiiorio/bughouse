@@ -3,7 +3,8 @@ import { Link } from 'react-router';
 
 export default function HeaderComponent(props) {
 	const headerStyle = {
-		marginTop: '1em'
+		marginTop: '1em',
+		marginBottom: '2em'
 	};
 	const linksContainerStyle = {
 		marginTop: '5px',
@@ -22,6 +23,11 @@ export default function HeaderComponent(props) {
 		display: !props.isLoggedIn ? 'inline' : 'none'
 	};
 
+	function logout() {
+		localStorage.removeItem('token');
+		props.updateCurrentUser({});
+	}
+
 	return (
 		<div className="container-fluid" style={headerStyle}>
 			<div className="col-md-1">
@@ -32,7 +38,7 @@ export default function HeaderComponent(props) {
 					<h4 style={displayAlwaysStyle}><Link to="/about">About</Link></h4>
 					<h4 style={loggedOutStyle}><Link to="/register">Register</Link></h4>
 					<h4 style={loggedInStyle}><Link to="/profile">My Profile</Link></h4>
-					<h4 style={loggedInStyle}><Link to="/logout">Logout</Link></h4>
+					<h4 style={loggedInStyle}><Link to="/" onClick={logout}>Logout</Link></h4>
 				</div>
 			</div>
 		</div>
