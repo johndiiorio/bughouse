@@ -7,7 +7,7 @@ const defaultState = {
 	modalDisplay: false
 };
 
-export default function user(state = defaultState, action) {
+export default function lobby(state = defaultState, action) {
 	switch (action.type) {
 		case lobbyActions.UPDATE_SELECTED_GAME:
 			return {

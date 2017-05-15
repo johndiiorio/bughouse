@@ -20,4 +20,24 @@ router.post('/', async (req, res) => {
 	}
 });
 
+router.post('/token', async (req, res) => {
+	const token = req.headers.token || req.body.token || req.query.token;
+	if (token) {
+		jwt.verify(token, secretToken, (err, decoded) => {
+			if (err) {
+				res.status(401).json({ success: false, error: 'Failed to authenticate token.' });
+			} else {
+				delete decoded.iat;
+				delete decoded.exp;
+				res.json(decoded);
+			}
+		});
+	} else {
+		res.status(403).send({
+			success: false,
+			message: 'No token provided.'
+		});
+	}
+});
+
 module.exports = router;

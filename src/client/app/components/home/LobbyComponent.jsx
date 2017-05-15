@@ -1,18 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import NotificationSystem from 'react-notification-system';
 
 export default class LobbyComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.addPlayer = this.addPlayer.bind(this);
-		this.notificationSystem = null;
 	}
 
 	addPlayer(game) {
 		if (_.isEmpty(this.props.currentUser)) {
-			this.notificationSystem.addNotification({
+			this.props.sendNotification({
 				message: 'Please log in to join a game',
 				level: 'error',
 				position: 'tc',
@@ -95,7 +93,6 @@ export default class LobbyComponent extends React.Component {
 		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		return (
 			<div className="col-md-9">
-				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<h3 className="brighter-color" style={underlineStyle}>Lobby:</h3>
 				<div id="lobbyTable">
 					<table className="table table-hover brighter-color table-condensed table-fixedheader">

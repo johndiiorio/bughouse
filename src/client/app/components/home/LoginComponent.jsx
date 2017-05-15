@@ -4,7 +4,7 @@ import _ from 'lodash';
 import NotificationSystem from 'react-notification-system';
 import { Button } from 'react-bootstrap';
 
-export default class LobbyComponent extends React.Component {
+export default class LoginComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -15,6 +15,21 @@ export default class LobbyComponent extends React.Component {
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.notificationSystem = null;
+	}
+
+	componentWillMount() {
+		const token = localStorage.getItem('token');
+		if (token) {
+			axios.post('/api/login/token', {
+				token: token,
+			})
+			.then(response => {
+				this.props.updateCurrentUser(response.data);
+			})
+			.catch(() => {
+				localStorage.removeItem('token');
+			});
+		}
 	}
 
 	handleUsernameChange(e) {
@@ -36,7 +51,8 @@ export default class LobbyComponent extends React.Component {
 			this.props.updateCurrentUser(response.data.user);
 		})
 		.catch(() => {
-			this.notificationSystem.addNotification({
+			this.inputUsername.focus();
+			this.props.sendNotification({
 				message: 'Invalid username/password combination',
 				level: 'error',
 				position: 'tc',
@@ -71,7 +87,7 @@ export default class LobbyComponent extends React.Component {
 								<h5 className="brighter-color">Username</h5>
 							</div>
 							<div className="col-md-12">
-								<input type="text" className="form-control input-sm" maxLength="25" value={this.state.username} onChange={this.handleUsernameChange} />
+								<input type="text" ref={c => { this.inputUsername = c; }} className="form-control input-sm" maxLength="25" value={this.state.username} onChange={this.handleUsernameChange} />
 							</div>
 						</div>
 						<div className="row" style={marginStyle}>

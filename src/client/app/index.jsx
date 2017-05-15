@@ -3,7 +3,7 @@ import thunkMiddleware from 'redux-thunk';
 import { render } from 'react-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
-import RouteComponent from './components/RouteComponent';
+import RouteContainer from './containers/RouteContainer';
 import reducers from './reducers';
 
 /* eslint-disable no-underscore-dangle */
@@ -13,7 +13,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)));
 render(
 	<Provider store={store}>
-		<RouteComponent />
+		<RouteContainer />
 	</Provider>,
 	document.getElementById('root')
 );
