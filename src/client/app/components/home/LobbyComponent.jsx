@@ -18,10 +18,10 @@ export default class LobbyComponent extends React.Component {
 			});
 		} else if (game.joinRandom) {
 			const openSlots = [];
-			if (_.has(game, 'player1')) openSlots.push(1);
-			if (_.has(game, 'player2')) openSlots.push(2);
-			if (_.has(game, 'player3')) openSlots.push(3);
-			if (_.has(game, 'player4')) openSlots.push(4);
+			if (game.player1.id === null) openSlots.push(1);
+			if (game.player2.id === null) openSlots.push(2);
+			if (game.player3.id === null) openSlots.push(3);
+			if (game.player4.id === null) openSlots.push(4);
 			const slot = openSlots[Math.floor(Math.random() * openSlots.length)];
 			const putData = {
 				id: game.id,
@@ -32,7 +32,14 @@ export default class LobbyComponent extends React.Component {
 				.then(() => {
 					this.props.updateSelectedGame(game);
 				})
-				.catch(console.error);
+				.catch(() => {
+					this.props.sendNotification({
+						message: 'You cannot join this game',
+						level: 'error',
+						position: 'tc',
+						autoDismiss: 4
+					});
+				});
 		} else {
 			this.props.updateModalDisplayedGame(game);
 			this.props.toggleModalDisplay();
