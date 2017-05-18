@@ -85,21 +85,22 @@ class Game {
 				// Check if player's rating is within game rating range and not overriding other player
 				if (userRating >= gameRatingRange[0] && userRating <= gameRatingRange[1] && game[playerPosition] === null) {
 					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player });
-					// Check if game is full, if so start game
-					game[playerPosition] = player;
-					if (game.player1 !== null && game.player2 !== null && game.player3 !== null && game.player4 !== null) {
-						await db.none(sqlFile('game/start_game.sql'), { id });
-						console.log('Started game');
-						console.log(typeof io.in);
-						io.in(id).emit('begin game');
-					}
-					return 0;
+					return true;
 				}
 			}
 		} catch (err) {
-			return 1;
+			return false;
 		}
-		return 1;
+		return false;
+	}
+
+	static async tryToStartGame(id) {
+		const game = await Game.getByID(id);
+		if (game.player1 !== null && game.player2 !== null && game.player3 !== null && game.player4 !== null) {
+			await db.none(sqlFile('game/start_game.sql'), { id });
+			return true;
+		}
+		return false;
 	}
 
 	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {

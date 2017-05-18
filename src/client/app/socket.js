@@ -11,10 +11,6 @@ socketLobby.on('update game list', () => {
 	store.dispatch(updateDisplayedGames());
 });
 
-socketLoading.on('connect', () => {
-	socketLoading.emit('room', store.getState().lobby.selectedGame.id);
-});
-
-socketLoading.on('begin game', () => {
+socketLoading.on('start game', () => {
 	browserHistory.push('/game');
 });

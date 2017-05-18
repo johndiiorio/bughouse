@@ -48,12 +48,11 @@ router.get('/:id', async (req, res) => {
 router.put('/open/:id', async (req, res) => {
 	try {
 		const result = await Game.updatePlayer(req.params.id, req.body.playerPosition, req.body.player);
-		if (result === 1) {
+		if (!result) {
 			res.status(400).send({ error: 'Failed to update player for open game' });
 		} else {
 			res.end();
 		}
-		res.end();
 	} catch (err) {
 		console.error(`Error while performing PUT update players for open game: ${err}`);
 		res.status(500).send({ error: 'Failed to update players for open game' });

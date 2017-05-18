@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
-import { socketLobby } from '../socket';
+import { socketLobby, socketLoading } from '../socket';
 
 export const UPDATE_SELECTED_GAME = 'UPDATE_SELECTED_GAME';
 export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
@@ -10,6 +10,7 @@ export const REQUEST_GAMES_INFO = 'REQUEST_GAMES_INFO';
 export const RECEIVE_GAMES_INFO = 'RECEIVE_GAMES_INFO';
 
 export function updateSelectedGame(game) {
+	socketLoading.emit('room', game.id);
 	socketLobby.emit('update game list');
 	browserHistory.push('/loading');
 	return { type: UPDATE_SELECTED_GAME, game };

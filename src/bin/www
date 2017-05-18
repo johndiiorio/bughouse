@@ -22,7 +22,7 @@ app.set('port', port);
 
 const server = http.createServer(app);
 
-global.io = require('socket.io')(server);
+const io = require('socket.io')(server);
 require('../server/services/socket')(io);
 
 function onError(error) {

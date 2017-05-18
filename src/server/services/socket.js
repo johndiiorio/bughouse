@@ -11,17 +11,12 @@ module.exports = io => {
 		});
 	});
 	loadingSocket.on('connection', socket => {
-        /* Join the user to the correct game room */
-		socket.on('room', room => {
-            // Leave room if user joins different room
-			if (socket.room) {
-				socket.leave(socket.room);
-			}
-			socket.room = room;
+		socket.on('room', async room => {
 			socket.join(room);
-		});
-		socket.on('begin game', () => {
-			socket.broadcast.emit('begin game');
+			const gameStarted = await Game.tryToStartGame(room);
+			if (gameStarted) {
+				io.of('/loading').in(room).emit('start game');
+			}
 		});
 	});
 	gameSocket.on('connection', socket => {
