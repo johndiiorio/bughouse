@@ -60,17 +60,6 @@ router.put('/open/:id', async (req, res) => {
 	}
 });
 
-/* Start a game */
-router.put('/start/:id', async (req, res) => {
-	try {
-		await Game.startGame(req.params.id);
-		res.end();
-	} catch (err) {
-		console.error(`Error while performing PUT start game: ${err}`);
-		res.status(400).send({ error: 'Failed to start game' });
-	}
-});
-
 /* Create a new game */
 router.post('/', async (req, res) => {
 	try {

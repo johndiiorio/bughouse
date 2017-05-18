@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import _ from 'lodash';
 import { Modal, Button } from 'react-bootstrap';
 
 export default class JoinGameModalComponent extends React.Component {
@@ -13,12 +14,12 @@ export default class JoinGameModalComponent extends React.Component {
 		this.props.toggleModalDisplay();
 	}
 
-	joinPlayer(e) {
+	joinPlayer(slot) {
 		this.toggleModal();
 		const putData = {
 			id: this.props.modalDisplayedGame.id,
 			player: this.props.currentUser.id,
-			playerPosition: `player${e.target.id.substring(e.target.id.length - 1)}`
+			playerPosition: `player${slot}`
 		};
 		return axios.put(`/api/games/open/${this.props.modalDisplayedGame.id}`, putData)
 			.then(() => {
@@ -33,16 +34,16 @@ export default class JoinGameModalComponent extends React.Component {
 			marginBottom: '3px'
 		};
 		const joinPlayer1Style = {
-			display: this.props.modalDisplayedGame.player1 !== undefined ? 'inline' : 'block'
+			display: _.has(this.props.modalDisplayedGame, 'player1') && this.props.modalDisplayedGame.player1.id !== null ? 'none' : 'block'
 		};
 		const joinPlayer2Style = {
-			display: this.props.modalDisplayedGame.player2 !== undefined ? 'inline' : 'block'
+			display: _.has(this.props.modalDisplayedGame, 'player2') && this.props.modalDisplayedGame.player2.id !== null ? 'none' : 'block'
 		};
 		const joinPlayer3Style = {
-			display: this.props.modalDisplayedGame.player3 !== undefined ? 'inline' : 'block'
+			display: _.has(this.props.modalDisplayedGame, 'player3') && this.props.modalDisplayedGame.player3.id !== null ? 'none' : 'block'
 		};
 		const joinPlayer4Style = {
-			display: this.props.modalDisplayedGame.player4 !== undefined ? 'inline' : 'block'
+			display: _.has(this.props.modalDisplayedGame, 'player4') && this.props.modalDisplayedGame.player4.id !== null ? 'none' : 'block'
 		};
 		return (
 			<Modal show={this.props.modalDisplay} onHide={this.toggleModal}>
@@ -52,12 +53,12 @@ export default class JoinGameModalComponent extends React.Component {
 				<Modal.Body>
 					<div className="row">
 						<div className="col-xs-6">
-							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer2Style} onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer2Style} onClick={() => this.joinPlayer(2)}>
 								Join this side
 							</Button>
 						</div>
 						<div className="col-xs-6">
-							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer3Style} onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer3Style} onClick={() => this.joinPlayer(3)}>
 								Join this side
 							</Button>
 						</div>
@@ -72,12 +73,12 @@ export default class JoinGameModalComponent extends React.Component {
 					</div>
 					<div className="row">
 						<div className="col-xs-6">
-							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer1Style} onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer1Style} onClick={() => this.joinPlayer(1)}>
 								Join this side
 							</Button>
 						</div>
 						<div className="col-xs-6">
-							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer4Style} onClick={this.joinPlayer}>
+							<Button bsClass="btn btn-secondary centerDiv" style={joinPlayer4Style} onClick={() => this.joinPlayer(4)}>
 								Join this side
 							</Button>
 						</div>

@@ -18,21 +18,21 @@ export default class LobbyComponent extends React.Component {
 			});
 		} else if (game.joinRandom) {
 			const openSlots = [];
-			if (typeof game.player1 === 'undefined') openSlots.push(1);
-			if (typeof game.player2 === 'undefined') openSlots.push(2);
-			if (typeof game.player3 === 'undefined') openSlots.push(3);
-			if (typeof game.player4 === 'undefined') openSlots.push(4);
+			if (_.has(game, 'player1')) openSlots.push(1);
+			if (_.has(game, 'player2')) openSlots.push(2);
+			if (_.has(game, 'player3')) openSlots.push(3);
+			if (_.has(game, 'player4')) openSlots.push(4);
 			const slot = openSlots[Math.floor(Math.random() * openSlots.length)];
 			const putData = {
 				id: game.id,
 				player: this.props.currentUser.id,
 				playerPosition: `player${slot}`
 			};
-			axios.put(`/api/games/open/${this.props.modalDisplayedGame.id}`, putData)
-					.then(() => {
-						this.props.updateSelectedGame(this.props.modalDisplayedGame);
-					})
-					.catch(console.error);
+			axios.put(`/api/games/open/${game.id}`, putData)
+				.then(() => {
+					this.props.updateSelectedGame(game);
+				})
+				.catch(console.error);
 		} else {
 			this.props.updateModalDisplayedGame(game);
 			this.props.toggleModalDisplay();

@@ -25,7 +25,7 @@ SELECT
 	player3.rating_bullet AS "player3ratingBullet",
 	player3.rating_blitz AS "player3ratingBlitz",
 	player3.rating_classical AS "player3ratingClassical",
-	player3.id AS player4id,
+	player4.id AS player4id,
 	player4.username AS player4username,
 	player4.title AS player4title,
 	player4.rating_bullet AS "player4ratingBullet",

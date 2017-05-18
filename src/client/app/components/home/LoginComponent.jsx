@@ -32,6 +32,10 @@ export default class LoginComponent extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		this.inputUsername.focus();
+	}
+
 	handleUsernameChange(e) {
 		this.setState({ username: e.target.value });
 	}

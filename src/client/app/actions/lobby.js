@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { browserHistory } from 'react-router';
-import io from 'socket.io-client';
-
-const socketLobby = io('/lobby');
+import { socketLobby } from '../socket';
 
 export const UPDATE_SELECTED_GAME = 'UPDATE_SELECTED_GAME';
 export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
