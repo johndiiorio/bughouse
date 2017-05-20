@@ -108,7 +108,7 @@ export default class CreateGameComponent extends React.Component {
 				<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />
 				<br />
 				<p className="brighter-color" type="text" id="incrementDisplay">Increment (seconds): {this.state.increment}</p>
-				<Slider min={1} max={30} tooltip={false} value={this.state.increment} onChange={this.handleIncrementChange} />
+				<Slider min={0} max={30} tooltip={false} value={this.state.increment} onChange={this.handleIncrementChange} />
 				<br />
 				<p className="brighter-color" type="text" id="ratingDisplay">{this.formatRatingRange()}</p>
 				<Slider min={0} max={500} step={10} tooltip={false} value={this.state.ratingRange} onChange={this.handleRatingRangeChange} />

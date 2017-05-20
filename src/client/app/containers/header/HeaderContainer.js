@@ -5,7 +5,8 @@ import HeaderComponent from '../../components/header/HeaderComponent';
 
 function mapStateToProps(state) {
 	return {
-		isLoggedIn: !_.isEmpty(state.user.currentUser)
+		isLoggedIn: !_.isEmpty(state.user.currentUser),
+		username: !_.isEmpty(state.user.currentUser) ? state.user.currentUser.username : ''
 	};
 }
 

@@ -4,13 +4,13 @@ const database = require('../models/database');
 
 const db = database.db;
 
-function newMoveString(moves, fkNum, game) {
+function newMoveString(moves, userPosition, game) {
 	if (!moves) moves = '';
 	let moveCount;
 	let lastPlayerLetter;
-	if (fkNum === 1) lastPlayerLetter = moves.lastIndexOf('A.');
-	else if (fkNum === 2) lastPlayerLetter = moves.lastIndexOf('a.');
-	else if (fkNum === 3) lastPlayerLetter = moves.lastIndexOf('B.');
+	if (userPosition === 1) lastPlayerLetter = moves.lastIndexOf('A.');
+	else if (userPosition === 2) lastPlayerLetter = moves.lastIndexOf('a.');
+	else if (userPosition === 3) lastPlayerLetter = moves.lastIndexOf('B.');
 	else lastPlayerLetter = moves.lastIndexOf('b.');
 	if (lastPlayerLetter === -1) moveCount = 1;
 	else {
@@ -22,11 +22,11 @@ function newMoveString(moves, fkNum, game) {
 		}
 		moveCount = parseInt(moves.substring(lastSpace + beginNum + 1, lastPlayerLetter)) + 1;
 	}
-	if (fkNum === 1) {
+	if (userPosition === 1) {
 		moves += `${moveCount}A. ${game.history()} `;
-	} else if (fkNum === 2) {
+	} else if (userPosition === 2) {
 		moves += `${moveCount}a. ${game.history()} `;
-	} else if (fkNum === 3) {
+	} else if (userPosition === 3) {
 		moves += `${moveCount}B. ${game.history()} `;
 	} else {
 		moves += `${moveCount}b. ${game.history()} `;
@@ -53,7 +53,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 		row.right_reserve_black = row.right_reserve_black ? JSON.parse(row.right_reserve_black) : [];
 		let game;
 		let move;
-		if (data.fkNum === 1 || data.fkNum === 2) { // Create game for left board
+		if (data.userPosition === 1 || data.userPosition === 2) { // Create game for left board
 			game = new Bug(row.left_fen);
 			game.setReserves(row.left_reserve_white, row.left_reserve_black);
 		} else { // Create game for right board
@@ -83,19 +83,19 @@ module.exports = async (data, socket, gameSocket, io) => {
 				capture = true;
 			}
 			const newReserves = game.getReserves();
-			const moveInfo = newMoveString(row.moves, data.fkNum, game);
+			const moveInfo = newMoveString(row.moves, data.userPosition, game);
 			const argMoves = moveInfo.moves;
 			const moveNum = moveInfo.moveNum;
 			const argReserveWhite = JSON.stringify(newReserves.reserve_white);
 			const argReserveBlack = JSON.stringify(newReserves.reserve_black);
 			const arrClocks = row.clocks.split(',').map(Number);
 			row.increment *= 1000; // convert seconds to milliseconds
-			if (data.fkNum === 1 || data.fkNum === 2) {
+			if (data.userPosition === 1 || data.userPosition === 2) {
 				boardNum = 1;
 				argOtherReserveWhite = JSON.stringify(row.right_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.right_reserve_black.concat(newReserves.other_reserve_black));
 				diffTime = moveNum !== 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
-				if (data.fkNum === 1) {
+				if (data.userPosition === 1) {
 					arrClocks[0] += diffTime - row.increment;
 				} else {
 					arrClocks[1] += diffTime - row.increment;
@@ -128,7 +128,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 				argOtherReserveWhite = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
 				diffTime = moveNum !== 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
-				if (data.fkNum === 3) {
+				if (data.userPosition === 3) {
 					arrClocks[2] += diffTime - row.increment;
 				} else {
 					arrClocks[3] += diffTime - row.increment;

@@ -16,6 +16,7 @@ import ProfileComponent from './header/ProfileComponent';
 export default class RouteComponent extends React.Component {
 	constructor(props) {
 		super(props);
+		this.requireGame = this.requireGame.bind(this);
 		this.requireAuth = this.requireAuth.bind(this);
 	}
 
@@ -28,6 +29,15 @@ export default class RouteComponent extends React.Component {
 		if (!_.isEmpty(nextProps.notification)) {
 			this.notificationSystem.addNotification(nextProps.notification);
 			this.props.clearNotifications();
+		}
+	}
+
+	requireGame(nextState, replace) {
+		if (!this.props.gameExists) {
+			replace({
+				pathname: '/',
+				state: { nextPathname: nextState.location.pathname }
+			});
 		}
 	}
 
@@ -62,7 +72,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/loading" component={LoadingComponent} />
-					<Route path="/game" component={GameComponent} />
+					<Route path="/game" component={GameComponent} onEnter={this.requireGame} />
 					<Route path="/review" component={GameReviewComponent} />
 					<Route path="*" component={NotFoundComponent} />
 				</Router>
