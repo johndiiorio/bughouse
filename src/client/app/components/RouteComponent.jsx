@@ -8,7 +8,7 @@ import AboutComponent from './header/AboutComponent';
 import NotFoundComponent from './NotFoundComponent';
 import RegisterContainer from '../containers/header/RegisterContainer';
 import LoadingComponent from './game/LoadingComponent';
-import GameComponent from './game/GameComponent';
+import GameContainer from '../containers/game/GameContainer';
 import GameReviewComponent from './game/GameReviewComponent';
 import ProfileComponent from './header/ProfileComponent';
 
@@ -72,7 +72,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/loading" component={LoadingComponent} />
-					<Route path="/game" component={GameComponent} onEnter={this.requireGame} />
+					<Route path="/game" component={GameContainer} onEnter={this.requireGame} />
 					<Route path="/review" component={GameReviewComponent} />
 					<Route path="*" component={NotFoundComponent} />
 				</Router>

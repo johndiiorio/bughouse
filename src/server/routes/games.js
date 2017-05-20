@@ -38,6 +38,17 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
+/* Get a single game */
+router.get('/withUsers/:id', async (req, res) => {
+	try {
+		const row = await Game.getGameWithUsersByID(req.params.id);
+		res.json(row);
+	} catch (err) {
+		console.error(`Error while performing GET game by id: ${err}`);
+		res.status(500).send({ error: 'Failed to get game by id' });
+	}
+});
+
 /**
  * Update player for an open game
  *

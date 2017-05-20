@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import JoinGameModalComponent from '../../components/home/JoinGameModalComponent';
 import { updateSelectedGame, toggleModalDisplay } from '../../actions/lobby';
+import { sendNotification } from '../../actions/topLevel';
 
 function mapStateToProps(state) {
 	return {
@@ -15,7 +16,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		updateSelectedGame: game => dispatch(updateSelectedGame(game)),
-		toggleModalDisplay: () => dispatch(toggleModalDisplay())
+		toggleModalDisplay: () => dispatch(toggleModalDisplay()),
+		sendNotification: notification => dispatch(sendNotification(notification))
 	};
 }
 

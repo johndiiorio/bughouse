@@ -28,6 +28,31 @@ class Game {
 		return new Game(row.id, row.player1, row.player2, row.player3, row.player4, row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random);
 	}
 
+	static mapRowGameWithUsers(row) {
+		const mappedObj = {
+			player1: {},
+			player2: {},
+			player3: {},
+			player4: {},
+		};
+		_.forOwn(row, (value, key) => {
+			if (key.substring(0, 6) === 'player') {
+				if (key[6] === '1') {
+					mappedObj.player1[key.substring(7)] = value;
+				} else if (key[6] === '2') {
+					mappedObj.player2[key.substring(7)] = value;
+				} else if (key[6] === '3') {
+					mappedObj.player3[key.substring(7)] = value;
+				} else {
+					mappedObj.player4[key.substring(7)] = value;
+				}
+			} else {
+				mappedObj[key] = value;
+			}
+		});
+		return mappedObj;
+	}
+
 	static async getAll() {
 		const rows = await db.any(sqlFile('game/get_all_games.sql'));
 		return rows.map(Game.mapRow);
@@ -35,35 +60,17 @@ class Game {
 
 	static async getAllOpen() {
 		const rows = await db.any(sqlFile('game/get_all_open_games.sql'));
-		return rows.map(row => {
-			const mappedObj = {
-				player1: {},
-				player2: {},
-				player3: {},
-				player4: {},
-			};
-			_.forOwn(row, (value, key) => {
-				if (key.substring(0, 6) === 'player') {
-					if (key[6] === '1') {
-						mappedObj.player1[key.substring(7)] = value;
-					} else if (key[6] === '2') {
-						mappedObj.player2[key.substring(7)] = value;
-					} else if (key[6] === '3') {
-						mappedObj.player3[key.substring(7)] = value;
-					} else {
-						mappedObj.player4[key.substring(7)] = value;
-					}
-				} else {
-					mappedObj[key] = value;
-				}
-			});
-			return mappedObj;
-		});
+		return rows.map(Game.mapRowGameWithUsers);
 	}
 
 	static async getByID(id) {
 		const row = await db.one(sqlFile('game/get_game_by_id.sql'), { id: id });
 		return Game.mapRow(row);
+	}
+
+	static async getGameWithUsersByID(id) {
+		const row = await db.one(sqlFile('game/get_game_with_users_by_id.sql'), { id: id });
+		return Game.mapRowGameWithUsers(row);
 	}
 
 	static async updatePlayer(id, playerPosition, player) {

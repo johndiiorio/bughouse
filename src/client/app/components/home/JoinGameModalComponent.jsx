@@ -25,7 +25,14 @@ export default class JoinGameModalComponent extends React.Component {
 			.then(() => {
 				this.props.updateSelectedGame(this.props.modalDisplayedGame);
 			})
-			.catch(console.error);
+			.catch(() => {
+				this.props.sendNotification({
+					message: 'You cannot join this game',
+					level: 'error',
+					position: 'tc',
+					autoDismiss: 4
+				});
+			});
 	}
 
 	render() {
