@@ -20,13 +20,7 @@ module.exports = io => {
 		});
 	});
 	gameSocket.on('connection', socket => {
-        /* Join the user to the correct game room */
 		socket.on('room', room => {
-            // Leave room if user joins different room
-			if (socket.room) {
-				socket.leave(socket.room);
-			}
-			socket.room = room;
 			socket.join(room);
 		});
 		/* Update a game's moves */

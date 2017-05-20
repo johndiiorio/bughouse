@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { socketGame } from '../../socket';
+import playSound from '../../util/sound';
 
 export default class GameBoardsComponent extends React.Component {
 	constructor(props) {
@@ -11,9 +12,12 @@ export default class GameBoardsComponent extends React.Component {
 		this.addPieceToSquare = this.addPieceToSquare.bind(this);
 		this.deletePieceFromSquare = this.deletePieceFromSquare.bind(this);
 		this.handleMove = this.handleMove.bind(this);
-		this.onDragStart = this.handleMove.bind(this);
-		this.onDrop = this.handleMove.bind(this);
+		this.onDragStart = this.onDragStart.bind(this);
+		this.onDrop = this.onDrop.bind(this);
 		this.updateMoves = this.updateMoves.bind(this);
+		this.updateHighlights = this.updateHighlights.bind(this);
+		this.updateGame = this.updateGame.bind(this);
+		this.handleGameOver = this.handleGameOver.bind(this);
 		this.board1 = null;
 		this.board2 = null;
 		this.board1Flip = false;
@@ -23,9 +27,13 @@ export default class GameBoardsComponent extends React.Component {
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
 		this.gameOver = false;
+		socketGame.on('update game', this.updateGame);
+		socketGame.on('snapback move', data => this.board1.position(data.fen));
+		socketGame.on('game over', this.handleGameOver);
 	}
 
 	componentDidMount() {
+		socketGame.emit('room', this.props.game.id);
 		const cfg1 = {
 			draggable: true,
 			position: 'start',
@@ -156,26 +164,102 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateMoves(moves) {
+		const newMoves = [];
 		const arrMoves = moves.trim().split(' ');
 		for (let i = 0; i < arrMoves.length; i += 2) {
 			const playerLetter = arrMoves[i].charAt(arrMoves[i].length - 2);
 			const moveNumber = arrMoves[i].substring(0, arrMoves[i].length - 2);
 			const moveStr = arrMoves[i + 1];
 			if (!this.props.moves[parseInt(moveNumber) - 1]) {
-				this.props.moves[parseInt(moveNumber) - 1] = {};
+				newMoves[parseInt(moveNumber) - 1] = {};
 			}
 			this.props.moves[parseInt(moveNumber) - 1].number = moveNumber;
 			if (playerLetter === 'A') {
-				this.props.moves[moveNumber - 1].player1 = moveStr;
+				newMoves[moveNumber - 1].player1 = moveStr;
 			} else if (playerLetter === 'a') {
-				this.props.moves[moveNumber - 1].player2 = moveStr;
+				newMoves[moveNumber - 1].player2 = moveStr;
 			} else if (playerLetter === 'B') {
-				this.props.moves[moveNumber - 1].player3 = moveStr;
+				newMoves[moveNumber - 1].player3 = moveStr;
 			} else {
-				this.props.moves[moveNumber - 1].player4 = moveStr;
+				newMoves[moveNumber - 1].player4 = moveStr;
 			}
 		}
+		this.props.updateMoves(newMoves);
 		document.getElementById('movesTableTBody').scrollTop = document.getElementById('movesTableTBody').style.height;
+	}
+
+	updateHighlights(boardEl, color, source, target) {
+		boardEl.querySelector('.square-55d63').classList.remove(`highlight-${color}`);
+		if (color === 'white') {
+			boardEl.querySelector(`.square-${source}`).className += 'highlight-black';
+			boardEl.querySelector(`.square-${target}`).className += 'highlight-black';
+		} else {
+			boardEl.querySelector(`.square-${source}`).className += 'highlight-white';
+			boardEl.querySelector(`.square-${target}`).className += 'highlight-white';
+		}
+	}
+
+	updateGame(data) {
+		const boardEl1 = document.getElementById('board1');
+		const boardEl2 = document.getElementById('board2');
+		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
+			if (data.boardNum === 1) {
+				this.board1.position(data.fen);
+				this.board1Turn = data.turn;
+				if (data.turn === 'w') {
+					this.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
+				} else {
+					this.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
+				}
+				if (data.capture) {
+					playSound('capture');
+				} else {
+					playSound('move');
+				}
+			} else {
+				this.board2.position(data.fen);
+				if (data.turn === 'w') {
+					this.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
+				} else {
+					this.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
+				}
+			}
+			this.board1.updateSparePieces('white', data.left_reserve_white);
+			this.board1.updateSparePieces('black', data.left_reserve_black);
+			this.board2.updateSparePieces('white', data.right_reserve_white);
+			this.board2.updateSparePieces('black', data.right_reserve_black);
+		} else {
+			if (data.boardNum === 1) {
+				this.board2.position(data.fen);
+				if (data.turn === 'w') {
+					this.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
+				} else {
+					this.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
+				}
+			} else {
+				this.board1.position(data.fen);
+				this.board1Turn = data.turn;
+				if (data.turn === 'w') {
+					this.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
+				} else {
+					this.updateHighlights(boardEl1, 'black', data.move.source, data.move.target);
+				}
+				if (data.capture) {
+					playSound('capture');
+				} else {
+					playSound('move');
+				}
+			}
+			this.board1.updateSparePieces('white', data.right_reserve_white);
+			this.board1.updateSparePieces('black', data.right_reserve_black);
+			this.board2.updateSparePieces('white', data.left_reserve_white);
+			this.board2.updateSparePieces('black', data.left_reserve_black);
+		}
+		this.updateMoves(data.moves);
+	}
+
+	handleGameOver() {
+		this.gameOver = true;
 	}
 
 	render() {
