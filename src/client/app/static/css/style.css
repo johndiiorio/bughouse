@@ -181,22 +181,22 @@ p, h1, h2, h3, h4, h5, h6 {
     padding-right: 0;
 }
 
-.left-game-top-username {
+#left-game-top-username {
     float: left;
     color: #FB667A;
 }
 
-.left-game-bottom-username {
+#left-game-bottom-username {
     float: left;
     color: #46BCDE;
 }
 
-.right-game-top-username {
+#right-game-top-username {
     float: right;
     color: #FB667A;
 }
 
-.right-game-bottom-username {
+#right-game-bottom-username {
     float: right;
     color: #46BCDE;
 }

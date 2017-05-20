@@ -16,8 +16,9 @@ export default class GameBoardsComponent extends React.Component {
 		this.updateMoves = this.updateMoves.bind(this);
 		this.board1 = null;
 		this.board2 = null;
+		this.board1Flip = false;
+		this.board2Flip = false;
 		this.board1Turn = 'w';
-		this.userPosition = null;
 		this.tmpPromotionPiece = null;
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
@@ -46,12 +47,27 @@ export default class GameBoardsComponent extends React.Component {
 		this.board1 = ChessBoard('board1', cfg1);
 		this.board2 = ChessBoard('board2', cfg2);
 		/*eslint-enable */
+		if (this.props.userPosition === 1) {
+			this.board2.flip();
+		} else if (this.props.userPosition === 2) {
+			this.board1.flip();
+		} else if (this.props.userPosition === 3) {
+			this.board2.flip();
+		} else {
+			this.board1.flip();
+		}
+		if (this.props.userPosition === 2 || this.props.userPosition === 3) {
+			document.getElementById('left-game-top-username').style.color = '#46BCDE';
+			document.getElementById('left-game-bottom-username').style.color = '#FB667A';
+			document.getElementById('right-game-top-username').style.color = '#46BCDE';
+			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
+		}
 	}
 
 	getRating(player) {
-		if (this.props.game.minutes < 3) return this.props.game[player].ratingBullet;
-		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return this.props.game[player].ratingBlitz;
-		return this.props.game[player].ratingClassical;
+		if (this.props.game.minutes < 3) return player.ratingBullet;
+		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return player.ratingBlitz;
+		return player.ratingClassical;
 	}
 
 	getDurationFormat(duration) {
@@ -89,7 +105,7 @@ export default class GameBoardsComponent extends React.Component {
 			this.deletePieceFromSquare(source);
 			this.addPieceToSquare(target, piece);
 		}
-		const data = { id: this.props.game.id, userPosition: this.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
+		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
 		socketGame.emit('update game', data);
 		// yourOpponentTimer.toggle();
 		// yourTimer.toggle();
@@ -97,13 +113,13 @@ export default class GameBoardsComponent extends React.Component {
 
 	// check if moving piece is allowed
 	onDragStart(source, piece) {
-		return !(((this.userPosition === 1 || this.userPosition === 3) && piece.charAt(0) !== 'w') || ((this.userPosition === 2 || this.userPosition === 4) && piece.charAt(0) !== 'b') || (this.board1Turn !== piece.charAt(0)) || this.gameOver);
+		return !(((this.props.userPosition === 1 || this.props.userPosition === 3) && piece.charAt(0) !== 'w') || ((this.props.userPosition === 2 || this.props.userPosition === 4) && piece.charAt(0) !== 'b') || (this.board1Turn !== piece.charAt(0)) || this.gameOver);
 	}
 
 	onDrop(source, target, piece) {
 		// check if move is a pawn promotion, validate on server
 		if (source !== 'spare' && piece.charAt(1).toLowerCase() === 'p' && (target.charAt(1) === '1' || target.charAt(1) === '8')) {
-			const putData = { source: source, target: target, piece: piece, userPosition: this.userPosition };
+			const putData = { source: source, target: target, piece: piece, userPosition: this.props.userPosition };
 			axios.put(`/api/games/validate/pawnpromotion/${this.props.game.id}`, putData)
 				.then(response => () => {
 					const data = response.data;
@@ -170,8 +186,8 @@ export default class GameBoardsComponent extends React.Component {
 			<div>
 				<div id="game-left" className="col-md-4">
 					<div className="container-fluid align-name-clock-top">
-						<h3 className="left-game-top-username">
-							{`${this.props.game.player2.username} (${this.getRating('player2')})`}
+						<h3 id="left-game-top-username">
+							{`${this.props.display.player2.username} (${this.getRating(this.props.display.player2)})`}
 						</h3>
 						<h3 id="yourOpponentTime" className="left-game-clock">
 							{this.getDurationFormat(this.props.game.minutes * 60)}
@@ -193,15 +209,15 @@ export default class GameBoardsComponent extends React.Component {
 					<div id="board1" style={boardWidthStyle} />
 					<div id="yourReserve" />
 					<div className="align-name-clock-bottom">
-						<h3 className="left-game-bottom-username">
-							{`${this.props.game.player1.username} (${this.getRating('player1')})`}</h3>
+						<h3 id="left-game-bottom-username">
+							{`${this.props.display.player1.username} (${this.getRating(this.props.display.player1)})`}</h3>
 						<h3 id="yourTime" className="left-game-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 				</div>
 				<div id="game-right" className="col-md-4">
 					<div className="container-fluid align-name-clock-top">
-						<h3 className="right-game-top-username">
-							{`${this.props.game.player3.username} (${this.getRating('player3')})`}
+						<h3 id="right-game-top-username">
+							{`${this.props.display.player3.username} (${this.getRating(this.props.display.player3)})`}
 						</h3>
 						<h3 id="opponentAcrossTime" className="right-game-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
@@ -209,8 +225,8 @@ export default class GameBoardsComponent extends React.Component {
 					<div id="board2" style={boardWidthStyle} />
 					<div id="teammateReserve" />
 					<div className="align-name-clock-bottom">
-						<h3 className="right-game-bottom-username">
-							{`${this.props.game.player4.username} (${this.getRating('player4')})`}</h3>
+						<h3 id="right-game-bottom-username">
+							{`${this.props.display.player4.username} (${this.getRating(this.props.display.player4)})`}</h3>
 						<h3 id="teammateTime" className="right-game-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 				</div>
