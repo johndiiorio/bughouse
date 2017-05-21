@@ -4,6 +4,7 @@
   "private": false,
   "scripts": {
     "start": "node ./src/bin/www",
+	"startDebug": "node $NODE_DEBUG_OPTION ./src/bin/www",
     "dev": "webpack -d --watch",
     "build": "webpack -p",
     "lint": "./node_modules/.bin/eslint src/client/app/**/*.js src/client/app/**/*.jsx src/server/**/*.js src/server/**/*.jsx src/scripts/**/*.js",
@@ -21,6 +22,7 @@
     "babel-preset-react": "^6.16.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "~1.15.1",
+    "chessground": "^6.4.23",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
     "dotenv": "^2.0.0",

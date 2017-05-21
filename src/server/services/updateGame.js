@@ -61,7 +61,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
 		}
 		if (data.move.source === 'spare') {
-			move = game.move(`${data.move.piece.charAt(1)}@${data.move.target}`);
+			move = game.move(`${data.move.piece.role.charAt(1).toUpperCase()}@${data.move.target}`);
 		} else {
 			move = game.move({
 				from: data.move.source,
@@ -112,10 +112,10 @@ module.exports = async (data, socket, gameSocket, io) => {
 					data.id];
 				emitData = {
 					fen: argFen,
-					left_reserve_white: convertReserveToSparePieces(argReserveWhite),
-					left_reserve_black: convertReserveToSparePieces(argReserveBlack),
-					right_reserve_white: convertReserveToSparePieces(argOtherReserveWhite),
-					right_reserve_black: convertReserveToSparePieces(argOtherReserveBlack),
+					leftReserveWhite: convertReserveToSparePieces(argReserveWhite),
+					leftReserveBlack: convertReserveToSparePieces(argReserveBlack),
+					rightReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
+					rightReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
 					turn: game.turn(),
 					boardNum: boardNum,
 					move: data.move,
@@ -145,10 +145,10 @@ module.exports = async (data, socket, gameSocket, io) => {
 					data.id];
 				emitData = {
 					fen: argFen,
-					left_reserve_white: convertReserveToSparePieces(argOtherReserveWhite),
-					left_reserve_black: convertReserveToSparePieces(argOtherReserveBlack),
-					right_reserve_white: convertReserveToSparePieces(argReserveWhite),
-					right_reserve_black: convertReserveToSparePieces(argReserveBlack),
+					leftReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
+					leftReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
+					rightReserveWhite: convertReserveToSparePieces(argReserveWhite),
+					rightReserveBlack: convertReserveToSparePieces(argReserveBlack),
 					turn: game.turn(),
 					boardNum: boardNum,
 					move: data.move,

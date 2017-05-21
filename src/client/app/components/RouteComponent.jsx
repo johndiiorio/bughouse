@@ -12,7 +12,6 @@ import GameContainer from '../containers/game/GameContainer';
 import GameReviewComponent from './game/GameReviewComponent';
 import ProfileComponent from './header/ProfileComponent';
 
-
 export default class RouteComponent extends React.Component {
 	constructor(props) {
 		super(props);

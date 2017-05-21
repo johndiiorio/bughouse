@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { Chessground } from 'chessground';
 import { socketGame } from '../../socket';
 import playSound from '../../util/sound';
 
@@ -9,10 +10,8 @@ export default class GameBoardsComponent extends React.Component {
 		this.getRating = this.getRating.bind(this);
 		this.getDurationFormat = this.getDurationFormat.bind(this);
 		this.selectPromotionPiece = this.selectPromotionPiece.bind(this);
-		this.addPieceToSquare = this.addPieceToSquare.bind(this);
-		this.deletePieceFromSquare = this.deletePieceFromSquare.bind(this);
 		this.handleMove = this.handleMove.bind(this);
-		this.onDragStart = this.onDragStart.bind(this);
+		this.select = this.select.bind(this);
 		this.onDrop = this.onDrop.bind(this);
 		this.updateMoves = this.updateMoves.bind(this);
 		this.updateHighlights = this.updateHighlights.bind(this);
@@ -22,7 +21,6 @@ export default class GameBoardsComponent extends React.Component {
 		this.board2 = null;
 		this.board1Flip = false;
 		this.board2Flip = false;
-		this.board1Turn = 'w';
 		this.tmpPromotionPiece = null;
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
@@ -30,39 +28,37 @@ export default class GameBoardsComponent extends React.Component {
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', data => this.board1.position(data.fen));
 		socketGame.on('game over', this.handleGameOver);
+
+		this.change = this.change.bind(this);
 	}
 
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
-		const cfg1 = {
-			draggable: true,
-			position: 'start',
-			sparePieces: true,
-			showNotation: false,
-			snapbackSpeed: 0,
-			snapSpeed: 0,
-			appearSpeed: 0,
-			onDragStart: this.onDragStart,
-			onDrop: this.onDrop
+
+		const board1Config = {
+			events: {
+				change: this.change,
+				move: this.onDrop,
+				dropNewPiece: this.testDropNewPiece,
+				select: this.select
+			}
 		};
-		const cfg2 = {
-			draggable: false,
-			position: 'start',
-			sparePieces: true,
-			showNotation: false
+		const board2Config = {
+			viewOnly: true,
+			disableContextMenu: true,
 		};
-		/*eslint-disable */ // Needed for global ChessBoard object from the chessboardjs library
-		this.board1 = ChessBoard('board1', cfg1);
-		this.board2 = ChessBoard('board2', cfg2);
-		/*eslint-enable */
+
+		this.board1 = Chessground(document.getElementById('board1'), board1Config);
+		this.board2 = Chessground(document.getElementById('board2'), board2Config);
+
 		if (this.props.userPosition === 1) {
-			this.board2.flip();
+			this.board2.toggleOrientation();
 		} else if (this.props.userPosition === 2) {
-			this.board1.flip();
+			this.board1.toggleOrientation();
 		} else if (this.props.userPosition === 3) {
-			this.board2.flip();
+			this.board2.toggleOrientation();
 		} else {
-			this.board1.flip();
+			this.board1.toggleOrientation();
 		}
 		if (this.props.userPosition === 2 || this.props.userPosition === 3) {
 			document.getElementById('left-game-top-username').style.color = '#46BCDE';
@@ -70,6 +66,10 @@ export default class GameBoardsComponent extends React.Component {
 			document.getElementById('right-game-top-username').style.color = '#46BCDE';
 			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
 		}
+	}
+
+	change() {
+
 	}
 
 	getRating(player) {
@@ -93,25 +93,13 @@ export default class GameBoardsComponent extends React.Component {
 		this.handleMove(this.tmpSourceSquare, this.tmpTargetSquare, piece);
 	}
 
-	addPieceToSquare(square, piece) {
-		const newPosition = this.board1.position();
-		newPosition[square] = piece;
-		this.board1.position(newPosition);
-	}
-
-	deletePieceFromSquare(square) {
-		const newPosition = this.board1.position();
-		delete newPosition[square];
-		this.board1.position(newPosition);
-	}
-
 	handleMove(source, target, piece) {
 		// Update UI without validating
 		if (source === 'spare') {
-			this.addPieceToSquare(target, piece);
+			// TODO is this necessary?
+			this.board1.newPiece(piece, target);
 		} else {
-			this.deletePieceFromSquare(source);
-			this.addPieceToSquare(target, piece);
+			this.board1.move(source, target);
 		}
 		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
 		socketGame.emit('update game', data);
@@ -120,13 +108,19 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	// check if moving piece is allowed
-	onDragStart(source, piece) {
-		return !(((this.props.userPosition === 1 || this.props.userPosition === 3) && piece.charAt(0) !== 'w') || ((this.props.userPosition === 2 || this.props.userPosition === 4) && piece.charAt(0) !== 'b') || (this.board1Turn !== piece.charAt(0)) || this.gameOver);
+	select() {
+		const turnColor = this.board1.state.turnColor;
+		if (((this.props.userPosition === 1 || this.props.userPosition === 3) && turnColor !== 'white')
+			|| ((this.props.userPosition === 2 || this.props.userPosition === 4) && turnColor !== 'black')
+			|| this.gameOver) {
+			this.board1.cancelMove();
+		}
 	}
 
-	onDrop(source, target, piece) {
+	onDrop(source, target) {
+		const piece = this.board1.state.pieces[target];
 		// check if move is a pawn promotion, validate on server
-		if (source !== 'spare' && piece.charAt(1).toLowerCase() === 'p' && (target.charAt(1) === '1' || target.charAt(1) === '8')) {
+		if (source !== 'spare' && piece.role === 'pawn' && (target.charAt(1) === '1' || target.charAt(1) === '8')) {
 			const putData = { source: source, target: target, piece: piece, userPosition: this.props.userPosition };
 			axios.put(`/api/games/validate/pawnpromotion/${this.props.game.id}`, putData)
 				.then(response => () => {
@@ -204,8 +198,8 @@ export default class GameBoardsComponent extends React.Component {
 		const boardEl2 = document.getElementById('board2');
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
-				this.board1.position(data.fen);
-				this.board1Turn = data.turn;
+				this.board1.set({ fen: data.fen });
+				// TODO here set board1Turn to data.turn
 				if (data.turn === 'w') {
 					this.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
 				} else {
@@ -217,28 +211,28 @@ export default class GameBoardsComponent extends React.Component {
 					playSound('move');
 				}
 			} else {
-				this.board2.position(data.fen);
+				this.board2.set({ fen: data.fen });
 				if (data.turn === 'w') {
 					this.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
 				} else {
 					this.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
 				}
 			}
-			this.board1.updateSparePieces('white', data.left_reserve_white);
-			this.board1.updateSparePieces('black', data.left_reserve_black);
-			this.board2.updateSparePieces('white', data.right_reserve_white);
-			this.board2.updateSparePieces('black', data.right_reserve_black);
+			this.board1.updateSparePieces('white', data.leftReserveWhite);
+			this.board1.updateSparePieces('black', data.leftReserveBlack);
+			this.board2.updateSparePieces('white', data.rightReserveWhite);
+			this.board2.updateSparePieces('black', data.rightReserveBlack);
 		} else {
 			if (data.boardNum === 1) {
-				this.board2.position(data.fen);
+				this.board2.set({ fen: data.fen });
 				if (data.turn === 'w') {
 					this.updateHighlights(boardEl2, 'white', data.move.source, data.move.target);
 				} else {
 					this.updateHighlights(boardEl2, 'black', data.move.source, data.move.target);
 				}
 			} else {
-				this.board1.position(data.fen);
-				this.board1Turn = data.turn;
+				this.board1.set({ fen: data.fen });
+				// TODO here set board1Turn to data.turn
 				if (data.turn === 'w') {
 					this.updateHighlights(boardEl1, 'white', data.move.source, data.move.target);
 				} else {
@@ -250,21 +244,24 @@ export default class GameBoardsComponent extends React.Component {
 					playSound('move');
 				}
 			}
-			this.board1.updateSparePieces('white', data.right_reserve_white);
-			this.board1.updateSparePieces('black', data.right_reserve_black);
-			this.board2.updateSparePieces('white', data.left_reserve_white);
-			this.board2.updateSparePieces('black', data.left_reserve_black);
+			this.board1.updateSparePieces('white', data.rightReserveWhite);
+			this.board1.updateSparePieces('black', data.rightReserveBlack);
+			this.board2.updateSparePieces('white', data.leftReserveWhite);
+			this.board2.updateSparePieces('black', data.leftReserveBlack);
 		}
 		this.updateMoves(data.moves);
 	}
 
 	handleGameOver() {
 		this.gameOver = true;
+		this.board1.stop();
+		this.board2.stop();
 	}
 
 	render() {
-		const boardWidthStyle = {
-			width: '500px'
+		const boardStyle = {
+			width: 500,
+			height: 500
 		};
 		return (
 			<div>
@@ -290,7 +287,7 @@ export default class GameBoardsComponent extends React.Component {
 						<img src="../../app/static/img/chesspieces/wikipedia/bR.png" className="promotion_piece" onClick={() => this.selectPromotionPiece('bR')} />
 						<img src="../../app/static/img/chesspieces/wikipedia/bB.png" className="promotion_piece" onClick={() => this.selectPromotionPiece('bB')} />
 					</div>
-					<div id="board1" style={boardWidthStyle} />
+					<div id="board1" style={boardStyle} />
 					<div id="yourReserve" />
 					<div className="align-name-clock-bottom">
 						<h3 id="left-game-bottom-username">
@@ -306,7 +303,7 @@ export default class GameBoardsComponent extends React.Component {
 						<h3 id="opponentAcrossTime" className="right-game-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 					<div id="opponentAcrossReserve" />
-					<div id="board2" style={boardWidthStyle} />
+					<div id="board2" style={boardStyle} />
 					<div id="teammateReserve" />
 					<div className="align-name-clock-bottom">
 						<h3 id="right-game-bottom-username">
