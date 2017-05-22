@@ -21,6 +21,7 @@ module.exports = io => {
 	});
 	gameSocket.on('connection', socket => {
 		socket.on('room', room => {
+			socket.room = room;
 			socket.join(room);
 		});
 		/* Update a game's moves */

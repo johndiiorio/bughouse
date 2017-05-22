@@ -52,20 +52,20 @@ export default class GameInfoPanelComponent extends React.Component {
 				<div style={infoPlayersStyle}>
 					<h4 className="brighter-color" style={underlineStyle}>{this.getInfoFormat()}</h4>
 					<div>
-						<img src="../../app/static/img/pieces/merida/wK.svg" alt="White" width="20px" height="20px" />
+						<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
 						<span className="blue-color" style={alignPlayerInfoStyle}>
 							{` ${this.props.game.player1.username} (${this.getRating('player1')}) `}
 						</span>
-						<img src="../../app/static/img/pieces/merida/bK.svg" alt="Black" width="20px" height="20px" />
+						<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
 						<span className="blue-color" style={alignPlayerInfoStyle}>
 							{` ${this.props.game.player4.username} (${this.getRating('player4')})`}
 						</span>
 						<p className="brighter-color" style={versusStyle}>versus</p>
-						<img src="../../app/static/img/pieces/merida/bK.svg" alt="Black" width="20px" height="20px" />
+						<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
 						<span className="red-color" style={alignPlayerInfoStyle}>
 							{` ${this.props.game.player2.username} (${this.getRating('player2')}) `}
 						</span>
-						<img src="../../app/static/img/pieces/merida/wK.svg" alt="White" width="20px" height="20px" />
+						<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
 						<span className="red-color" style={alignPlayerInfoStyle}>
 							{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
 						</span>

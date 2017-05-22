@@ -78,6 +78,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			let argOtherReserveWhite = [];
 			let argOtherReserveBlack = [];
 			const argFen = game.fen();
+			const turn = game.turn() === 'w' ? 'white' : 'black';
 			let capture = false;
 			if (game.history()[0].indexOf('x') !== -1) { // Move is a capture
 				capture = true;
@@ -116,11 +117,11 @@ module.exports = async (data, socket, gameSocket, io) => {
 					leftReserveBlack: convertReserveToSparePieces(argReserveBlack),
 					rightReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
 					rightReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
-					turn: game.turn(),
-					boardNum: boardNum,
+					turn,
+					boardNum,
+					capture,
 					move: data.move,
 					moves: argMoves,
-					capture: capture,
 					clocks: row.clocks
 				};
 			} else {
@@ -149,11 +150,11 @@ module.exports = async (data, socket, gameSocket, io) => {
 					leftReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
 					rightReserveWhite: convertReserveToSparePieces(argReserveWhite),
 					rightReserveBlack: convertReserveToSparePieces(argReserveBlack),
-					turn: game.turn(),
-					boardNum: boardNum,
+					turn,
+					boardNum,
+					capture,
 					move: data.move,
 					moves: argMoves,
-					capture: capture,
 					clocks: row.clocks
 				};
 			}
