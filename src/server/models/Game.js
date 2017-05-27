@@ -6,8 +6,8 @@ const db = database.db;
 const sqlFile = database.sqlFile;
 
 class Game {
-	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom,
-				timestamp, clocks, leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack) {
+	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom, timestamp,
+				clocks, moves, leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack) {
 		this.id = id;
 		this.player1 = player1;
 		this.player2 = player2;
@@ -21,6 +21,7 @@ class Game {
 		this.joinRandom = joinRandom;
 		this.timestamp = timestamp;
 		this.clocks = clocks;
+		this.moves = moves;
 		this.left_fen = leftFen;
 		this.right_fen = rightFen;
 		this.left_reserve_white = leftReserveWhite;
@@ -37,7 +38,7 @@ class Game {
 		return new Game(
 			row.id, row.player1, row.player2, row.player3, row.player4,
 			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random,
-			row.timestamp, row.clocks, row.left_fen, row.right_fen,
+			row.timestamp, row.clocks, row.moves, row.left_fen, row.right_fen,
 			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black
 		);
 	}

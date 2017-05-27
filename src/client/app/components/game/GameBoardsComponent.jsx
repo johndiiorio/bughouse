@@ -203,7 +203,8 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	snapbackMove(data) {
-		this.board1.set({ fen: data.fen });
+		const oldTurnColor = this.board1.state.turnColor === 'white' ? 'black' : 'white';
+		this.board1.set({ fen: data.fen, turnColor: oldTurnColor });
 	}
 
 	handleGameOver() {
