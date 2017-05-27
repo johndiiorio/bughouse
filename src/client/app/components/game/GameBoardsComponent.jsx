@@ -12,22 +12,19 @@ export default class GameBoardsComponent extends React.Component {
 		this.getDurationFormat = this.getDurationFormat.bind(this);
 		this.selectPromotionPiece = this.selectPromotionPiece.bind(this);
 		this.handleMove = this.handleMove.bind(this);
-		this.select = this.select.bind(this);
 		this.onDrop = this.onDrop.bind(this);
 		this.onDropFromReserve = this.onDropFromReserve.bind(this);
 		this.updateMoves = this.updateMoves.bind(this);
 		this.updateGame = this.updateGame.bind(this);
+		this.snapbackMove = this.snapbackMove.bind(this);
 		this.handleGameOver = this.handleGameOver.bind(this);
 		this.board1 = null;
 		this.board2 = null;
-		this.board1Flip = false;
-		this.board2Flip = false;
 		this.tmpPromotionPiece = null;
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
-		this.gameOver = false;
 		socketGame.on('update game', this.updateGame);
-		socketGame.on('snapback move', data => this.board1.set({ fen: data.fen }));
+		socketGame.on('snapback move', this.snapbackMove);
 		socketGame.on('game over', this.handleGameOver);
 	}
 
@@ -38,12 +35,11 @@ export default class GameBoardsComponent extends React.Component {
 				enabled: true,
 			},
 			movable: {
-				color: 'white',
+				color: (this.props.userPosition === 1 || this.props.userPosition === 3) ? 'white' : 'black',
 			},
 			events: {
 				move: this.onDrop,
-				dropNewPiece: this.onDropFromReserve,
-				select: this.select
+				dropNewPiece: this.onDropFromReserve
 			}
 		};
 		const board2Config = {
@@ -54,11 +50,7 @@ export default class GameBoardsComponent extends React.Component {
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
 
-		if (this.props.userPosition === 1) {
-			this.board2.toggleOrientation();
-		} else if (this.props.userPosition === 2) {
-			this.board1.toggleOrientation();
-		} else if (this.props.userPosition === 3) {
+		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
 			this.board2.toggleOrientation();
 		} else {
 			this.board1.toggleOrientation();
@@ -106,16 +98,6 @@ export default class GameBoardsComponent extends React.Component {
 		// yourTimer.toggle();
 	}
 
-	// check if moving piece is allowed
-	select() {
-		const turnColor = this.board1.state.turnColor;
-		if (((this.props.userPosition === 1 || this.props.userPosition === 3) && turnColor !== 'white')
-			|| ((this.props.userPosition === 2 || this.props.userPosition === 4) && turnColor !== 'black')
-			|| this.gameOver) {
-			this.board1.cancelMove();
-		}
-	}
-
 	onDrop(source, target) {
 		const piece = this.board1.state.pieces[target];
 		// check if move is a pawn promotion, validate on server
@@ -161,13 +143,13 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateMoves(moves) {
-		const newMoves = [];
+		const newMoves = this.props.moves;
 		const arrMoves = moves.trim().split(' ');
 		for (let i = 0; i < arrMoves.length; i += 2) {
 			const playerLetter = arrMoves[i].charAt(arrMoves[i].length - 2);
 			const moveNumber = arrMoves[i].substring(0, arrMoves[i].length - 2);
 			const moveStr = arrMoves[i + 1];
-			if (!this.props.moves[parseInt(moveNumber) - 1]) {
+			if (!newMoves[parseInt(moveNumber) - 1]) {
 				newMoves[parseInt(moveNumber) - 1] = {};
 			}
 			newMoves[parseInt(moveNumber) - 1].number = moveNumber;
@@ -220,8 +202,11 @@ export default class GameBoardsComponent extends React.Component {
 		this.updateMoves(data.moves);
 	}
 
+	snapbackMove(data) {
+		this.board1.set({ fen: data.fen });
+	}
+
 	handleGameOver() {
-		this.gameOver = true;
 		this.board1.stop();
 		this.board2.stop();
 	}
