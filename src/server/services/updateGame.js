@@ -35,12 +35,13 @@ function newMoveString(moves, userPosition, game) {
 }
 
 function convertReserveToSparePieces(reserve) {
-	const convertedArray = [];
-	reserve = JSON.parse(reserve);
-	for (let i = 0; i < reserve.length; i++) {
-		convertedArray.push(reserve[i].color + reserve[i].type.toUpperCase());
-	}
-	return convertedArray;
+	return JSON.parse(reserve).map(row => {
+		const letters = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' };
+		return {
+			role: letters[row.type],
+			color: row.color === 'w' ? 'white' : 'black'
+		};
+	});
 }
 
 module.exports = async (data, socket, gameSocket, io) => {

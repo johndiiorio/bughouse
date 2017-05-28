@@ -3,7 +3,13 @@ import * as gameActions from '../actions/game';
 const defaultState = {
 	game: {},
 	userPosition: null,
-	moves: []
+	moves: [],
+	reserves: {
+		leftWhite: [],
+		leftBlack: [],
+		rightWhite: [],
+		rightBlack: []
+	}
 };
 
 export default function user(state = defaultState, action) {
@@ -12,6 +18,16 @@ export default function user(state = defaultState, action) {
 			return {
 				...state,
 				moves: action.moves
+			};
+		case gameActions.UPDATE_RESERVES:
+			return {
+				...state,
+				reserves: {
+					leftWhite: action.leftWhite,
+					leftBlack: action.leftBlack,
+					rightWhite: action.rightWhite,
+					rightBlack: action.rightBlack
+				}
 			};
 		case gameActions.RECEIVE_GAME_INFO: {
 			const game = action.data;

@@ -12,7 +12,7 @@ export default class GameBoardsComponent extends React.Component {
 		this.getDurationFormat = this.getDurationFormat.bind(this);
 		this.selectPromotionPiece = this.selectPromotionPiece.bind(this);
 		this.handleMove = this.handleMove.bind(this);
-		this.onDrop = this.onDrop.bind(this);
+		this.onDropFromBoard = this.onDropFromBoard.bind(this);
 		this.onDropFromReserve = this.onDropFromReserve.bind(this);
 		this.updateMoves = this.updateMoves.bind(this);
 		this.updateGame = this.updateGame.bind(this);
@@ -38,7 +38,7 @@ export default class GameBoardsComponent extends React.Component {
 				color: (this.props.userPosition === 1 || this.props.userPosition === 3) ? 'white' : 'black',
 			},
 			events: {
-				move: this.onDrop,
+				move: this.onDropFromBoard,
 				dropNewPiece: this.onDropFromReserve
 			}
 		};
@@ -98,7 +98,7 @@ export default class GameBoardsComponent extends React.Component {
 		// yourTimer.toggle();
 	}
 
-	onDrop(source, target) {
+	onDropFromBoard(source, target) {
 		const piece = this.board1.state.pieces[target];
 		// check if move is a pawn promotion, validate on server
 		if (source !== 'spare' && piece.role === 'pawn' && (target.charAt(1) === '1' || target.charAt(1) === '8')) {
@@ -168,6 +168,7 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateGame(data) {
+		console.log(data);
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
 				this.board1.set({ fen: data.fen, turnColor: data.turn });
@@ -179,10 +180,6 @@ export default class GameBoardsComponent extends React.Component {
 			} else {
 				this.board2.set({ fen: data.fen });
 			}
-			// this.board1.updateSparePieces('white', data.leftReserveWhite);
-			// this.board1.updateSparePieces('black', data.leftReserveBlack);
-			// this.board2.updateSparePieces('white', data.rightReserveWhite);
-			// this.board2.updateSparePieces('black', data.rightReserveBlack);
 		} else {
 			if (data.boardNum === 1) {
 				this.board2.set({ fen: data.fen });
@@ -194,11 +191,8 @@ export default class GameBoardsComponent extends React.Component {
 					playSound('move');
 				}
 			}
-			// this.board1.updateSparePieces('white', data.rightReserveWhite);
-			// this.board1.updateSparePieces('black', data.rightReserveBlack);
-			// this.board2.updateSparePieces('white', data.leftReserveWhite);
-			// this.board2.updateSparePieces('black', data.leftReserveBlack);
 		}
+		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
 		this.updateMoves(data.moves);
 	}
 
@@ -228,7 +222,7 @@ export default class GameBoardsComponent extends React.Component {
 				<div className="col-md-4">
 					<h3 id="left-game-top-username">{`${this.props.display.player2.username} (${this.getRating(this.props.display.player2)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
-						<ReserveContainer clickable={false} floatRight={false} margin="bottom" reserveColorFromPosition1="black" />
+						<ReserveContainer clickable={false} floatRight={false} margin="bottom" reservePosition={2} />
 						<h3 id="left-game-top-clock">
 							{this.getDurationFormat(this.props.game.minutes * 60)}
 						</h3>
@@ -271,7 +265,7 @@ export default class GameBoardsComponent extends React.Component {
 					</div>
 					<div id="board1" style={boardStyle} />
 					<div className="align-reserve-clock-bottom">
-						<ReserveContainer clickable floatRight={false} margin="top" reserveColorFromPosition1="white" />
+						<ReserveContainer clickable floatRight={false} margin="top" reservePosition={1} />
 						<h3 id="left-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 					<h3 id="left-game-bottom-username">{`${this.props.display.player1.username} (${this.getRating(this.props.display.player1)})`}</h3>
@@ -280,11 +274,11 @@ export default class GameBoardsComponent extends React.Component {
 					<h3 id="right-game-top-username">{`${this.props.display.player3.username} (${this.getRating(this.props.display.player3)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<h3 id="right-game-top-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
-						<ReserveContainer clickable={false} floatRight margin="bottom" reserveColorFromPosition1="white" />
+						<ReserveContainer clickable={false} floatRight margin="bottom" reservePosition={3} />
 					</div>
 					<div id="board2" style={boardStyle} />
 					<div className="align-reserve-clock-bottom">
-						<ReserveContainer clickable={false} floatRight margin="top" reserveColorFromPosition1="black" />
+						<ReserveContainer clickable={false} floatRight margin="top" reservePosition={4} />
 						<h3 id="right-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 					<h3 id="right-game-bottom-username">{`${this.props.display.player4.username} (${this.getRating(this.props.display.player4)})`}</h3>

@@ -1,45 +1,50 @@
 import React from 'react';
-import ReservePieceComponent from './ReservePieceComponent';
+import ReservePieceGroupComponent from './ReservePieceGroupComponent';
 
 export default function ReserveComponent(props) {
-	const reserveContainerStyle = {
-		width: '310px',
-		height: '63px',
-		backgroundColor: '#b0b0b0',
-		float: props.floatRight ? 'right' : 'auto',
-		marginTop: props.margin === 'top' ? '15px' : '0em',
-		marginBottom: props.margin === 'bottom' ? '15px' : '0em',
-		display: 'inline-block'
-	};
-
-	let reserveColor;
-	if (props.userPosition === 1 || props.userPosition === 3) {
-		reserveColor = props.reserveColorFromPosition1;
-	} else {
-		reserveColor = props.reserveColorFromPosition1 === 'white' ? 'black' : 'white';
+	function getPieceNumsFromReserve(reserve) {
+		const pieceNums = { pawn: 0, knight: 0, bishop: 0, rook: 0, queen: 0 };
+		for (const row of props.reserves[reserve]) {
+			pieceNums[row.role]++;
+		}
+		return pieceNums;
 	}
-	// TODO set pieceNum to props from Redux state, done after reserve pieces are implemented in Redux
-	return (
-		<div style={reserveContainerStyle}>
-			{ reserveColor === 'white' ?
-				(
-					<div>
-						<ReservePieceComponent piece="wP" pieceNum={0} />
-						<ReservePieceComponent piece="wN" pieceNum={4} />
-						<ReservePieceComponent piece="wB" pieceNum={0} />
-						<ReservePieceComponent piece="wR" pieceNum={2} />
-						<ReservePieceComponent piece="wQ" pieceNum={1} />
-					</div>
-				) : (
-					<div>
-						<ReservePieceComponent piece="bP" pieceNum={1} />
-						<ReservePieceComponent piece="bN" pieceNum={0} />
-						<ReservePieceComponent piece="bB" pieceNum={2} />
-						<ReservePieceComponent piece="bR" pieceNum={0} />
-						<ReservePieceComponent piece="bQ" pieceNum={9} />
-					</div>
-				)
-			}
-		</div>
-	);
+
+	if (props.userPosition === 1) {
+		if (props.reservePosition === 1) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('leftWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 2) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('leftBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 3) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('rightWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		}
+		return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('rightBlack')} margin={props.margin} floatRight={props.floatRight} />);
+	} else if (props.userPosition === 2) {
+		if (props.reservePosition === 1) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('leftBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 2) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('leftWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 3) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('rightBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		}
+		return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('rightWhite')} margin={props.margin} floatRight={props.floatRight} />);
+	} else if (props.userPosition === 3) {
+		if (props.reservePosition === 1) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('rightWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 2) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('rightBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 3) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('leftWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		}
+		return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('leftBlack')} margin={props.margin} floatRight={props.floatRight} />);
+	} else {
+		if (props.reservePosition === 1) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('rightBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 2) {
+			return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('rightWhite')} margin={props.margin} floatRight={props.floatRight} />);
+		} else if (props.reservePosition === 3) {
+			return (<ReservePieceGroupComponent reserveColor="black" pieceNums={getPieceNumsFromReserve('leftBlack')} margin={props.margin} floatRight={props.floatRight} />);
+		}
+		return (<ReservePieceGroupComponent reserveColor="white" pieceNums={getPieceNumsFromReserve('leftWhite')} margin={props.margin} floatRight={props.floatRight} />);
+	}
 }

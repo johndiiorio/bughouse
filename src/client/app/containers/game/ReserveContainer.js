@@ -3,7 +3,8 @@ import ReserveComponent from '../../components/game/ReserveComponent';
 
 function mapStateToProps(state) {
 	return {
-		userPosition: state.game.userPosition
+		userPosition: state.game.userPosition,
+		reserves: state.game.reserves
 	};
 }
 
