@@ -90,19 +90,15 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	selectPromotionPiece(piece) {
-		this.tmpPromotionPiece = piece;
-		this.newPiece(piece, this.tmpTargetSquare);
+		this.tmpPromotionPiece = piece.role.charAt(0);
+		this.board1.newPiece(piece, this.tmpTargetSquare);
 		document.getElementById('whitePromotion').style.display = 'none';
 		document.getElementById('blackPromotion').style.display = 'none';
 		this.handleMove(this.tmpSourceSquare, this.tmpTargetSquare, piece);
 	}
 
 	handleMove(source, target, piece) {
-		// Update UI without validating
-		if (source === 'spare') {
-			// TODO is this necessary?
-			this.board1.newPiece(piece, target);
-		} else {
+		if (source !== 'spare') {
 			this.board1.move(source, target);
 		}
 		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
@@ -115,35 +111,34 @@ export default class GameBoardsComponent extends React.Component {
 		const piece = this.board1.state.pieces[target];
 		// check if move is a pawn promotion, validate on server
 		if (source !== 'spare' && piece.role === 'pawn' && (target.charAt(1) === '1' || target.charAt(1) === '8')) {
-			const putData = { source: source, target: target, piece: piece, userPosition: this.props.userPosition };
+			const putData = { source, target, piece, userPosition: this.props.userPosition };
 			axios.put(`/api/games/validate/pawnpromotion/${this.props.game.id}`, putData)
-				.then(response => () => {
+				.then(response => {
 					const data = response.data;
 					if (data.valid) {  // promotion is allowed, display popup to select piece
 						const letter = target.charAt(0);
 						let targetColumn;
 						if (letter === 'a') targetColumn = 1;
-						else if (letter === 'b') targetColumn = 1;
-						else if (letter === 'c') targetColumn = 1;
-						else if (letter === 'd') targetColumn = 1;
-						else if (letter === 'e') targetColumn = 1;
-						else if (letter === 'f') targetColumn = 1;
-						else if (letter === 'g') targetColumn = 1;
+						else if (letter === 'b') targetColumn = 2;
+						else if (letter === 'c') targetColumn = 3;
+						else if (letter === 'd') targetColumn = 4;
+						else if (letter === 'e') targetColumn = 5;
+						else if (letter === 'f') targetColumn = 6;
+						else if (letter === 'g') targetColumn = 7;
 						else targetColumn = 8;
-						if (piece.charAt(0) === 'w') {
+						if (piece.color.charAt(0) === 'w') {
 							document.getElementById('whitePromotion').style.display = 'block';
-							document.getElementById('whitePromotion').style.transform = `translate(${(targetColumn * 62) - 60}px, 64px)`;
+							document.getElementById('whitePromotion').style.transform = `translate(${(targetColumn * 62.5) - 62.5}px)`;
 						} else {
 							targetColumn = 9 - targetColumn;
 							document.getElementById('blackPromotion').style.display = 'block';
-							document.getElementById('blackPromotion').style.transform = `translate(${(targetColumn * 62) - 60}px, 64px)`;
+							document.getElementById('blackPromotion').style.transform = `translate(${(targetColumn * 62.5) - 62.5}px)`;
 						}
 						this.tmpSourceSquare = source;
 						this.tmpTargetSquare = target;
-						this.deletePieceFromSquare(this.tmpSourceSquare);
+						delete this.board1.state.pieces[this.tmpSourceSquare];
 					}
-					this.board1.position(data.fen);
-					return 'snapback'; // remove the pawn being promoted or snapback the invalid piece move
+					this.board1.set({ fen: data.fen });
 				})
 				.catch(console.log('Error validating pawn promotion'));
 		} else { // not a promotion, handle move normally
@@ -151,8 +146,8 @@ export default class GameBoardsComponent extends React.Component {
 		}
 	}
 
-	onDropFromReserve(role, position) {
-
+	onDropFromReserve(piece, target) {
+		this.handleMove('spare', target, piece);
 	}
 
 	updateMoves(moves) {
@@ -242,7 +237,7 @@ export default class GameBoardsComponent extends React.Component {
 						</h3>
 					</div>
 					<div id="whitePromotion" className="promotion-box">
-						<img src="../../app/static/img/pieces/wikipedia/wQ.svg"
+						<img src="../../app/static/img/pieces/wQ.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'pawn' })}
 						/>

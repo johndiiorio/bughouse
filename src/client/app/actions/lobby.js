@@ -27,10 +27,8 @@ function receiveGamesInfo(data) {
 }
 
 export function createGame(postData) {
-	return dispatch => {
-		return axios.post('/api/games', postData)
+	return dispatch => axios.post('/api/games', postData)
 			.then(response => dispatch(updateSelectedGame(response.data)));
-	};
 }
 
 export function updateDisplayedGames() {

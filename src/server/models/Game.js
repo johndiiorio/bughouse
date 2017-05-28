@@ -138,14 +138,6 @@ class Game {
 		}
 		return id;
 	}
-
-	static async updateGameMoves(id, moves) {
-		return await db.none(sqlFile('game/update_moves.sql'), { id, moves });
-	}
-
-	static async updateGameReserve(id, reserve, pieces) {
-		return await db.none(sqlFile('game/update_one_column_single_game.sql'), { id, column: reserve, value: pieces });
-	}
 }
 
 module.exports = Game;

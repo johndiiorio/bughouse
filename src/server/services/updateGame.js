@@ -62,7 +62,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
 		}
 		if (data.move.source === 'spare') {
-			move = game.move(`${data.move.piece.role.charAt(1).toUpperCase()}@${data.move.target}`);
+			move = game.move(`${data.move.piece.role.charAt(0).toUpperCase()}@${data.move.target}`);
 		} else {
 			move = game.move({
 				from: data.move.source,

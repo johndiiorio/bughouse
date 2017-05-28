@@ -8,6 +8,9 @@ export default class ReservePieceComponent extends React.Component {
 
 	handleOnDragStart(e) {
 		e.preventDefault();
+		if (this.props.pieceNum === 0 || !this.props.canDrag) {
+			return;
+		}
 		const rolesMapping = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' };
 		const pieceToDrag = {
 			role: rolesMapping[this.props.piece.charAt(1).toLowerCase()],

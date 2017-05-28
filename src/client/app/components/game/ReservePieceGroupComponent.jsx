@@ -17,19 +17,19 @@ export default function ReservePieceGroupComponent(props) {
 			{ props.reserveColor === 'white' ?
 				(
 					<div>
-						<ReservePieceContainer piece="wP" pieceNum={props.pieceNums.pawn} />
-						<ReservePieceContainer piece="wN" pieceNum={props.pieceNums.knight} />
-						<ReservePieceContainer piece="wB" pieceNum={props.pieceNums.bishop} />
-						<ReservePieceContainer piece="wR" pieceNum={props.pieceNums.rook} />
-						<ReservePieceContainer piece="wQ" pieceNum={props.pieceNums.queen} />
+						<ReservePieceContainer piece="wP" canDrag={props.canDrag} pieceNum={props.pieceNums.pawn} />
+						<ReservePieceContainer piece="wN" canDrag={props.canDrag} pieceNum={props.pieceNums.knight} />
+						<ReservePieceContainer piece="wB" canDrag={props.canDrag} pieceNum={props.pieceNums.bishop} />
+						<ReservePieceContainer piece="wR" canDrag={props.canDrag} pieceNum={props.pieceNums.rook} />
+						<ReservePieceContainer piece="wQ" canDrag={props.canDrag} pieceNum={props.pieceNums.queen} />
 					</div>
 				) : (
 					<div>
-						<ReservePieceContainer piece="bP" pieceNum={props.pieceNums.pawn} />
-						<ReservePieceContainer piece="bN" pieceNum={props.pieceNums.knight} />
-						<ReservePieceContainer piece="bB" pieceNum={props.pieceNums.bishop} />
-						<ReservePieceContainer piece="bR" pieceNum={props.pieceNums.rook} />
-						<ReservePieceContainer piece="bQ" pieceNum={props.pieceNums.queen} />
+						<ReservePieceContainer piece="bP" canDrag={props.canDrag} pieceNum={props.pieceNums.pawn} />
+						<ReservePieceContainer piece="bN" canDrag={props.canDrag} pieceNum={props.pieceNums.knight} />
+						<ReservePieceContainer piece="bB" canDrag={props.canDrag} pieceNum={props.pieceNums.bishop} />
+						<ReservePieceContainer piece="bR" canDrag={props.canDrag} pieceNum={props.pieceNums.rook} />
+						<ReservePieceContainer piece="bQ" canDrag={props.canDrag} pieceNum={props.pieceNums.queen} />
 					</div>
 				)
 			}
