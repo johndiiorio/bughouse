@@ -1,7 +1,6 @@
 import React from 'react';
-import ReservePieceComponent from './ReservePieceComponent';
+import ReservePieceContainer from '../../containers/game/ReservePieceContainer';
 
-// Props: floatRight, margin, reserveColor, pieceNums
 export default function ReservePieceGroupComponent(props) {
 	const reserveContainerStyle = {
 		width: '310px',
@@ -18,19 +17,19 @@ export default function ReservePieceGroupComponent(props) {
 			{ props.reserveColor === 'white' ?
 				(
 					<div>
-						<ReservePieceComponent piece="wP" pieceNum={props.pieceNums.pawn} />
-						<ReservePieceComponent piece="wN" pieceNum={props.pieceNums.knight} />
-						<ReservePieceComponent piece="wB" pieceNum={props.pieceNums.bishop} />
-						<ReservePieceComponent piece="wR" pieceNum={props.pieceNums.rook} />
-						<ReservePieceComponent piece="wQ" pieceNum={props.pieceNums.queen} />
+						<ReservePieceContainer piece="wP" pieceNum={props.pieceNums.pawn} />
+						<ReservePieceContainer piece="wN" pieceNum={props.pieceNums.knight} />
+						<ReservePieceContainer piece="wB" pieceNum={props.pieceNums.bishop} />
+						<ReservePieceContainer piece="wR" pieceNum={props.pieceNums.rook} />
+						<ReservePieceContainer piece="wQ" pieceNum={props.pieceNums.queen} />
 					</div>
 				) : (
 					<div>
-						<ReservePieceComponent piece="bP" pieceNum={props.pieceNums.pawn} />
-						<ReservePieceComponent piece="bN" pieceNum={props.pieceNums.knight} />
-						<ReservePieceComponent piece="bB" pieceNum={props.pieceNums.bishop} />
-						<ReservePieceComponent piece="bR" pieceNum={props.pieceNums.rook} />
-						<ReservePieceComponent piece="bQ" pieceNum={props.pieceNums.queen} />
+						<ReservePieceContainer piece="bP" pieceNum={props.pieceNums.pawn} />
+						<ReservePieceContainer piece="bN" pieceNum={props.pieceNums.knight} />
+						<ReservePieceContainer piece="bB" pieceNum={props.pieceNums.bishop} />
+						<ReservePieceContainer piece="bR" pieceNum={props.pieceNums.rook} />
+						<ReservePieceContainer piece="bQ" pieceNum={props.pieceNums.queen} />
 					</div>
 				)
 			}

@@ -9,7 +9,8 @@ const defaultState = {
 		leftBlack: [],
 		rightWhite: [],
 		rightBlack: []
-	}
+	},
+	pieceToDragFromReserve: {}
 };
 
 export default function user(state = defaultState, action) {
@@ -29,6 +30,12 @@ export default function user(state = defaultState, action) {
 					rightBlack: action.rightBlack
 				}
 			};
+		case gameActions.UPDATE_PIECE_TO_DRAG_FROM_RESERVE: {
+			return {
+				...state,
+				pieceToDragFromReserve: action.piece
+			};
+		}
 		case gameActions.RECEIVE_GAME_INFO: {
 			const game = action.data;
 			const userID = action.userID;

@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import _ from 'lodash';
 import { Chessground } from 'chessground';
 import ReserveContainer from '../../containers/game/ReserveContainer';
 import { socketGame } from '../../socket';
@@ -60,6 +61,18 @@ export default class GameBoardsComponent extends React.Component {
 			document.getElementById('left-game-bottom-username').style.color = '#FB667A';
 			document.getElementById('right-game-top-username').style.color = '#46BCDE';
 			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (!_.isEmpty(nextProps.pieceToDragFromReserve)) {
+			const mouseEvent = new MouseEvent('click', {
+				bubbles: true,
+				cancelable: true,
+				view: window
+			});
+			this.board1.dragNewPiece(nextProps.pieceToDragFromReserve, mouseEvent);
+			this.props.updatePieceToDragFromReserve({});
 		}
 	}
 
@@ -168,7 +181,6 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateGame(data) {
-		console.log(data);
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
 				this.board1.set({ fen: data.fen, turnColor: data.turn });
@@ -194,6 +206,8 @@ export default class GameBoardsComponent extends React.Component {
 		}
 		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
 		this.updateMoves(data.moves);
+		this.board1.playPremove();
+		this.board1.playPredrop();
 	}
 
 	snapbackMove(data) {
