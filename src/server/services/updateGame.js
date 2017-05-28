@@ -35,12 +35,13 @@ function newMoveString(moves, userPosition, game) {
 }
 
 function convertReserveToSparePieces(reserve) {
-	const convertedArray = [];
-	reserve = JSON.parse(reserve);
-	for (let i = 0; i < reserve.length; i++) {
-		convertedArray.push(reserve[i].color + reserve[i].type.toUpperCase());
-	}
-	return convertedArray;
+	return JSON.parse(reserve).map(row => {
+		const letters = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' };
+		return {
+			role: letters[row.type],
+			color: row.color === 'w' ? 'white' : 'black'
+		};
+	});
 }
 
 module.exports = async (data, socket, gameSocket, io) => {
@@ -61,7 +62,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
 		}
 		if (data.move.source === 'spare') {
-			move = game.move(`${data.move.piece.charAt(1)}@${data.move.target}`);
+			move = game.move(`${data.move.piece.role.charAt(0).toUpperCase()}@${data.move.target}`);
 		} else {
 			move = game.move({
 				from: data.move.source,
@@ -78,6 +79,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			let argOtherReserveWhite = [];
 			let argOtherReserveBlack = [];
 			const argFen = game.fen();
+			const turn = game.turn() === 'w' ? 'white' : 'black';
 			let capture = false;
 			if (game.history()[0].indexOf('x') !== -1) { // Move is a capture
 				capture = true;
@@ -112,15 +114,15 @@ module.exports = async (data, socket, gameSocket, io) => {
 					data.id];
 				emitData = {
 					fen: argFen,
-					left_reserve_white: convertReserveToSparePieces(argReserveWhite),
-					left_reserve_black: convertReserveToSparePieces(argReserveBlack),
-					right_reserve_white: convertReserveToSparePieces(argOtherReserveWhite),
-					right_reserve_black: convertReserveToSparePieces(argOtherReserveBlack),
-					turn: game.turn(),
-					boardNum: boardNum,
+					leftReserveWhite: convertReserveToSparePieces(argReserveWhite),
+					leftReserveBlack: convertReserveToSparePieces(argReserveBlack),
+					rightReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
+					rightReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
+					turn,
+					boardNum,
+					capture,
 					move: data.move,
 					moves: argMoves,
-					capture: capture,
 					clocks: row.clocks
 				};
 			} else {
@@ -145,15 +147,15 @@ module.exports = async (data, socket, gameSocket, io) => {
 					data.id];
 				emitData = {
 					fen: argFen,
-					left_reserve_white: convertReserveToSparePieces(argOtherReserveWhite),
-					left_reserve_black: convertReserveToSparePieces(argOtherReserveBlack),
-					right_reserve_white: convertReserveToSparePieces(argReserveWhite),
-					right_reserve_black: convertReserveToSparePieces(argReserveBlack),
-					turn: game.turn(),
-					boardNum: boardNum,
+					leftReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
+					leftReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
+					rightReserveWhite: convertReserveToSparePieces(argReserveWhite),
+					rightReserveBlack: convertReserveToSparePieces(argReserveBlack),
+					turn,
+					boardNum,
+					capture,
 					move: data.move,
 					moves: argMoves,
-					capture: capture,
 					clocks: row.clocks
 				};
 			}

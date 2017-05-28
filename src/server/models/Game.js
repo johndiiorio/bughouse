@@ -6,7 +6,8 @@ const db = database.db;
 const sqlFile = database.sqlFile;
 
 class Game {
-	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
+	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom, timestamp,
+				clocks, moves, leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack) {
 		this.id = id;
 		this.player1 = player1;
 		this.player2 = player2;
@@ -18,6 +19,15 @@ class Game {
 		this.mode = mode;
 		this.status = status;
 		this.joinRandom = joinRandom;
+		this.timestamp = timestamp;
+		this.clocks = clocks;
+		this.moves = moves;
+		this.left_fen = leftFen;
+		this.right_fen = rightFen;
+		this.left_reserve_white = leftReserveWhite;
+		this.left_reserve_black = leftReserveBlack;
+		this.right_reserve_white = rightReserveWhite;
+		this.right_reserve_black = rightReserveBlack;
 	}
 
 	static createTable() {
@@ -25,7 +35,12 @@ class Game {
 	}
 
 	static mapRow(row) {
-		return new Game(row.id, row.player1, row.player2, row.player3, row.player4, row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random);
+		return new Game(
+			row.id, row.player1, row.player2, row.player3, row.player4,
+			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random,
+			row.timestamp, row.clocks, row.moves, row.left_fen, row.right_fen,
+			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black
+		);
 	}
 
 	static mapRowGameWithUsers(row) {
@@ -122,14 +137,6 @@ class Game {
 			numGamesEnd = rowNumEnd.count;
 		}
 		return id;
-	}
-
-	static async updateGameMoves(id, moves) {
-		return await db.none(sqlFile('game/update_moves.sql'), { id, moves });
-	}
-
-	static async updateGameReserve(id, reserve, pieces) {
-		return await db.none(sqlFile('game/update_one_column_single_game.sql'), { id, column: reserve, value: pieces });
 	}
 }
 
