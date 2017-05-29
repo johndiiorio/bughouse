@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as gameActions from '../actions/game';
 
 const defaultState = {
@@ -18,7 +19,7 @@ export default function user(state = defaultState, action) {
 		case gameActions.UPDATE_MOVES:
 			return {
 				...state,
-				moves: action.moves
+				moves: _.cloneDeep(action.moves)
 			};
 		case gameActions.UPDATE_RESERVES:
 			return {
