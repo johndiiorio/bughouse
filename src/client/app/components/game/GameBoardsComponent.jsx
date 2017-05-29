@@ -31,6 +31,7 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	componentDidMount() {
+		playSound('notify');
 		socketGame.emit('room', this.props.game.id);
 		const board1Config = {
 			predroppable: {

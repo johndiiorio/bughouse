@@ -1,21 +1,19 @@
+const soundMove = new Audio('app/static/sound/move.mp3');
+const soundCapture = new Audio('app/static/sound/capture.mp3');
+const soundNotify = new Audio('app/static/sound/notify.mp3');
+
 export default function playSound(name) {
-	function Sound(src) {
-		this.sound = document.createElement('audio');
-		this.sound.src = src;
-		this.sound.setAttribute('preload', 'auto');
-		this.sound.setAttribute('controls', 'none');
-		this.sound.style.display = 'none';
-		document.body.appendChild(this.sound);
-		this.play = () => this.sound.play();
-		this.stop = () => this.sound.pause();
+	switch (name) {
+		case 'move':
+			soundMove.play();
+			break;
+		case 'capture':
+			soundCapture.play();
+			break;
+		case 'notify':
+			soundNotify.play();
+			break;
+		default:
+			soundNotify.play();
 	}
-	let soundObj;
-	if (name === 'move') {
-		soundObj = new Sound('app/static/sound/move.mp3');
-	} else if (name === 'capture') {
-		soundObj = new Sound('/app/static/sound/capture.mp3');
-	} else {
-		soundObj = new Sound('/app/static/sound/notify.mp3');
-	}
-	soundObj.play();
 }
