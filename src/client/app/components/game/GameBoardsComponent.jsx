@@ -24,6 +24,7 @@ export default class GameBoardsComponent extends React.Component {
 		this.tmpPromotionPiece = null;
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
+		this.squaresToHighlight = [];
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', this.snapbackMove);
 		socketGame.on('game over', this.handleGameOver);
@@ -103,8 +104,6 @@ export default class GameBoardsComponent extends React.Component {
 		}
 		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
 		socketGame.emit('update game', data);
-		// yourOpponentTimer.toggle();
-		// yourTimer.toggle();
 	}
 
 	onDropFromBoard(source, target) {
@@ -176,22 +175,23 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateGame(data) {
+		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
-				this.board1.set({ fen: data.fen, turnColor: data.turn });
+				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
 				if (data.capture) {
 					playSound('capture');
 				} else {
 					playSound('move');
 				}
 			} else {
-				this.board2.set({ fen: data.fen });
+				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
 			}
 		} else {
 			if (data.boardNum === 1) {
-				this.board2.set({ fen: data.fen });
+				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
 			} else {
-				this.board1.set({ fen: data.fen, turnColor: data.turn });
+				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
 				if (data.capture) {
 					playSound('capture');
 				} else {
@@ -207,7 +207,7 @@ export default class GameBoardsComponent extends React.Component {
 
 	snapbackMove(data) {
 		const oldTurnColor = this.board1.state.turnColor === 'white' ? 'black' : 'white';
-		this.board1.set({ fen: data.fen, turnColor: oldTurnColor });
+		this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: oldTurnColor });
 	}
 
 	handleGameOver() {
