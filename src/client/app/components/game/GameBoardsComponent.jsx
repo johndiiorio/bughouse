@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Chessground } from 'chessground';
 import ReserveContainer from '../../containers/game/ReserveContainer';
 import { socketGame } from '../../socket';
+import Clock from '../../util/Clock';
 import playSound from '../../util/sound';
 
 export default class GameBoardsComponent extends React.Component {
@@ -25,14 +26,20 @@ export default class GameBoardsComponent extends React.Component {
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
 		this.squaresToHighlight = [];
+		this.timer1 = null;
+		this.timer2 = null;
+		this.timer3 = null;
+		this.timer4 = null;
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', this.snapbackMove);
 		socketGame.on('game over', this.handleGameOver);
 	}
 
 	componentDidMount() {
-		playSound('notify');
 		socketGame.emit('room', this.props.game.id);
+		playSound('notify');
+
+		// Game boards
 		const board1Config = {
 			predroppable: {
 				enabled: true,
@@ -49,21 +56,48 @@ export default class GameBoardsComponent extends React.Component {
 			viewOnly: true,
 			disableContextMenu: true,
 		};
-
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
-
 		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
 			this.board2.toggleOrientation();
 		} else {
 			this.board1.toggleOrientation();
 		}
+
+		// Username styling
 		if (this.props.userPosition === 2 || this.props.userPosition === 3) {
 			document.getElementById('left-game-top-username').style.color = '#46BCDE';
 			document.getElementById('left-game-bottom-username').style.color = '#FB667A';
 			document.getElementById('right-game-top-username').style.color = '#46BCDE';
 			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
 		}
+
+		// Clocks
+		const duration = this.props.game.minutes * 60 * 1000;
+		const increment = this.props.game.increment * 1000;
+		this.timer1 = new Clock(duration, increment);
+		this.timer2 = new Clock(duration, increment);
+		this.timer3 = new Clock(duration, increment);
+		this.timer4 = new Clock(duration, increment);
+		function format(display) {
+			return (minutes, seconds, deciseconds) => {
+				const minutesDisplay = minutes < 10 ? `0${minutes}` : minutes;
+				const secondsDisplay = seconds < 10 ? `0${seconds}` : seconds;
+				if (minutes === 0 && seconds === 0 && deciseconds === 0) {
+					display.style.backgroundColor = '#a00000';
+				}
+				if (minutes < 1 && seconds < 10) {
+					display.style.width = '168px';
+					display.innerHTML = `${minutesDisplay}:${secondsDisplay}.${deciseconds}`;
+				} else {
+					display.innerHTML = `${minutesDisplay}:${secondsDisplay}`;
+				}
+			};
+		}
+		this.timer1.onTick(format(document.getElementById('left-game-bottom-clock')));
+		this.timer2.onTick(format(document.getElementById('left-game-top-clock')));
+		this.timer3.onTick(format(document.getElementById('right-game-top-clock')));
+		this.timer4.onTick(format(document.getElementById('right-game-bottom-clock')));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -85,7 +119,8 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	getDurationFormat(duration) {
-		const minutes = Math.floor(duration / 60);
+		let minutes = Math.floor(duration / 60);
+		minutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
 		let seconds = duration % 60;
 		seconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 		return `${minutes}:${seconds}`;
@@ -180,6 +215,12 @@ export default class GameBoardsComponent extends React.Component {
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
 				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
+				if (!this.timer1.isRunning() && !this.timer2.isRunning()) { // First move
+					this.timer2.toggle();
+				} else { // Not first move, toggle both clocks
+					this.timer1.toggle();
+					this.timer2.toggle();
+				}
 				if (data.capture) {
 					playSound('capture');
 				} else {
@@ -187,12 +228,30 @@ export default class GameBoardsComponent extends React.Component {
 				}
 			} else {
 				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
+				if (!this.timer3.isRunning() && !this.timer4.isRunning()) { // First move
+					this.timer4.toggle();
+				} else { // Not first move, toggle both clocks
+					this.timer3.toggle();
+					this.timer4.toggle();
+				}
 			}
 		} else {
 			if (data.boardNum === 1) {
 				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
+				if (!this.timer1.isRunning() && !this.timer2.isRunning()) { // First move
+					this.timer2.toggle();
+				} else { // Not first move, toggle both clocks
+					this.timer1.toggle();
+					this.timer2.toggle();
+				}
 			} else {
 				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
+				if (!this.timer3.isRunning() && !this.timer4.isRunning()) { // First move
+					this.timer4.toggle();
+				} else { // Not first move, toggle both clocks
+					this.timer3.toggle();
+					this.timer4.toggle();
+				}
 				if (data.capture) {
 					playSound('capture');
 				} else {
@@ -233,9 +292,9 @@ export default class GameBoardsComponent extends React.Component {
 					<h3 id="left-game-top-username">{`${this.props.display.player2.username} (${this.getRating(this.props.display.player2)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<ReserveContainer clickable={false} floatRight={false} margin="bottom" reservePosition={2} />
-						<h3 id="left-game-top-clock">
+						<div id="left-game-top-clock">
 							{this.getDurationFormat(this.props.game.minutes * 60)}
-						</h3>
+						</div>
 					</div>
 					<div id="whitePromotion" className="promotion-box">
 						<img src="../../app/static/img/pieces/wQ.svg"

@@ -201,26 +201,56 @@ p, h1, h2, h3, h4, h5, h6 {
 }
 
 #left-game-top-clock {
-    float: right;
-    color: #d85000;
+	float: right;
+	margin-bottom: 15px;
+	width: 132px;
+	height: 63px;
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+	font-size: 38px;
+	color: #ABABAB;
+	text-align: center;
+	line-height: 62px;
 }
 
 #left-game-bottom-clock {
 	float: right;
-	color: #d85000;
-	transform: translateY(+50%);
+	margin-top: 15px;
+	width: 132px;
+	height: 63px;
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+	font-size: 38px;
+	color: #ABABAB;
+	text-align: center;
+	line-height: 62px;
 }
 
 #right-game-top-clock {
     float: left;
-    color: #d85000;
-	transform: translateY(+200%);
+	width: 132px;
+	height: 63px;
+	margin-bottom: 15px;
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+	font-size: 38px;
+	color: #ABABAB;
+	text-align: center;
+	line-height: 62px;
+	transform: translateY(+62%);
 }
 
 #right-game-bottom-clock {
 	float: left;
-	color: #d85000;
-	transform: translateY(+50%);
+	width: 132px;
+	height: 63px;
+	margin-top: 15px;
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+	font-size: 38px;
+	color: #ABABAB;
+	text-align: center;
+	line-height: 62px;
 }
 
 /* Moves Table */

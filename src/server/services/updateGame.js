@@ -102,7 +102,6 @@ module.exports = async (data, socket, gameSocket, io) => {
 				} else {
 					arrClocks[1] += diffTime - row.increment;
 				}
-				row.clocks = arrClocks.join();
 				argsQuery = ['left_fen', argFen,
 					'left_reserve_white', argReserveWhite,
 					'left_reserve_black', argReserveBlack,
@@ -110,7 +109,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'right_reserve_black', argOtherReserveBlack,
 					'last_time_left', currentTime,
 					'moves', argMoves,
-					'clocks', row.clocks,
+					'clocks', arrClocks.join(),
 					data.id];
 				emitData = {
 					fen: argFen,
@@ -123,7 +122,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					capture,
 					move: data.move,
 					moves: argMoves,
-					clocks: row.clocks
+					clocks: arrClocks
 				};
 			} else {
 				boardNum = 2;
@@ -135,7 +134,6 @@ module.exports = async (data, socket, gameSocket, io) => {
 				} else {
 					arrClocks[3] += diffTime - row.increment;
 				}
-				row.clocks = arrClocks.join();
 				argsQuery = ['right_fen', argFen,
 					'right_reserve_white', argReserveWhite,
 					'right_reserve_black', argReserveBlack,
@@ -143,7 +141,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'left_reserve_black', argOtherReserveBlack,
 					'moves', argMoves,
 					'last_time_right', currentTime,
-					'clocks', row.clocks,
+					'clocks', arrClocks.join(),
 					data.id];
 				emitData = {
 					fen: argFen,
@@ -156,7 +154,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					capture,
 					move: data.move,
 					moves: argMoves,
-					clocks: row.clocks
+					clocks: arrClocks
 				};
 			}
 			await db.none(queryString, argsQuery);
