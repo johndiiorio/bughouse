@@ -90,6 +90,9 @@ module.exports = async (data, socket, gameSocket, io) => {
 			const moveNum = moveInfo.moveNum;
 			const argReserveWhite = JSON.stringify(newReserves.reserve_white);
 			const argReserveBlack = JSON.stringify(newReserves.reserve_black);
+			// clocks in database represent number of milliseconds for each players clock
+			// i.e. 32000 of a 5 minute game means 32 seconds have elapsed for that player, clock should display 4:28
+			// can be negative from increment, i.e. -3000 of a 5 minute game means the player's clock should display 5:03
 			const arrClocks = row.clocks.split(',').map(Number);
 			row.increment *= 1000; // convert seconds to milliseconds
 			if (data.userPosition === 1 || data.userPosition === 2) {
@@ -152,6 +155,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					turn,
 					boardNum,
 					capture,
+					moveNum,
 					move: data.move,
 					moves: argMoves,
 					clocks: arrClocks
