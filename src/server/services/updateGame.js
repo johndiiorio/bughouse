@@ -131,7 +131,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 				boardNum = 2;
 				argOtherReserveWhite = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
-				diffTime = moveNum !== 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
+				diffTime = moveNum !== 1 ? currentTime - row.last_time_right : row.increment; // don't change clock if first move
 				if (data.userPosition === 3) {
 					arrClocks[2] += diffTime - row.increment;
 				} else {

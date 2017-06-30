@@ -4,7 +4,6 @@
   "private": false,
   "scripts": {
     "start": "node ./src/bin/www",
-    "startDebug": "node $NODE_DEBUG_OPTION ./src/bin/www",
     "dev": "webpack -d --watch --color --progress",
     "build": "webpack -p",
     "lint": "./node_modules/.bin/eslint src/client/app/**/*.js src/client/app/**/*.jsx src/server/**/*.js src/server/**/*.jsx src/scripts/**/*.js",
