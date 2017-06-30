@@ -90,6 +90,9 @@ module.exports = async (data, socket, gameSocket, io) => {
 			const moveNum = moveInfo.moveNum;
 			const argReserveWhite = JSON.stringify(newReserves.reserve_white);
 			const argReserveBlack = JSON.stringify(newReserves.reserve_black);
+			// clocks in database represent number of milliseconds for each players clock
+			// i.e. 32000 of a 5 minute game means 32 seconds have elapsed for that player, clock should display 4:28
+			// can be negative from increment, i.e. -3000 of a 5 minute game means the player's clock should display 5:03
 			const arrClocks = row.clocks.split(',').map(Number);
 			row.increment *= 1000; // convert seconds to milliseconds
 			if (data.userPosition === 1 || data.userPosition === 2) {
@@ -102,7 +105,6 @@ module.exports = async (data, socket, gameSocket, io) => {
 				} else {
 					arrClocks[1] += diffTime - row.increment;
 				}
-				row.clocks = arrClocks.join();
 				argsQuery = ['left_fen', argFen,
 					'left_reserve_white', argReserveWhite,
 					'left_reserve_black', argReserveBlack,
@@ -110,7 +112,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'right_reserve_black', argOtherReserveBlack,
 					'last_time_left', currentTime,
 					'moves', argMoves,
-					'clocks', row.clocks,
+					'clocks', arrClocks.join(),
 					data.id];
 				emitData = {
 					fen: argFen,
@@ -123,19 +125,18 @@ module.exports = async (data, socket, gameSocket, io) => {
 					capture,
 					move: data.move,
 					moves: argMoves,
-					clocks: row.clocks
+					clocks: arrClocks
 				};
 			} else {
 				boardNum = 2;
 				argOtherReserveWhite = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
-				diffTime = moveNum !== 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
+				diffTime = moveNum !== 1 ? currentTime - row.last_time_right : row.increment; // don't change clock if first move
 				if (data.userPosition === 3) {
 					arrClocks[2] += diffTime - row.increment;
 				} else {
 					arrClocks[3] += diffTime - row.increment;
 				}
-				row.clocks = arrClocks.join();
 				argsQuery = ['right_fen', argFen,
 					'right_reserve_white', argReserveWhite,
 					'right_reserve_black', argReserveBlack,
@@ -143,7 +144,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'left_reserve_black', argOtherReserveBlack,
 					'moves', argMoves,
 					'last_time_right', currentTime,
-					'clocks', row.clocks,
+					'clocks', arrClocks.join(),
 					data.id];
 				emitData = {
 					fen: argFen,
@@ -154,9 +155,10 @@ module.exports = async (data, socket, gameSocket, io) => {
 					turn,
 					boardNum,
 					capture,
+					moveNum,
 					move: data.move,
 					moves: argMoves,
-					clocks: row.clocks
+					clocks: arrClocks
 				};
 			}
 			await db.none(queryString, argsQuery);

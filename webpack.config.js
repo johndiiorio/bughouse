@@ -1,5 +1,4 @@
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-const webpack = require('webpack');
 const path = require('path');
 
 const BUILD_DIR = path.resolve(__dirname, 'src/client/public');
@@ -12,18 +11,18 @@ const config = {
 		filename: 'bundle.js'
 	},
 	resolve: {
-		extensions: ['', '.js', '.jsx']
+		extensions: ['.js', '.jsx']
 	},
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /\.jsx?/,
 				include: [APP_DIR],
-				loader: 'babel'
+				loader: 'babel-loader'
 			},
 			{
 				test: /\.css$/,
-				loader: 'style-loader!css-loader'
+				use: ['style-loader', 'css-loader']
 			}
 		]
 	},

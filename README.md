@@ -10,9 +10,9 @@ This web application is designed for the purpose for chess players to play [Bugh
 1. Install Node and Git
 2. Clone this repository
 3. Run ```npm install```
-4. Create a .env file in the root directory of the project with the following, replacing (?) with the desired information: <br>
-5. Install PostgreSQL, start the PostgreSQL server, and connect to it via psql.
-6. In psql, run ```CREATE DATABASE bughouse;``` to create the database.
+4. Install PostgreSQL, start the PostgreSQL server, and connect to it via psql.
+5. In psql, run ```CREATE DATABASE bughouse;``` to create the database.
+6. Create a .env file in the root directory of the project with the following, replacing (?) with the desired information: <br>
 ```
 SERVER_PORT=?              // The port that the server should run on. 3000 is a good default choice
 DB_USER=?                  // The user that should be used to connect to Postgres

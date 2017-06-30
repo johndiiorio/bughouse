@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Chessground } from 'chessground';
 import ReserveContainer from '../../containers/game/ReserveContainer';
 import { socketGame } from '../../socket';
+import Clock from '../../util/Clock';
 import playSound from '../../util/sound';
 
 export default class GameBoardsComponent extends React.Component {
@@ -15,8 +16,8 @@ export default class GameBoardsComponent extends React.Component {
 		this.handleMove = this.handleMove.bind(this);
 		this.onDropFromBoard = this.onDropFromBoard.bind(this);
 		this.onDropFromReserve = this.onDropFromReserve.bind(this);
-		this.updateMoves = this.updateMoves.bind(this);
 		this.updateGame = this.updateGame.bind(this);
+		this.updateMoves = this.updateMoves.bind(this);
 		this.snapbackMove = this.snapbackMove.bind(this);
 		this.handleGameOver = this.handleGameOver.bind(this);
 		this.board1 = null;
@@ -25,14 +26,20 @@ export default class GameBoardsComponent extends React.Component {
 		this.tmpSourceSquare = null;
 		this.tmpTargetSquare = null;
 		this.squaresToHighlight = [];
+		this.timer1 = null;
+		this.timer2 = null;
+		this.timer3 = null;
+		this.timer4 = null;
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', this.snapbackMove);
 		socketGame.on('game over', this.handleGameOver);
 	}
 
 	componentDidMount() {
-		playSound('notify');
 		socketGame.emit('room', this.props.game.id);
+		playSound('notify');
+
+		// Game boards
 		const board1Config = {
 			predroppable: {
 				enabled: true,
@@ -49,20 +56,64 @@ export default class GameBoardsComponent extends React.Component {
 			viewOnly: true,
 			disableContextMenu: true,
 		};
-
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
-
 		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
 			this.board2.toggleOrientation();
 		} else {
 			this.board1.toggleOrientation();
 		}
+
+		// Username styling
 		if (this.props.userPosition === 2 || this.props.userPosition === 3) {
 			document.getElementById('left-game-top-username').style.color = '#46BCDE';
 			document.getElementById('left-game-bottom-username').style.color = '#FB667A';
 			document.getElementById('right-game-top-username').style.color = '#46BCDE';
 			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
+		}
+
+		// Clocks
+		const minutesInMilliseconds = this.props.game.minutes * 60 * 1000;
+		const incrementInMilliseconds = this.props.game.increment * 1000;
+		this.timer1 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		this.timer2 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		this.timer3 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		this.timer4 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		function format(display) {
+			return (minutes, seconds, deciseconds) => {
+				const minutesDisplay = minutes < 10 ? `0${minutes}` : minutes;
+				const secondsDisplay = seconds < 10 ? `0${seconds}` : seconds;
+				if (minutes === 0 && seconds === 0 && deciseconds === 0) {
+					display.style.backgroundColor = '#a00000';
+				}
+				if (minutes < 1 && seconds < 10) {
+					display.style.width = '168px';
+					display.innerHTML = `${minutesDisplay}:${secondsDisplay}.${deciseconds}`;
+				} else {
+					display.innerHTML = `${minutesDisplay}:${secondsDisplay}`;
+				}
+			};
+		}
+		if (this.props.userPosition === 1) {
+			this.timer1.onTick(format(document.getElementById('left-game-bottom-clock')));
+			this.timer2.onTick(format(document.getElementById('left-game-top-clock')));
+			this.timer3.onTick(format(document.getElementById('right-game-top-clock')));
+			this.timer4.onTick(format(document.getElementById('right-game-bottom-clock')));
+		} else if (this.props.userPosition === 2) {
+			this.timer1.onTick(format(document.getElementById('left-game-top-clock')));
+			this.timer2.onTick(format(document.getElementById('left-game-bottom-clock')));
+			this.timer3.onTick(format(document.getElementById('right-game-bottom-clock')));
+			this.timer4.onTick(format(document.getElementById('right-game-top-clock')));
+		} else if (this.props.userPosition === 3) {
+			this.timer1.onTick(format(document.getElementById('right-game-top-clock')));
+			this.timer2.onTick(format(document.getElementById('right-game-bottom-clock')));
+			this.timer3.onTick(format(document.getElementById('left-game-bottom-clock')));
+			this.timer4.onTick(format(document.getElementById('left-game-top-clock')));
+		} else {
+			this.timer1.onTick(format(document.getElementById('right-game-bottom-clock')));
+			this.timer2.onTick(format(document.getElementById('right-game-top-clock')));
+			this.timer3.onTick(format(document.getElementById('left-game-top-clock')));
+			this.timer4.onTick(format(document.getElementById('left-game-bottom-clock')));
 		}
 	}
 
@@ -85,7 +136,8 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	getDurationFormat(duration) {
-		const minutes = Math.floor(duration / 60);
+		let minutes = Math.floor(duration / 60);
+		minutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
 		let seconds = duration % 60;
 		seconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 		return `${minutes}:${seconds}`;
@@ -150,6 +202,69 @@ export default class GameBoardsComponent extends React.Component {
 		this.handleMove('spare', target, piece);
 	}
 
+	updateGame(data) {
+		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
+		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
+			if (data.boardNum === 1) {
+				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
+				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
+					this.timer1.toggle(data.clocks[0]);
+				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
+					// do nothing
+				} else { // Not end of first full move, toggle both clocks
+					this.timer1.toggle(data.clocks[0]);
+					this.timer2.toggle(data.clocks[1]);
+				}
+				if (data.capture) {
+					playSound('capture');
+				} else {
+					playSound('move');
+				}
+			} else {
+				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
+				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
+					this.timer3.toggle(data.clocks[2]);
+				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
+					// do nothing
+				} else { // Not first move, toggle both clocks
+					this.timer3.toggle(data.clocks[2]);
+					this.timer4.toggle(data.clocks[3]);
+				}
+			}
+		} else {
+			if (data.boardNum === 1) {
+				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
+				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
+					this.timer1.toggle(data.clocks[0]);
+				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
+					// do nothing
+				} else { // Not first move, toggle both clocks
+					this.timer1.toggle(data.clocks[0]);
+					this.timer2.toggle(data.clocks[1]);
+				}
+			} else {
+				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
+				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
+					this.timer3.toggle(data.clocks[2]);
+				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
+					// do nothing
+				} else { // Not first move, toggle both clocks
+					this.timer3.toggle(data.clocks[2]);
+					this.timer4.toggle(data.clocks[3]);
+				}
+				if (data.capture) {
+					playSound('capture');
+				} else {
+					playSound('move');
+				}
+			}
+		}
+		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+		this.updateMoves(data.moves);
+		this.board1.playPremove();
+		this.board1.playPredrop();
+	}
+
 	updateMoves(moves) {
 		const newMoves = this.props.moves;
 		const arrMoves = moves.trim().split(' ');
@@ -173,37 +288,6 @@ export default class GameBoardsComponent extends React.Component {
 		}
 		this.props.updateMoves(newMoves);
 		document.getElementById('movesTableTBody').scrollTop = document.getElementById('movesTableTBody').style.height;
-	}
-
-	updateGame(data) {
-		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
-		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
-			if (data.boardNum === 1) {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
-			} else {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-			}
-		} else {
-			if (data.boardNum === 1) {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-			} else {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
-			}
-		}
-		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
-		this.updateMoves(data.moves);
-		this.board1.playPremove();
-		this.board1.playPredrop();
 	}
 
 	snapbackMove(data) {
@@ -233,9 +317,9 @@ export default class GameBoardsComponent extends React.Component {
 					<h3 id="left-game-top-username">{`${this.props.display.player2.username} (${this.getRating(this.props.display.player2)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<ReserveContainer clickable={false} floatRight={false} margin="bottom" reservePosition={2} />
-						<h3 id="left-game-top-clock">
+						<div id="left-game-top-clock">
 							{this.getDurationFormat(this.props.game.minutes * 60)}
-						</h3>
+						</div>
 					</div>
 					<div id="whitePromotion" className="promotion-box">
 						<img src="../../app/static/img/pieces/wQ.svg"
