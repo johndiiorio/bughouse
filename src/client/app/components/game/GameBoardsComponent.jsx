@@ -105,13 +105,13 @@ export default class GameBoardsComponent extends React.Component {
 			this.timer3.onTick(format(document.getElementById('right-game-bottom-clock')));
 			this.timer4.onTick(format(document.getElementById('right-game-top-clock')));
 		} else if (this.props.userPosition === 3) {
-			this.timer1.onTick(format(document.getElementById('right-game-bottom-clock')));
-			this.timer2.onTick(format(document.getElementById('right-game-top-clock')));
+			this.timer1.onTick(format(document.getElementById('right-game-top-clock')));
+			this.timer2.onTick(format(document.getElementById('right-game-bottom-clock')));
 			this.timer3.onTick(format(document.getElementById('left-game-bottom-clock')));
 			this.timer4.onTick(format(document.getElementById('left-game-top-clock')));
 		} else {
-			this.timer1.onTick(format(document.getElementById('right-game-top-clock')));
-			this.timer2.onTick(format(document.getElementById('right-game-bottom-clock')));
+			this.timer1.onTick(format(document.getElementById('right-game-bottom-clock')));
+			this.timer2.onTick(format(document.getElementById('right-game-top-clock')));
 			this.timer3.onTick(format(document.getElementById('left-game-top-clock')));
 			this.timer4.onTick(format(document.getElementById('left-game-bottom-clock')));
 		}
@@ -223,7 +223,7 @@ export default class GameBoardsComponent extends React.Component {
 			} else {
 				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
 				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer4.toggle(data.clocks[3]);
+					this.timer3.toggle(data.clocks[2]);
 				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
 					// do nothing
 				} else { // Not first move, toggle both clocks
@@ -235,7 +235,7 @@ export default class GameBoardsComponent extends React.Component {
 			if (data.boardNum === 1) {
 				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
 				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer2.toggle(data.clocks[1]);
+					this.timer1.toggle(data.clocks[0]);
 				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
 					// do nothing
 				} else { // Not first move, toggle both clocks
@@ -245,7 +245,7 @@ export default class GameBoardsComponent extends React.Component {
 			} else {
 				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
 				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer4.toggle(data.clocks[3]);
+					this.timer3.toggle(data.clocks[2]);
 				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
 					// do nothing
 				} else { // Not first move, toggle both clocks

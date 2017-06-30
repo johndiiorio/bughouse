@@ -5,6 +5,9 @@ module.exports = {
 		"jsx-a11y",
 		"import"
 	],
+	"settings": {
+		"import/resolver": "webpack"
+	},
 	"rules": {
 		"no-tabs": 0, // We're using tabs instead of spaces
 		"indent": ["error", "tab", { "SwitchCase": 1 }], // We're using ONLY tabs instead of spaces
