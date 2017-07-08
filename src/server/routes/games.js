@@ -1,6 +1,8 @@
 const express = require('express');
 const Game = require('../models/Game');
 const Bug = require('../services/bug');
+const jwt = require('jsonwebtoken');
+const secretToken = require('../config').secretToken;
 
 const router = express.Router();
 
@@ -37,14 +39,39 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-/* Get a single game */
+/* Get a single game with users information */
 router.get('/withUsers/:id', async (req, res) => {
 	try {
 		const row = await Game.getGameWithUsersByID(req.params.id);
 		res.json(row);
 	} catch (err) {
 		console.error(`Error while performing GET game by id: ${err}`);
-		res.status(500).send({ error: 'Failed to get game by id' });
+		res.status(400).send({ error: 'Failed to get game with users by id' });
+	}
+});
+
+/* Get if a user is in a game */
+router.put('/userInGame/:id', async (req, res) => {
+	try {
+		const token = req.body.token;
+		if (req.params.id === 'undefined' || !token) {
+			throw new Error('No id or token given');
+		}
+		const row = await Game.getGameWithUsersByID(req.params.id);
+		jwt.verify(token, secretToken, (err, decoded) => {
+			if (err) {
+				res.json({ userInGame: false });
+			} else {
+				if (row.player1.id === decoded.id || row.player2.id === decoded.id || row.player3.id === decoded.id || row.player4.id === decoded.id) {
+					res.json({ userInGame: true });
+				} else {
+					res.json({ userInGame: false });
+				}
+			}
+		});
+	} catch (err) {
+		console.error(`Error while performing GET if user in game by id: ${err}`);
+		res.status(400).send({ userInGame: false });
 	}
 });
 

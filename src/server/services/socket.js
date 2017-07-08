@@ -15,7 +15,7 @@ module.exports = io => {
 			socket.join(room);
 			const gameStarted = await Game.tryToStartGame(room);
 			if (gameStarted) {
-				io.of('/loading').in(room).emit('start game');
+				io.of('/loading').in(room).emit('start game', room);
 			}
 		});
 	});

@@ -95,36 +95,42 @@ export default class CreateGameComponent extends React.Component {
 	}
 
 	render() {
-		const createGameContainerStyle = {
-			display: !_.isEmpty(this.props.currentUser) ? 'block' : 'none'
-		};
 		const underlineStyle = {
 			textDecoration: 'underline'
 		};
 		return (
-			<div className="col-md-2" style={createGameContainerStyle}>
-				<h3 className="brighter-color" style={underlineStyle}>Create a new game:</h3>
-				<p className="brighter-color" type="text" id="minutesDisplay">Minutes: {this.state.minutes}</p>
-				<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />
-				<br />
-				<p className="brighter-color" type="text" id="incrementDisplay">Increment (seconds): {this.state.increment}</p>
-				<Slider min={0} max={30} tooltip={false} value={this.state.increment} onChange={this.handleIncrementChange} />
-				<br />
-				<p className="brighter-color" type="text" id="ratingDisplay">{this.formatRatingRange()}</p>
-				<Slider min={0} max={500} step={10} tooltip={false} value={this.state.ratingRange} onChange={this.handleRatingRangeChange} />
-				<br />
-				<p className="brighter-color noBottomMargin">Players join random sides?</p>
-				<Toggle defaultChecked={this.state.randomSwitch} icons={false} onChange={this.handleRandomSwitchChange}	/>
-				<br /><br />
-				<p className="noBottomMargin brighter-color">Rated game?</p>
-				<Toggle defaultChecked={this.state.mode} icons={false} onChange={this.handleModeSwitchChange} />
-				<br /><br />
-				<p className="brighter-color">Choose your side and create game!</p>
-				<ButtonGroup>
-					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('white')}>White</Button>
-					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('random')}>Random</Button>
-					<Button bsClass="btn btn-secondary" onClick={() => this.createGame('black')}>Black</Button>
-				</ButtonGroup>
+			<div>
+				{!_.isEmpty(this.props.currentUser) &&
+				<div className="col-md-2">
+					<h3 className="brighter-color" style={underlineStyle}>Create a new game:</h3>
+					<p className="brighter-color" type="text" id="minutesDisplay">Minutes: {this.state.minutes}</p>
+					<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />
+					<br />
+					<p className="brighter-color" type="text" id="incrementDisplay">Increment
+						(seconds): {this.state.increment}</p>
+					<Slider min={0} max={30} tooltip={false} value={this.state.increment}
+						onChange={this.handleIncrementChange}
+					/>
+					<br />
+					<p className="brighter-color" type="text" id="ratingDisplay">{this.formatRatingRange()}</p>
+					<Slider min={0} max={500} step={10} tooltip={false} value={this.state.ratingRange}
+						onChange={this.handleRatingRangeChange}
+					/>
+					<br />
+					<p className="brighter-color noBottomMargin">Players join random sides?</p>
+					<Toggle defaultChecked={this.state.randomSwitch} icons={false} onChange={this.handleRandomSwitchChange} />
+					<br /><br />
+					<p className="noBottomMargin brighter-color">Rated game?</p>
+					<Toggle defaultChecked={this.state.mode} icons={false} onChange={this.handleModeSwitchChange} />
+					<br /><br />
+					<p className="brighter-color">Choose your side and create game!</p>
+					<ButtonGroup>
+						<Button bsClass="btn btn-secondary" onClick={() => this.createGame('white')}>White</Button>
+						<Button bsClass="btn btn-secondary" onClick={() => this.createGame('random')}>Random</Button>
+						<Button bsClass="btn btn-secondary" onClick={() => this.createGame('black')}>Black</Button>
+					</ButtonGroup>
+				</div>
+				}
 			</div>
 		);
 	}

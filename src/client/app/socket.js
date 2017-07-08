@@ -11,6 +11,6 @@ socketLobby.on('update game list', () => {
 	store.dispatch(updateDisplayedGames());
 });
 
-socketLoading.on('start game', () => {
-	browserHistory.push('/game');
+socketLoading.on('start game', id => {
+	browserHistory.push(`/game/${id}`);
 });

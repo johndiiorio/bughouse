@@ -1,12 +1,27 @@
 import axios from 'axios';
 
 export const UPDATE_MOVES = 'UPDATE_MOVES';
+export const UPDATE_CLOCKS = 'UPDATE_CLOCKS';
 export const UPDATE_RESERVES = 'UPDATE_RESERVES';
+export const UPDATE_BOARD1_CONFIG = 'UPDATE_BOARD1_CONFIG';
+export const UPDATE_BOARD2_CONFIG = 'UPDATE_BOARD2_CONFIG';
 export const UPDATE_PIECE_TO_DRAG_FROM_RESERVE = 'UPDATE_PIECE_TO_DRAG_FROM_RESERVE';
 export const RECEIVE_GAME_INFO = 'RECEIVE_GAME_INFO';
 
 export function updateMoves(moves) {
 	return { type: UPDATE_MOVES, moves };
+}
+
+export function updateClocks(clocks) {
+	return { type: UPDATE_CLOCKS, clocks };
+}
+
+export function updateBoard1Config(config) {
+	return { type: UPDATE_BOARD1_CONFIG, config };
+}
+
+export function updateBoard2Config(config) {
+	return { type: UPDATE_BOARD2_CONFIG, config };
 }
 
 // Each reserve is an array of objects of type { color, role }

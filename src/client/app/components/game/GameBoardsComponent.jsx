@@ -41,6 +41,7 @@ export default class GameBoardsComponent extends React.Component {
 
 		// Game boards
 		const board1Config = {
+			fen: this.props.board1Config.fen,
 			predroppable: {
 				enabled: true,
 			},
@@ -52,10 +53,19 @@ export default class GameBoardsComponent extends React.Component {
 				dropNewPiece: this.onDropFromReserve
 			}
 		};
+		if (this.props.board1Config.lastMove) board1Config.lastMove = this.props.board1Config.lastMove;
+		if (this.props.board1Config.turnColor) board1Config.turnColor = this.props.board1Config.turnColor;
 		const board2Config = {
+			fen: this.props.board1Config.fen,
 			viewOnly: true,
 			disableContextMenu: true,
 		};
+		if (this.props.board2Config.lastMove) board2Config.lastMove = this.props.board2Config.lastMove;
+		if (this.props.board2Config.turnColor) board2Config.turnColor = this.props.board2Config.turnColor;
+
+		console.log(board1Config);
+		console.log(board2Config);
+
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
 		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
@@ -127,6 +137,16 @@ export default class GameBoardsComponent extends React.Component {
 			this.board1.dragNewPiece(nextProps.pieceToDragFromReserve, mouseEvent);
 			this.props.updatePieceToDragFromReserve({});
 		}
+		this.board1.set({
+			fen: nextProps.board1Config.fen,
+			lastMove: nextProps.board1Config.lastMove,
+			turnColor: nextProps.board1Config.turnColor
+		});
+		this.board2.set({
+			fen: nextProps.board2Config.fen,
+			lastMove: nextProps.board2Config.lastMove,
+			turnColor: nextProps.board2Config.turnColor
+		});
 	}
 
 	getRating(player) {
@@ -204,65 +224,68 @@ export default class GameBoardsComponent extends React.Component {
 
 	updateGame(data) {
 		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
+		const boardStateWithTurnColor = {
+			fen: data.fen,
+			lastMove: this.squaresToHighlight,
+			turnColor: data.turn
+		};
+		const boardStateWithoutTurnColor = {
+			fen: data.fen,
+			lastMove: this.squaresToHighlight
+		};
+		function handleSound() {
+			if (data.capture) {
+				playSound('capture');
+			} else {
+				playSound('move');
+			}
+		}
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer1.toggle(data.clocks[0]);
-				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not end of first full move, toggle both clocks
-					this.timer1.toggle(data.clocks[0]);
-					this.timer2.toggle(data.clocks[1]);
-				}
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
+				this.props.updateBoard1Config(boardStateWithTurnColor);
+				this.updateTimers1And2(data.clocks, data.turn);
+				handleSound();
 			} else {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer3.toggle(data.clocks[2]);
-				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer3.toggle(data.clocks[2]);
-					this.timer4.toggle(data.clocks[3]);
-				}
+				this.props.updateBoard2Config(boardStateWithoutTurnColor);
+				this.updateTimers3And4(data.clocks, data.turn);
 			}
 		} else {
 			if (data.boardNum === 1) {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer1.toggle(data.clocks[0]);
-				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer1.toggle(data.clocks[0]);
-					this.timer2.toggle(data.clocks[1]);
-				}
+				this.props.updateBoard2Config(boardStateWithoutTurnColor);
+				this.updateTimers1And2(data.clocks, data.turn);
 			} else {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer3.toggle(data.clocks[2]);
-				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer3.toggle(data.clocks[2]);
-					this.timer4.toggle(data.clocks[3]);
-				}
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
+				this.props.updateBoard1Config(boardStateWithTurnColor);
+				this.updateTimers3And4(data.clocks, data.turn);
+				handleSound();
 			}
 		}
 		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+		this.props.updateClocks(data.clocks);
 		this.updateMoves(data.moves);
 		this.board1.playPremove();
 		this.board1.playPredrop();
+	}
+
+	updateTimers1And2(clocks, turn) {
+		if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'white') { // Start clocks at end of first full move
+			this.timer1.toggle(clocks[0]);
+		} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'black') {
+			// do nothing
+		} else { // Not end of first full move, toggle both clocks
+			this.timer1.toggle(clocks[0]);
+			this.timer2.toggle(clocks[1]);
+		}
+	}
+
+	updateTimers3And4(clocks, turn) {
+		if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'white') { // Start clocks at end of first full move
+			this.timer3.toggle(clocks[2]);
+		} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'black') {
+			// do nothing
+		} else { // Not first move, toggle both clocks
+			this.timer3.toggle(clocks[2]);
+			this.timer4.toggle(clocks[3]);
+		}
 	}
 
 	updateMoves(moves) {
