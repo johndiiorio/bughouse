@@ -5,16 +5,6 @@ const defaultState = {
 	game: {},
 	userPosition: null,
 	moves: [],
-	board1Config: {
-		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
-		lastMove: null,
-		turnColor: null
-	},
-	board2Config: {
-		fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
-		lastMove: null,
-		turnColor: null
-	},
 	clocks: [],
 	reserves: {
 		leftWhite: [],
@@ -47,16 +37,6 @@ export default function user(state = defaultState, action) {
 					rightBlack: action.rightBlack
 				}
 			};
-		case gameActions.UPDATE_BOARD1_CONFIG:
-			return {
-				...state,
-				board1Config: _.cloneDeep(action.config)
-			};
-		case gameActions.UPDATE_BOARD2_CONFIG:
-			return {
-				...state,
-				board2Config: _.cloneDeep(action.config)
-			};
 		case gameActions.UPDATE_PIECE_TO_DRAG_FROM_RESERVE: {
 			return {
 				...state,
@@ -64,22 +44,10 @@ export default function user(state = defaultState, action) {
 			};
 		}
 		case gameActions.RECEIVE_GAME_INFO: {
-			const game = action.data;
-			const userID = action.userID;
-			let userPosition;
-			if (game.player1.id === userID) {
-				userPosition = 1;
-			} else if (game.player2.id === userID) {
-				userPosition = 2;
-			} else if (game.player3.id === userID) {
-				userPosition = 3;
-			} else {
-				userPosition = 4;
-			}
 			return {
 				...state,
-				game,
-				userPosition
+				game: action.data,
+				userPosition: action.userPosition
 			};
 		}
 		default:

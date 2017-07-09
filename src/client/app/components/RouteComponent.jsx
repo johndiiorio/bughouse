@@ -42,9 +42,9 @@ export default class RouteComponent extends React.Component {
 		}
 		if (!token) routeToOverview();
 		else {
-			axios.put(`/api/games/games/userInGame/${gameID}`, { token })
+			axios.put(`/api/games/showGameOrOverview/${gameID}`, { token })
 				.then(res => {
-					if (!res.data.userInGame) routeToOverview();
+					if (!res.data.showGame) browserHistory.push(`/overview/${gameID}`);
 				})
 				.catch(() => routeToOverview);
 		}
