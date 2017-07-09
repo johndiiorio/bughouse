@@ -10,7 +10,6 @@ import playSound from '../../util/sound';
 export default class GameBoardsComponent extends React.Component {
 	constructor(props) {
 		super(props);
-		this.hydrateState = this.hydrateState.bind(this);
 		this.getRating = this.getRating.bind(this);
 		this.getDurationFormat = this.getDurationFormat.bind(this);
 		this.selectPromotionPiece = this.selectPromotionPiece.bind(this);
@@ -38,7 +37,6 @@ export default class GameBoardsComponent extends React.Component {
 
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
-		playSound('notify');
 
 		// Game boards
 		const board1Config = {
@@ -117,7 +115,31 @@ export default class GameBoardsComponent extends React.Component {
 			this.timer3.onTick(format(document.getElementById('left-game-top-clock')));
 			this.timer4.onTick(format(document.getElementById('left-game-bottom-clock')));
 		}
-		this.hydrateState();
+
+		// Hydrate state
+		axios.get(`/api/games/state/${this.props.game.id}`)
+			.then(res => {
+				const data = res.data;
+				this.updateMoves(data.moves);
+				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+				const leftConfig = {
+					fen: data.leftFen,
+					lastMove: data.leftLastMove,
+					turnColor: data.leftColorToPlay
+				};
+				const rightConfig = {
+					fen: data.rightFen,
+					lastMove: data.rightLastMove,
+					turnColor: data.rightColorToPlay
+				};
+				if (this.props.userPosition === 1 || this.props.userPosition === 2) {
+					this.board1.set(leftConfig);
+					this.board2.set(rightConfig);
+				} else {
+					this.board1.set(rightConfig);
+					this.board2.set(leftConfig);
+				}
+			}).catch(console.error);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -130,20 +152,6 @@ export default class GameBoardsComponent extends React.Component {
 			this.board1.dragNewPiece(nextProps.pieceToDragFromReserve, mouseEvent);
 			this.props.updatePieceToDragFromReserve({});
 		}
-	}
-
-	hydrateState() {
-		axios.get(`/api/games/state/${this.props.game.id}`)
-			.then(res => {
-				this.updateMoves(res.data.moves);
-				if (this.props.userPosition === 1 || this.props.userPosition === 2) {
-					this.board1.set({ fen: res.data.leftFen });
-					this.board2.set({ fen: res.data.rightFen });
-				} else {
-					this.board1.set({ fen: res.data.rightFen });
-					this.board2.set({ fen: res.data.leftFen });
-				}
-			}).catch(console.error);
 	}
 
 	getRating(player) {
@@ -172,7 +180,16 @@ export default class GameBoardsComponent extends React.Component {
 		if (source !== 'spare') {
 			this.board1.move(source, target);
 		}
-		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
+		const data = {
+			id: this.props.game.id,
+			userPosition: this.props.userPosition,
+			move: {
+				source,
+				target,
+				piece,
+				promotion: this.tmpPromotionPiece
+			}
+		};
 		socketGame.emit('update game', data);
 	}
 

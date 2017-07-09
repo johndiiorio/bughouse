@@ -61,6 +61,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 			game = new Bug(row.right_fen);
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
 		}
+		let lastMove = [data.move.target];
 		if (data.move.source === 'spare') {
 			move = game.move(`${data.move.piece.role.charAt(0).toUpperCase()}@${data.move.target}`);
 		} else {
@@ -69,9 +70,14 @@ module.exports = async (data, socket, gameSocket, io) => {
 				to: data.move.target,
 				promotion: data.move.promotion
 			});
+			lastMove.push(data.move.source);
 		}
+		lastMove = JSON.stringify(lastMove);
 		if (move) { // Not an illegal move
-			const queryString = 'UPDATE Games SET $1~ = $2, $3~ = $4, $5~ = $6, $7~ = $8, $9~ = $10, $11~ = $12, $13~ = $14, $15~ = $16 WHERE id = $17';
+			const queryString =
+				'UPDATE Games SET $1~ = $2, $3~ = $4, $5~ = $6, ' +
+				'$7~ = $8, $9~ = $10, $11~ = $12, $13~ = $14, ' +
+				'$15~ = $16, $17~ = $18, $19~ = $20 WHERE id = $21';
 			let argsQuery;
 			let boardNum;
 			let emitData;
@@ -113,6 +119,8 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'last_time_left', currentTime,
 					'moves', argMoves,
 					'clocks', arrClocks.join(),
+					'left_last_move', lastMove,
+					'left_color_to_play', turn,
 					data.id];
 				emitData = {
 					fen: argFen,
@@ -145,6 +153,8 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'moves', argMoves,
 					'last_time_right', currentTime,
 					'clocks', arrClocks.join(),
+					'right_last_move', lastMove,
+					'right_color_to_play', turn,
 					data.id];
 				emitData = {
 					fen: argFen,

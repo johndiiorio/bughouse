@@ -151,6 +151,10 @@ router.get('/state/:id', async (req, res) => {
 		state.moves = game.moves;
 		state.leftFen = game.left_fen;
 		state.rightFen = game.right_fen;
+		state.leftLastMove = JSON.parse(game.left_last_move);
+		state.rightLastMove = JSON.parse(game.right_last_move);
+		state.leftColorToPlay = game.left_color_to_play;
+		state.rightColorToPlay = game.right_color_to_play;
 		res.json(state);
 	} catch (err) {
 		console.error(`Error while performing fetch game state: ${err}`);
@@ -181,7 +185,6 @@ router.put('/validate/pawnpromotion/:id', async (req, res) => {
 		if (move) {
 			res.json({ valid: true });
 		} else {
-			console.log('Move does not exist');
 			res.json({ valid: false, fen: game.fen() });
 		}
 	} catch (err) {
