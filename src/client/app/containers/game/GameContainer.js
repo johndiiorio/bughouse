@@ -11,7 +11,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
 	return {
-		getGameInfo: () => dispatch(getGameInfo())
+		getGameInfo: id => dispatch(getGameInfo(id))
 	};
 }
 

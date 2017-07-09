@@ -37,11 +37,9 @@ export default class GameBoardsComponent extends React.Component {
 
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
-		playSound('notify');
 
 		// Game boards
 		const board1Config = {
-			fen: this.props.board1Config.fen,
 			predroppable: {
 				enabled: true,
 			},
@@ -53,18 +51,10 @@ export default class GameBoardsComponent extends React.Component {
 				dropNewPiece: this.onDropFromReserve
 			}
 		};
-		if (this.props.board1Config.lastMove) board1Config.lastMove = this.props.board1Config.lastMove;
-		if (this.props.board1Config.turnColor) board1Config.turnColor = this.props.board1Config.turnColor;
 		const board2Config = {
-			fen: this.props.board1Config.fen,
 			viewOnly: true,
 			disableContextMenu: true,
 		};
-		if (this.props.board2Config.lastMove) board2Config.lastMove = this.props.board2Config.lastMove;
-		if (this.props.board2Config.turnColor) board2Config.turnColor = this.props.board2Config.turnColor;
-
-		console.log(board1Config);
-		console.log(board2Config);
 
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
@@ -125,6 +115,31 @@ export default class GameBoardsComponent extends React.Component {
 			this.timer3.onTick(format(document.getElementById('left-game-top-clock')));
 			this.timer4.onTick(format(document.getElementById('left-game-bottom-clock')));
 		}
+
+		// Hydrate state
+		axios.get(`/api/games/state/${this.props.game.id}`)
+			.then(res => {
+				const data = res.data;
+				this.updateMoves(data.moves);
+				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+				const leftConfig = {
+					fen: data.leftFen,
+					lastMove: data.leftLastMove,
+					turnColor: data.leftColorToPlay
+				};
+				const rightConfig = {
+					fen: data.rightFen,
+					lastMove: data.rightLastMove,
+					turnColor: data.rightColorToPlay
+				};
+				if (this.props.userPosition === 1 || this.props.userPosition === 2) {
+					this.board1.set(leftConfig);
+					this.board2.set(rightConfig);
+				} else {
+					this.board1.set(rightConfig);
+					this.board2.set(leftConfig);
+				}
+			}).catch(console.error);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -137,16 +152,6 @@ export default class GameBoardsComponent extends React.Component {
 			this.board1.dragNewPiece(nextProps.pieceToDragFromReserve, mouseEvent);
 			this.props.updatePieceToDragFromReserve({});
 		}
-		this.board1.set({
-			fen: nextProps.board1Config.fen,
-			lastMove: nextProps.board1Config.lastMove,
-			turnColor: nextProps.board1Config.turnColor
-		});
-		this.board2.set({
-			fen: nextProps.board2Config.fen,
-			lastMove: nextProps.board2Config.lastMove,
-			turnColor: nextProps.board2Config.turnColor
-		});
 	}
 
 	getRating(player) {
@@ -175,7 +180,16 @@ export default class GameBoardsComponent extends React.Component {
 		if (source !== 'spare') {
 			this.board1.move(source, target);
 		}
-		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
+		const data = {
+			id: this.props.game.id,
+			userPosition: this.props.userPosition,
+			move: {
+				source,
+				target,
+				piece,
+				promotion: this.tmpPromotionPiece
+			}
+		};
 		socketGame.emit('update game', data);
 	}
 
@@ -242,19 +256,19 @@ export default class GameBoardsComponent extends React.Component {
 		}
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
-				this.props.updateBoard1Config(boardStateWithTurnColor);
+				this.board1.set(boardStateWithTurnColor);
 				this.updateTimers1And2(data.clocks, data.turn);
 				handleSound();
 			} else {
-				this.props.updateBoard2Config(boardStateWithoutTurnColor);
+				this.board2.set(boardStateWithoutTurnColor);
 				this.updateTimers3And4(data.clocks, data.turn);
 			}
 		} else {
 			if (data.boardNum === 1) {
-				this.props.updateBoard2Config(boardStateWithoutTurnColor);
+				this.board2.set(boardStateWithoutTurnColor);
 				this.updateTimers1And2(data.clocks, data.turn);
 			} else {
-				this.props.updateBoard1Config(boardStateWithTurnColor);
+				this.board1.set(boardStateWithTurnColor);
 				this.updateTimers3And4(data.clocks, data.turn);
 				handleSound();
 			}
