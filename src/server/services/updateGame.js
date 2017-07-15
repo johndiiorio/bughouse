@@ -105,7 +105,8 @@ module.exports = async (data, socket, gameSocket, io) => {
 				boardNum = 1;
 				argOtherReserveWhite = JSON.stringify(row.right_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.right_reserve_black.concat(newReserves.other_reserve_black));
-				diffTime = moveNum !== 1 ? currentTime - row.last_time_left : row.increment; // don't change clock if first move
+				// don't change clock if white's first move
+				diffTime = moveNum === 1 && turn === 'black' ? row.increment : currentTime - row.left_last_time;
 				if (data.userPosition === 1) {
 					arrClocks[0] += diffTime - row.increment;
 				} else {
@@ -116,7 +117,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'left_reserve_black', argReserveBlack,
 					'right_reserve_white', argOtherReserveWhite,
 					'right_reserve_black', argOtherReserveBlack,
-					'last_time_left', currentTime,
+					'left_last_time', currentTime,
 					'moves', argMoves,
 					'clocks', arrClocks.join(),
 					'left_last_move', lastMove,
@@ -139,7 +140,8 @@ module.exports = async (data, socket, gameSocket, io) => {
 				boardNum = 2;
 				argOtherReserveWhite = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
-				diffTime = moveNum !== 1 ? currentTime - row.last_time_right : row.increment; // don't change clock if first move
+				// don't change clock if white's first move
+				diffTime = moveNum === 1 && turn === 'black' ? row.increment : currentTime - row.right_last_time;
 				if (data.userPosition === 3) {
 					arrClocks[2] += diffTime - row.increment;
 				} else {
@@ -151,7 +153,7 @@ module.exports = async (data, socket, gameSocket, io) => {
 					'left_reserve_white', argOtherReserveWhite,
 					'left_reserve_black', argOtherReserveBlack,
 					'moves', argMoves,
-					'last_time_right', currentTime,
+					'right_last_time', currentTime,
 					'clocks', arrClocks.join(),
 					'right_last_move', lastMove,
 					'right_color_to_play', turn,

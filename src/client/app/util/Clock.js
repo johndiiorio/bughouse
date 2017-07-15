@@ -46,6 +46,14 @@ export default class Clock {
 		}
 	}
 
+	setDuration(duration) {
+		this.duration = duration;
+		const obj = this.parse(duration);
+		this.tickFtns.forEach(ftn => {
+			ftn.call(this, obj.minutes, obj.seconds, obj.deciseconds);
+		});
+	}
+
 	onTick(ftn) {
 		if (typeof ftn === 'function') {
 			this.tickFtns.push(ftn);

@@ -139,6 +139,28 @@ export default class GameBoardsComponent extends React.Component {
 					this.board1.set(rightConfig);
 					this.board2.set(leftConfig);
 				}
+				// Hydrate clocks
+				const currentTime = Date.now();
+				if (data.leftLastTime) {
+					const diffTime = currentTime - data.leftLastTime;
+					if (data.leftColorToPlay === 'white') {
+						this.timer1.toggle(data.clocks[0] + diffTime);
+						this.timer2.setDuration(minutesInMilliseconds - data.clocks[1]);
+					} else {
+						this.timer1.setDuration(minutesInMilliseconds - data.clocks[0]);
+						this.timer2.toggle(data.clocks[1] + diffTime);
+					}
+				}
+				if (data.rightLastTime) {
+					const diffTime = currentTime - data.rightLastTime;
+					if (data.rightColorToPlay === 'white') {
+						this.timer3.toggle(data.clocks[2] + diffTime);
+						this.timer4.setDuration(minutesInMilliseconds - data.clocks[3]);
+					} else {
+						this.timer3.setDuration(minutesInMilliseconds - data.clocks[2]);
+						this.timer4.toggle(data.clocks[3] + diffTime);
+					}
+				}
 			}).catch(console.error);
 	}
 
@@ -281,9 +303,9 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateTimers1And2(clocks, turn) {
-		if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'white') { // Start clocks at end of first full move
-			this.timer1.toggle(clocks[0]);
-		} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'black') {
+		if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'black') { // Start clocks at end of white's first move
+			this.timer2.toggle(clocks[0]);
+		} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'white') {
 			// do nothing
 		} else { // Not end of first full move, toggle both clocks
 			this.timer1.toggle(clocks[0]);
@@ -292,9 +314,9 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	updateTimers3And4(clocks, turn) {
-		if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'white') { // Start clocks at end of first full move
-			this.timer3.toggle(clocks[2]);
-		} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'black') {
+		if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'black') { // Start clocks at end of white's first move
+			this.timer4.toggle(clocks[2]);
+		} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'white') {
 			// do nothing
 		} else { // Not first move, toggle both clocks
 			this.timer3.toggle(clocks[2]);

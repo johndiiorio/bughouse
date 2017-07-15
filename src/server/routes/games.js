@@ -143,18 +143,22 @@ router.get('/state/:id', async (req, res) => {
 	}
 	try {
 		const game = await Game.getByID(req.params.id);
-		const state = {};
-		state.leftReserveWhite = convertReserveToSparePieces(game.left_reserve_white);
-		state.leftReserveBlack = convertReserveToSparePieces(game.left_reserve_black);
-		state.rightReserveWhite = convertReserveToSparePieces(game.right_reserve_white);
-		state.rightReserveBlack = convertReserveToSparePieces(game.right_reserve_black);
-		state.moves = game.moves;
-		state.leftFen = game.left_fen;
-		state.rightFen = game.right_fen;
-		state.leftLastMove = JSON.parse(game.left_last_move);
-		state.rightLastMove = JSON.parse(game.right_last_move);
-		state.leftColorToPlay = game.left_color_to_play;
-		state.rightColorToPlay = game.right_color_to_play;
+		const state = {
+			leftReserveWhite: convertReserveToSparePieces(game.left_reserve_white),
+			leftReserveBlack: convertReserveToSparePieces(game.left_reserve_black),
+			rightReserveWhite: convertReserveToSparePieces(game.right_reserve_white),
+			rightReserveBlack: convertReserveToSparePieces(game.right_reserve_black),
+			moves: game.moves,
+			leftFen: game.left_fen,
+			rightFen: game.right_fen,
+			leftLastMove: JSON.parse(game.left_last_move),
+			rightLastMove: JSON.parse(game.right_last_move),
+			leftColorToPlay: game.left_color_to_play,
+			rightColorToPlay: game.right_color_to_play,
+			clocks: game.clocks.split(',').map(Number),
+			leftLastTime: parseInt(game.left_last_time),
+			rightLastTime: parseInt(game.right_last_time)
+		};
 		res.json(state);
 	} catch (err) {
 		console.error(`Error while performing fetch game state: ${err}`);
