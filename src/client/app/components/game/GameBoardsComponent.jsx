@@ -37,7 +37,6 @@ export default class GameBoardsComponent extends React.Component {
 
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
-		playSound('notify');
 
 		// Game boards
 		const board1Config = {
@@ -56,6 +55,7 @@ export default class GameBoardsComponent extends React.Component {
 			viewOnly: true,
 			disableContextMenu: true,
 		};
+
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
 		this.board2 = Chessground(document.getElementById('board2'), board2Config);
 		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
@@ -115,6 +115,53 @@ export default class GameBoardsComponent extends React.Component {
 			this.timer3.onTick(format(document.getElementById('left-game-top-clock')));
 			this.timer4.onTick(format(document.getElementById('left-game-bottom-clock')));
 		}
+
+		// Hydrate state
+		axios.get(`/api/games/state/${this.props.game.id}`)
+			.then(res => {
+				const data = res.data;
+				this.updateMoves(data.moves);
+				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+				const leftConfig = {
+					fen: data.leftFen,
+					lastMove: data.leftLastMove,
+					turnColor: data.leftColorToPlay
+				};
+				const rightConfig = {
+					fen: data.rightFen,
+					lastMove: data.rightLastMove,
+					turnColor: data.rightColorToPlay
+				};
+				if (this.props.userPosition === 1 || this.props.userPosition === 2) {
+					this.board1.set(leftConfig);
+					this.board2.set(rightConfig);
+				} else {
+					this.board1.set(rightConfig);
+					this.board2.set(leftConfig);
+				}
+				// Hydrate clocks
+				const currentTime = Date.now();
+				if (data.leftLastTime) {
+					const diffTime = currentTime - data.leftLastTime;
+					if (data.leftColorToPlay === 'white') {
+						this.timer1.toggle(data.clocks[0] + diffTime);
+						this.timer2.setDuration(minutesInMilliseconds - data.clocks[1]);
+					} else {
+						this.timer1.setDuration(minutesInMilliseconds - data.clocks[0]);
+						this.timer2.toggle(data.clocks[1] + diffTime);
+					}
+				}
+				if (data.rightLastTime) {
+					const diffTime = currentTime - data.rightLastTime;
+					if (data.rightColorToPlay === 'white') {
+						this.timer3.toggle(data.clocks[2] + diffTime);
+						this.timer4.setDuration(minutesInMilliseconds - data.clocks[3]);
+					} else {
+						this.timer3.setDuration(minutesInMilliseconds - data.clocks[2]);
+						this.timer4.toggle(data.clocks[3] + diffTime);
+					}
+				}
+			}).catch(console.error);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -155,7 +202,16 @@ export default class GameBoardsComponent extends React.Component {
 		if (source !== 'spare') {
 			this.board1.move(source, target);
 		}
-		const data = { id: this.props.game.id, userPosition: this.props.userPosition, move: { source, target, piece, promotion: this.tmpPromotionPiece } };
+		const data = {
+			id: this.props.game.id,
+			userPosition: this.props.userPosition,
+			move: {
+				source,
+				target,
+				piece,
+				promotion: this.tmpPromotionPiece
+			}
+		};
 		socketGame.emit('update game', data);
 	}
 
@@ -204,65 +260,68 @@ export default class GameBoardsComponent extends React.Component {
 
 	updateGame(data) {
 		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
+		const boardStateWithTurnColor = {
+			fen: data.fen,
+			lastMove: this.squaresToHighlight,
+			turnColor: data.turn
+		};
+		const boardStateWithoutTurnColor = {
+			fen: data.fen,
+			lastMove: this.squaresToHighlight
+		};
+		function handleSound() {
+			if (data.capture) {
+				playSound('capture');
+			} else {
+				playSound('move');
+			}
+		}
 		if (this.props.userPosition === 1 || this.props.userPosition === 2) {
 			if (data.boardNum === 1) {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer1.toggle(data.clocks[0]);
-				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not end of first full move, toggle both clocks
-					this.timer1.toggle(data.clocks[0]);
-					this.timer2.toggle(data.clocks[1]);
-				}
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
+				this.board1.set(boardStateWithTurnColor);
+				this.updateTimers1And2(data.clocks, data.turn);
+				handleSound();
 			} else {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer3.toggle(data.clocks[2]);
-				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer3.toggle(data.clocks[2]);
-					this.timer4.toggle(data.clocks[3]);
-				}
+				this.board2.set(boardStateWithoutTurnColor);
+				this.updateTimers3And4(data.clocks, data.turn);
 			}
 		} else {
 			if (data.boardNum === 1) {
-				this.board2.set({ fen: data.fen, lastMove: this.squaresToHighlight });
-				if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer1.toggle(data.clocks[0]);
-				} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer1.toggle(data.clocks[0]);
-					this.timer2.toggle(data.clocks[1]);
-				}
+				this.board2.set(boardStateWithoutTurnColor);
+				this.updateTimers1And2(data.clocks, data.turn);
 			} else {
-				this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: data.turn });
-				if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'white') { // Start clocks at end of first full move
-					this.timer3.toggle(data.clocks[2]);
-				} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && data.turn === 'black') {
-					// do nothing
-				} else { // Not first move, toggle both clocks
-					this.timer3.toggle(data.clocks[2]);
-					this.timer4.toggle(data.clocks[3]);
-				}
-				if (data.capture) {
-					playSound('capture');
-				} else {
-					playSound('move');
-				}
+				this.board1.set(boardStateWithTurnColor);
+				this.updateTimers3And4(data.clocks, data.turn);
+				handleSound();
 			}
 		}
 		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+		this.props.updateClocks(data.clocks);
 		this.updateMoves(data.moves);
 		this.board1.playPremove();
 		this.board1.playPredrop();
+	}
+
+	updateTimers1And2(clocks, turn) {
+		if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'black') { // Start clocks at end of white's first move
+			this.timer2.toggle(clocks[0]);
+		} else if (!this.timer1.isRunning() && !this.timer2.isRunning() && turn === 'white') {
+			// do nothing
+		} else { // Not end of first full move, toggle both clocks
+			this.timer1.toggle(clocks[0]);
+			this.timer2.toggle(clocks[1]);
+		}
+	}
+
+	updateTimers3And4(clocks, turn) {
+		if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'black') { // Start clocks at end of white's first move
+			this.timer4.toggle(clocks[2]);
+		} else if (!this.timer3.isRunning() && !this.timer4.isRunning() && turn === 'white') {
+			// do nothing
+		} else { // Not first move, toggle both clocks
+			this.timer3.toggle(clocks[2]);
+			this.timer4.toggle(clocks[3]);
+		}
 	}
 
 	updateMoves(moves) {

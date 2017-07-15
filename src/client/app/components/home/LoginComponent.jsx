@@ -67,9 +67,6 @@ export default class LoginComponent extends React.Component {
 	}
 
 	render() {
-		const containerStyle = {
-			display: _.isEmpty(this.props.currentUser) ? 'block' : 'none'
-		};
 		const underlineStyle = {
 			textDecoration: 'underline'
 		};
@@ -81,37 +78,52 @@ export default class LoginComponent extends React.Component {
 			margin: 'auto'
 		};
 		return (
-			<div className="col-md-2" style={containerStyle}>
-				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
-				<h3 className="brighter-color" style={underlineStyle}>Log in:</h3>
-				<div style={loginStyle}>
-					<form onSubmit={this.handleSubmit}>
-						<div className="row" style={marginStyle}>
-							<div className="col-md-12">
-								<h5 className="brighter-color">Username</h5>
+			<div>
+				{ _.isEmpty(this.props.currentUser) &&
+				<div className="col-md-2">
+					<NotificationSystem	ref={c => {	this.notificationSystem = c; }}	/>
+					<h3 className="brighter-color" style={underlineStyle}>Log in:</h3>
+					<div style={loginStyle}>
+						<form onSubmit={this.handleSubmit}>
+							<div className="row" style={marginStyle}>
+								<div className="col-md-12">
+									<h5 className="brighter-color">Username</h5>
+								</div>
+								<div className="col-md-12">
+									<input
+										type="text" ref={c => { this.inputUsername = c; }}
+										className="form-control input-sm"
+										maxLength="25"
+										value={this.state.username}
+										onChange={this.handleUsernameChange}
+									/>
+								</div>
 							</div>
-							<div className="col-md-12">
-								<input type="text" ref={c => { this.inputUsername = c; }} className="form-control input-sm" maxLength="25" value={this.state.username} onChange={this.handleUsernameChange} />
+							<div className="row" style={marginStyle}>
+								<div className="col-md-12">
+									<h5 className="brighter-color">Password</h5>
+								</div>
+								<div className="col-md-12">
+									<input
+										type="password"
+										className="form-control input-sm"
+										value={this.state.password}
+										onChange={this.handlePasswordChange}
+									/>
+								</div>
 							</div>
-						</div>
-						<div className="row" style={marginStyle}>
-							<div className="col-md-12">
-								<h5 className="brighter-color">Password</h5>
-							</div>
-							<div className="col-md-12">
-								<input type="password" className="form-control input-sm" value={this.state.password} onChange={this.handlePasswordChange} />
-							</div>
-						</div>
-						<br />
-						<div className="row" style={marginStyle}>
-							<div className="col-md-12">
-								<Button type="submit" bsClass="btn btn-secondary"> Sign in
+							<br />
+							<div className="row" style={marginStyle}>
+								<div className="col-md-12">
+									<Button type="submit" bsClass="btn btn-secondary"> Sign in
 									<span className="glyphicon glyphicon-log-in" />
-								</Button>
+									</Button>
+								</div>
 							</div>
-						</div>
-					</form>
+						</form>
+					</div>
 				</div>
+				}
 			</div>
 		);
 	}

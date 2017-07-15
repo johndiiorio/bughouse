@@ -31,7 +31,7 @@ export default function HeaderComponent(props) {
 	return (
 		<div className="container-fluid" style={headerStyle}>
 			<div className="col-md-1">
-				<Link to="/"><img src="app/static/img/assets/bug-text.png" alt="Bughouse Chess" width="223px" height="60px" /></Link>
+				<Link to="/"><img src="/app/static/img/assets/bug-text.png" alt="Bughouse Chess" width="223px" height="60px" /></Link>
 			</div>
 			<div className="col-md-10" style={linksContainerStyle}>
 				<div className="pull-right">

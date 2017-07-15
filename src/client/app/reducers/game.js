@@ -5,6 +5,7 @@ const defaultState = {
 	game: {},
 	userPosition: null,
 	moves: [],
+	clocks: [],
 	reserves: {
 		leftWhite: [],
 		leftBlack: [],
@@ -20,6 +21,11 @@ export default function user(state = defaultState, action) {
 			return {
 				...state,
 				moves: _.cloneDeep(action.moves)
+			};
+		case gameActions.UPDATE_CLOCKS:
+			return {
+				...state,
+				clocks: action.clocks
 			};
 		case gameActions.UPDATE_RESERVES:
 			return {
@@ -38,22 +44,10 @@ export default function user(state = defaultState, action) {
 			};
 		}
 		case gameActions.RECEIVE_GAME_INFO: {
-			const game = action.data;
-			const userID = action.userID;
-			let userPosition;
-			if (game.player1.id === userID) {
-				userPosition = 1;
-			} else if (game.player2.id === userID) {
-				userPosition = 2;
-			} else if (game.player3.id === userID) {
-				userPosition = 3;
-			} else {
-				userPosition = 4;
-			}
 			return {
 				...state,
-				game,
-				userPosition
+				game: action.data,
+				userPosition: action.userPosition
 			};
 		}
 		default:

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import GameBoardsComponent from '../../components/game/GameBoardsComponent';
-import { updateMoves, updateReserves, updatePieceToDragFromReserve } from '../../actions/game';
+import { updateMoves, updateClocks, updateReserves, updatePieceToDragFromReserve } from '../../actions/game';
 
 function mapStateToProps(state) {
 	const userPosition = state.game.userPosition;
@@ -32,6 +32,7 @@ function mapStateToProps(state) {
 		display,
 		userPosition: state.game.userPosition,
 		moves: state.game.moves,
+		clocks: state.game.clocks,
 		pieceToDragFromReserve: state.game.pieceToDragFromReserve,
 		user: state.user.currentUser
 	};
@@ -40,6 +41,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		updateMoves: moves => dispatch(updateMoves(moves)),
+		updateClocks: clocks => dispatch(updateClocks(clocks)),
 		updateReserves: (leftWhite, leftBlack, rightWhite, rightBlack) => dispatch(updateReserves(leftWhite, leftBlack, rightWhite, rightBlack)),
 		updatePieceToDragFromReserve: piece => dispatch(updatePieceToDragFromReserve(piece))
 	};

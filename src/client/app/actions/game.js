@@ -1,12 +1,17 @@
 import axios from 'axios';
 
 export const UPDATE_MOVES = 'UPDATE_MOVES';
+export const UPDATE_CLOCKS = 'UPDATE_CLOCKS';
 export const UPDATE_RESERVES = 'UPDATE_RESERVES';
 export const UPDATE_PIECE_TO_DRAG_FROM_RESERVE = 'UPDATE_PIECE_TO_DRAG_FROM_RESERVE';
 export const RECEIVE_GAME_INFO = 'RECEIVE_GAME_INFO';
 
 export function updateMoves(moves) {
 	return { type: UPDATE_MOVES, moves };
+}
+
+export function updateClocks(clocks) {
+	return { type: UPDATE_CLOCKS, clocks };
 }
 
 // Each reserve is an array of objects of type { color, role }
@@ -18,16 +23,16 @@ export function updatePieceToDragFromReserve(piece) {
 	return { type: UPDATE_PIECE_TO_DRAG_FROM_RESERVE, piece };
 }
 
-export function receiveGameInfo(data, userID) {
-	return { type: RECEIVE_GAME_INFO, data, userID };
+export function receiveGameInfo(data, userPosition) {
+	return { type: RECEIVE_GAME_INFO, data, userPosition };
 }
 
-export function getGameInfo() {
+export function getGameInfo(id) {
 	return (dispatch, getState) => {
 		const state = getState();
-		axios.get(`/api/games/withUsers/${state.lobby.selectedGame.id}`)
+		axios.put(`/api/games/withUsers/${state.lobby.selectedGame.id || id}`, { token: localStorage.getItem('token') })
 			.then(response => {
-				dispatch(receiveGameInfo(response.data, state.user.currentUser.id));
+				dispatch(receiveGameInfo(response.data, response.data.userPosition));
 			});
 	};
 }

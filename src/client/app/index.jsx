@@ -10,7 +10,8 @@ import reducers from './reducers';
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 /* eslint-enable */
 
-const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)));
+const store = createStore(reducers,	composeEnhancers(applyMiddleware(thunkMiddleware)));
+
 render(
 	<Provider store={store}>
 		<RouteContainer />

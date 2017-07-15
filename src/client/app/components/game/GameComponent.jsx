@@ -12,7 +12,7 @@ export default class GameComponent extends React.Component {
 	}
 
 	componentWillMount() {
-		this.props.getGameInfo();
+		this.props.getGameInfo(this.props.params.splat);
 	}
 
 	componentWillReceiveProps(nextProps) {
