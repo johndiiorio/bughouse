@@ -22,11 +22,6 @@ export default class GameInfoPanelComponent extends React.Component {
 	}
 
 	render() {
-		const infoPanelStyle = {
-			position: 'relative',
-			textAlign: 'center',
-			paddingTop: '4em'
-		};
 		const infoPlayersStyle = {
 			textAlign: 'center',
 			width: '450px',
@@ -48,53 +43,26 @@ export default class GameInfoPanelComponent extends React.Component {
 			position: 'relative'
 		};
 		return (
-			<div style={infoPanelStyle} className="col-md-4">
-				<div style={infoPlayersStyle}>
-					<h4 className="brighter-color" style={underlineStyle}>{this.getInfoFormat()}</h4>
-					<div>
-						<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
-						<span className="blue-color" style={alignPlayerInfoStyle}>
-							{` ${this.props.game.player1.username} (${this.getRating('player1')}) `}
-						</span>
-						<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
-						<span className="blue-color" style={alignPlayerInfoStyle}>
-							{` ${this.props.game.player4.username} (${this.getRating('player4')})`}
-						</span>
-						<p className="brighter-color" style={versusStyle}>versus</p>
-						<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
-						<span className="red-color" style={alignPlayerInfoStyle}>
-							{` ${this.props.game.player2.username} (${this.getRating('player2')}) `}
-						</span>
-						<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
-						<span className="red-color" style={alignPlayerInfoStyle}>
-							{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
-						</span>
-					</div>
-				</div>
-				<br />
-				<div id="movesTable">
-					<table id="movesTableContainer" className="table-container">
-						<thead>
-							<tr>
-								<th><h1>#</h1></th>
-								<th><h1>{this.props.game.player1.username}</h1></th>
-								<th><h1>{this.props.game.player2.username}</h1></th>
-								<th><h1>{this.props.game.player3.username}</h1></th>
-								<th><h1>{this.props.game.player4.username}</h1></th>
-							</tr>
-						</thead>
-						<tbody id="movesTableTBody">
-							{this.props.moves.map((move, index) =>
-								<tr key={index}>
-									<td>{move.number}</td>
-									<td>{move.player1}</td>
-									<td>{move.player2}</td>
-									<td>{move.player3}</td>
-									<td>{move.player4}</td>
-								</tr>
-							)}
-						</tbody>
-					</table>
+			<div style={infoPlayersStyle}>
+				<h4 className="brighter-color" style={underlineStyle}>{this.getInfoFormat()}</h4>
+				<div>
+					<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
+					<span className="blue-color" style={alignPlayerInfoStyle}>
+						{` ${this.props.game.player1.username} (${this.getRating('player1')}) `}
+					</span>
+					<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
+					<span className="blue-color" style={alignPlayerInfoStyle}>
+						{` ${this.props.game.player4.username} (${this.getRating('player4')})`}
+					</span>
+					<p className="brighter-color" style={versusStyle}>versus</p>
+					<img src="../../app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
+					<span className="red-color" style={alignPlayerInfoStyle}>
+						{` ${this.props.game.player2.username} (${this.getRating('player2')}) `}
+					</span>
+					<img src="../../app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
+					<span className="red-color" style={alignPlayerInfoStyle}>
+						{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
+					</span>
 				</div>
 			</div>
 		);

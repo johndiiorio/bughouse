@@ -1,6 +1,6 @@
 import React from 'react';
 import HeaderContainer from '../../containers/header/HeaderContainer';
-import GameInfoPanelContainer from '../../containers/game/GameInfoPanelContainer';
+import GameSidebarComponent from './GameSidebarComponent';
 import GameBoardsContainer from '../../containers/game/GameBoardsContainer';
 
 export default class GameComponent extends React.Component {
@@ -25,7 +25,7 @@ export default class GameComponent extends React.Component {
 				<HeaderContainer />
 				{ this.state.renderGameBoards &&
 				<div className="container-fluid">
-					<GameInfoPanelContainer />
+					<GameSidebarComponent />
 					<GameBoardsContainer />
 				</div>
 				}
