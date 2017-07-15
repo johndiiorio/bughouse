@@ -67,6 +67,9 @@ export default class LoginComponent extends React.Component {
 	}
 
 	render() {
+		const containerStyle = {
+			maxWidth: 600
+		};
 		const underlineStyle = {
 			textDecoration: 'underline'
 		};
@@ -80,7 +83,7 @@ export default class LoginComponent extends React.Component {
 		return (
 			<div>
 				{ _.isEmpty(this.props.currentUser) &&
-				<div className="col-md-2">
+				<div className="col-md-2" style={containerStyle}>
 					<NotificationSystem	ref={c => {	this.notificationSystem = c; }}	/>
 					<h3 className="brighter-color" style={underlineStyle}>Log in:</h3>
 					<div style={loginStyle}>

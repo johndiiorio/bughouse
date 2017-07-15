@@ -25,7 +25,7 @@ module.exports = io => {
 			socket.join(room);
 		});
 		socket.on('update game', data => {
-			updateGame(data, socket, gameSocket, io);
+			updateGame(data, socket, gameSocket);
 		});
 	});
 };

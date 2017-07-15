@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import CreateGameComponent from '../../components/home/LoginComponent';
+import LoginComponent from '../../components/home/LoginComponent';
 import { updateCurrentUser } from '../../actions/user';
 import { sendNotification } from '../../actions/topLevel';
 
@@ -16,4 +16,4 @@ function mapDispatchToProps(dispatch) {
 	};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreateGameComponent);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent);

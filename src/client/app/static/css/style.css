@@ -211,6 +211,8 @@ p, h1, h2, h3, h4, h5, h6 {
 	color: #ABABAB;
 	text-align: center;
 	line-height: 62px;
+	user-select: none;
+	cursor: default;
 }
 
 #left-game-bottom-clock {
@@ -224,6 +226,8 @@ p, h1, h2, h3, h4, h5, h6 {
 	color: #ABABAB;
 	text-align: center;
 	line-height: 62px;
+	user-select: none;
+	cursor: default;
 }
 
 #right-game-top-clock {
@@ -238,6 +242,8 @@ p, h1, h2, h3, h4, h5, h6 {
 	text-align: center;
 	line-height: 62px;
 	transform: translateY(+62%);
+	user-select: none;
+	cursor: default;
 }
 
 #right-game-bottom-clock {
@@ -251,6 +257,8 @@ p, h1, h2, h3, h4, h5, h6 {
 	color: #ABABAB;
 	text-align: center;
 	line-height: 62px;
+	user-select: none;
+	cursor: default;
 }
 
 /* Moves Table */

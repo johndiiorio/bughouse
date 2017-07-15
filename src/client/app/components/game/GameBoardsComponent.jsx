@@ -120,7 +120,7 @@ export default class GameBoardsComponent extends React.Component {
 		axios.get(`/api/games/state/${this.props.game.id}`)
 			.then(res => {
 				const data = res.data;
-				this.updateMoves(data.moves);
+				if (data.moves) this.updateMoves(data.moves);
 				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
 				const leftConfig = {
 					fen: data.leftFen,
@@ -357,6 +357,12 @@ export default class GameBoardsComponent extends React.Component {
 	handleGameOver() {
 		this.board1.stop();
 		this.board2.stop();
+		this.timer1.running = false;
+		this.timer2.running = false;
+		this.timer3.running = false;
+		this.timer4.running = false;
+		playSound('notify');
+		// TODO redirect to overview page
 	}
 
 	render() {
