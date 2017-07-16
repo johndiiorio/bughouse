@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import GameBoardsComponent from '../../components/game/GameBoardsComponent';
-import { updateMoves, updateClocks, updateReserves, updatePieceToDragFromReserve } from '../../actions/game';
+import GameBoardsComponent from '../../../components/game/boards/GameBoardsComponent';
+import { updateMoves, updateClocks, updateReserves, updatePieceToDragFromReserve } from '../../../actions/game';
 
 function mapStateToProps(state) {
 	const userPosition = state.game.userPosition;

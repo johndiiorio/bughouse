@@ -1,9 +1,10 @@
 import React from 'react';
+import './css/gameMovesPanel.css';
 
 export default function GameMovesPanelComponent(props) {
 	return (
-		<div id="movesTable">
-			<table id="movesTableContainer" className="table-container">
+		<div className="movesTablePanel">
+			<table className="table-container">
 				<thead>
 					<tr>
 						<th><h1>#</h1></th>

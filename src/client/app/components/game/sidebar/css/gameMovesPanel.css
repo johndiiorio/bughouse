@@ -1,0 +1,90 @@
+.movesTablePanel {
+	color:#A7A1AE;
+	display: inline-block;
+	border: 1px solid #3d3d3d;
+}
+
+.movesTablePanel .table-container {
+	text-align: center;
+	vertical-align: middle;
+	display: table;
+	width: 450px;
+}
+
+.movesTablePanel table.table-container tbody {
+	overflow: auto;
+	height: 215px;
+}
+
+.movesTablePanel table.table-container tbody td:nth-child(1), .movesTablePanel table.table-container thead th:nth-child(1) {
+	width: 34px;
+}
+
+.movesTablePanel table.table-container tbody td:not(:first-child), .movesTablePanel table.table-container thead th:not(:first-child) {
+	width: 104px;
+}
+
+.movesTablePanel table.table-container thead, .movesTablePanel table.table-container tbody {
+	float: left;
+}
+
+.movesTablePanel .table-container td, .movesTablePanel .table-container th {
+	padding-bottom: .5%;
+	padding-top: .5%;
+	padding-left: .5%;
+}
+
+.movesTablePanel .table-container th h1 {
+	font-weight: bold;
+	font-size: 1em;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 95px;
+	text-align: center;
+}
+
+.movesTablePanel .table-container th {
+	background-color: #2b2b2b;
+}
+
+.movesTablePanel .table-container th:nth-child(1) h1 {
+	color: white;
+	width: 30px;
+}
+
+.movesTablePanel .table-container th:nth-child(2) h1, .movesTablePanel .table-container th:nth-child(5) h1 {
+	color: #46BCDE;
+}
+
+.movesTablePanel .table-container th:nth-child(3) h1, .movesTablePanel .table-container th:nth-child(4) h1 {
+	color: #FB667A;
+}
+
+.movesTablePanel .table-container td {
+	font-weight: normal;
+	font-size: 1em;
+	-webkit-box-shadow: 0 2px 2px -2px #0E1119;
+	-moz-box-shadow: 0 2px 2px -2px #0E1119;
+	box-shadow: 0 2px 2px -2px #0E1119;
+	text-align:center;
+	vertical-align:middle;
+	color: #ABABAB;
+}
+
+.movesTablePanel .table-container td:nth-child(even) {
+	background-color: #464646;
+}
+
+.movesTablePanel .table-container td:nth-child(odd) {
+	background-color: #3D3D3D;
+}
+
+.movesTablePanel .table-container td:nth-child(1) {
+	background-color: #2b2b2b;
+}
+
+.movesTablePanel .table-container td:hover {
+	color: #d85000;
+	font-weight: bold;
+}

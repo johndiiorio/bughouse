@@ -1,7 +1,7 @@
 import React from 'react';
 import HeaderContainer from '../../containers/header/HeaderContainer';
-import GameSidebarComponent from './GameSidebarComponent';
-import GameBoardsContainer from '../../containers/game/GameBoardsContainer';
+import GameSidebarComponent from './sidebar/GameSidebarComponent';
+import GameBoardsContainer from '../../containers/game/boards/GameBoardsContainer';
 
 export default class GameComponent extends React.Component {
 	constructor(props) {

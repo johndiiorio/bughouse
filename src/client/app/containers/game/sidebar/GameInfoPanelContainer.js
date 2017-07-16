@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import GameInfoPanelComponent from '../../components/game/GameInfoPanelComponent';
+import GameInfoPanelComponent from '../../../components/game/sidebar/GameInfoPanelComponent';
 
 function mapStateToProps(state) {
 	return {

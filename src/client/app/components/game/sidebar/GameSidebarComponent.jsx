@@ -1,6 +1,8 @@
 import React from 'react';
-import GameInfoPanelContainer from '../../containers/game/GameInfoPanelContainer';
-import GameMovesPanelContainer from '../../containers/game/GameMovesPanelContainer';
+import GameInfoPanelContainer from '../../../containers/game/sidebar/GameInfoPanelContainer';
+import GameMovesPanelContainer from '../../../containers/game/sidebar/GameMovesPanelContainer';
+import GameActionsPanelComponent from './GameActionsPanelComponent';
+import './css/gameSidebar.css';
 
 export default class GameSidebarComponent extends React.Component {
 	constructor(props) {
@@ -24,17 +26,13 @@ export default class GameSidebarComponent extends React.Component {
 	}
 
 	render() {
-		const sidebarPanelStyle = {
-			position: 'relative',
-			textAlign: 'center',
-			paddingTop: '4em'
-		};
 		return (
-			<div style={sidebarPanelStyle} className="col-md-4">
+			<div className="col-md-4 gameSidebarPanel">
 				<GameInfoPanelContainer />
 				<br />
 				<GameMovesPanelContainer />
 				<br />
+				<GameActionsPanelComponent />
 			</div>
 		);
 	}
