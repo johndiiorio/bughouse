@@ -5,6 +5,8 @@ export const UPDATE_CLOCKS = 'UPDATE_CLOCKS';
 export const UPDATE_RESERVES = 'UPDATE_RESERVES';
 export const UPDATE_PIECE_TO_DRAG_FROM_RESERVE = 'UPDATE_PIECE_TO_DRAG_FROM_RESERVE';
 export const RECEIVE_GAME_INFO = 'RECEIVE_GAME_INFO';
+export const UPDATE_DISPLAY_RESIGN_CHOICE = 'UPDATE_DISPLAY_RESIGN_CHOICE';
+export const UPDATE_DISPLAY_DRAW_CHOICE = 'UPDATE_DISPLAY_DRAW_CHOICE';
 
 export function updateMoves(moves) {
 	return { type: UPDATE_MOVES, moves };
@@ -25,6 +27,14 @@ export function updatePieceToDragFromReserve(piece) {
 
 export function receiveGameInfo(data, userPosition) {
 	return { type: RECEIVE_GAME_INFO, data, userPosition };
+}
+
+export function updateDisplayResignChoice(display) {
+	return { type: UPDATE_DISPLAY_RESIGN_CHOICE, display };
+}
+
+export function updateDisplayDrawChoice(display) {
+	return { type: UPDATE_DISPLAY_DRAW_CHOICE, display };
 }
 
 export function getGameInfo(id) {

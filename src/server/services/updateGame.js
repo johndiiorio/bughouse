@@ -44,7 +44,7 @@ function convertReserveToSparePieces(reserve) {
 	});
 }
 
-module.exports = async (data, socket, gameSocket) => {
+module.exports = async (data, socket) => {
 	try {
 		const row = await Game.getByID(data.id);
 		const currentTime = Date.now();
@@ -175,7 +175,7 @@ module.exports = async (data, socket, gameSocket) => {
 			}
 			await db.none(queryString, argsQuery);
 			// update everyone in game
-			gameSocket.in(socket.room).emit('update game', emitData);
+			socket.in(socket.room).emit('update game', emitData);
 
 			if (game.game_over()) {
 				let termination = null;
@@ -194,7 +194,7 @@ module.exports = async (data, socket, gameSocket) => {
 				}
 				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
 				await db.none(terminationQueryString, [termination, 'terminated', data.id]);
-				gameSocket.in(socket.room).emit('game over', { termination });
+				socket.in(socket.room).emit('game over', { termination });
 			}
 		} else { // illegal move
 			socket.emit('snapback move', { fen: game.fen() });

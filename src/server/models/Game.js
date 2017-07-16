@@ -9,7 +9,7 @@ class Game {
 	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange,
 				mode, status, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
 				leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack,
-				leftLastMove, rightLastMove, leftColorToPlay, rightColorToPlay) {
+				leftLastMove, rightLastMove, leftColorToPlay, rightColorToPlay, resignState, drawState) {
 		this.id = id;
 		this.player1 = player1;
 		this.player2 = player2;
@@ -36,6 +36,8 @@ class Game {
 		this.right_last_move = rightLastMove;
 		this.left_color_to_play = leftColorToPlay;
 		this.right_color_to_play = rightColorToPlay;
+		this.resign_state = resignState;
+		this.draw_state = drawState;
 	}
 
 	static createTable() {
@@ -48,7 +50,8 @@ class Game {
 			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random,
 			row.timestamp, row.clocks, row.moves, row.left_last_time, row.right_last_time, row.left_fen, row.right_fen,
 			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black,
-			row.left_last_move, row.right_last_move, row.left_color_to_play, row.right_color_to_play
+			row.left_last_move, row.right_last_move, row.left_color_to_play, row.right_color_to_play,
+			row.resign_state, row.draw_state
 		);
 	}
 

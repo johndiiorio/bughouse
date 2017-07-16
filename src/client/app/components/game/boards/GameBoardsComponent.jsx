@@ -1,4 +1,5 @@
 import React from 'react';
+import { browserHistory } from 'react-router';
 import axios from 'axios';
 import _ from 'lodash';
 import { Chessground } from 'chessground';
@@ -363,7 +364,7 @@ export default class GameBoardsComponent extends React.Component {
 		this.timer3.running = false;
 		this.timer4.running = false;
 		playSound('notify');
-		// TODO redirect to overview page
+		browserHistory.push(`/overview/${this.props.game.id}`);
 	}
 
 	render() {
@@ -420,7 +421,7 @@ export default class GameBoardsComponent extends React.Component {
 					</div>
 					<h3 id="left-game-bottom-username">{`${this.props.display.player1.username} (${this.getRating(this.props.display.player1)})`}</h3>
 				</div>
-				<div className="col-md-4 right-game">
+				<div className="col-md-4 rightGame">
 					<h3 id="right-game-top-username">{`${this.props.display.player3.username} (${this.getRating(this.props.display.player3)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<h3 id="right-game-top-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>

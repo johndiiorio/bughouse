@@ -1,7 +1,7 @@
 import React from 'react';
 import GameInfoPanelContainer from '../../../containers/game/sidebar/GameInfoPanelContainer';
 import GameMovesPanelContainer from '../../../containers/game/sidebar/GameMovesPanelContainer';
-import GameActionsPanelComponent from './GameActionsPanelComponent';
+import GameActionsPanelContainer from '../../../containers/game/sidebar/GameActionsPanelContainer';
 import './css/gameSidebar.css';
 
 export default class GameSidebarComponent extends React.Component {
@@ -32,7 +32,7 @@ export default class GameSidebarComponent extends React.Component {
 				<br />
 				<GameMovesPanelContainer />
 				<br />
-				<GameActionsPanelComponent />
+				<GameActionsPanelContainer />
 			</div>
 		);
 	}
