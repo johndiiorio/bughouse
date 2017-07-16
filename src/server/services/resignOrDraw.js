@@ -11,24 +11,72 @@ async function offerResign(data, socket) {
 		await db.none('UPDATE Games SET resign_state = $1 WHERE id = $2', [resignState.join(), data.id]);
 		socket.to(socket.room).emit('offer resign', data.userPosition);
 	} catch (err) {
-		console.log(`Error updating resign_state for game id ${data.id}: ${err}`);
+		console.log(`Error handling offerResign for game id ${data.id}: ${err}`);
 	}
 }
 
 async function offerDraw(data, socket) {
-
+	try {
+		const row = await Game.getByID(data.id);
+		const drawState = row.draw_state.split(',').map(Number);
+		drawState[data.userPosition - 1] = 1;
+		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', [drawState.join(), data.id]);
+		socket.to(socket.room).emit('offer draw');
+	} catch (err) {
+		console.log(`Error handling offerDraw for game id ${data.id}: ${err}`);
+	}
 }
 
-async function acceptResign(data, socket) {
-
+async function acceptResign(data, socket, gameSocket) {
+	try {
+		const row = await Game.getByID(data.id);
+		const resignState = row.resign_state.split(',').map(Number);
+		let resignedAgreed = false;
+		let termination = 'Team 1 Resigned, Team 2 is victorious';
+		if (data.userPosition === 1 && resignState[3] === 1) {
+			resignedAgreed = true;
+		} else if (data.userPosition === 2 && resignState[2] === 1) {
+			resignedAgreed = true;
+			termination = 'Team 2 Resigned, Team 1 is victorious';
+		} else if (data.userPosition === 3 && resignState[1] === 1) {
+			resignedAgreed = true;
+			termination = 'Team 2 Resigned, Team 1 is victorious';
+		} else if (data.userPosition === 4 && resignState[0] === 1) {
+			resignedAgreed = true;
+		}
+		if (resignedAgreed) {
+			const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
+			await db.none(terminationQueryString, [termination, 'terminated', data.id]);
+			gameSocket.in(socket.room).emit('game over', { termination });
+		}
+	} catch (err) {
+		console.log(`Error updating acceptResign for game id ${data.id}: ${err}`);
+	}
 }
 
 async function declineResign(data, socket) {
 
 }
 
-async function acceptDraw(data, socket) {
-
+async function acceptDraw(data, socket, gameSocket) {
+	try {
+		const row = await Game.getByID(data.id);
+		const drawState = row.draw_state.split(',').map(Number);
+		drawState[data.userPosition - 1] = 1;
+		let drawAgreed = true;
+		for (const element of drawState) {
+			if (element !== 1) drawAgreed = false;
+		}
+		if (drawAgreed) {
+			const termination = 'Draw by agreement';
+			const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
+			await db.none(terminationQueryString, [termination, 'terminated', data.id]);
+			gameSocket.in(socket.room).emit('game over', { termination });
+		}
+		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', [drawState.join(), data.id]);
+	} catch (err) {
+		console.log(`Error updating acceptDraw for game id ${data.id}: ${err}`);
+	}
 }
 
 async function declineDraw(data, socket) {

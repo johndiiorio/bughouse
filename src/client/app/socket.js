@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { browserHistory } from 'react-router';
 import store from './index';
 import { updateDisplayedGames } from './actions/lobby';
-import { updateDisplayResignChoice } from './actions/game';
+import { updateDisplayResignChoice, updateDisplayDrawChoice } from './actions/game';
 import playSound from './util/sound';
 
 export const socketLobby = io('/lobby');
@@ -32,4 +32,8 @@ socketGame.on('offer resign', resigningUserPosition => {
 	if (onSameTeam(userPosition, resigningUserPosition)) {
 		store.dispatch(updateDisplayResignChoice(true));
 	}
+});
+
+socketGame.on('offer draw', () => {
+	store.dispatch(updateDisplayDrawChoice(true));
 });

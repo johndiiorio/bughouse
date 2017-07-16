@@ -26,22 +26,22 @@ module.exports = io => {
 			socket.join(room);
 		});
 		socket.on('update game', data => {
-			updateGame(data, socket);
+			updateGame(data, socket, gameSocket);
 		});
 		socket.on('offer resign', data => {
-			resignOrDraw.offerResign(data, socket, gameSocket);
+			resignOrDraw.offerResign(data, socket);
 		});
 		socket.on('offer draw', data => {
-
+			resignOrDraw.offerDraw(data, socket);
 		});
 		socket.on('accept resign', data => {
-
+			resignOrDraw.acceptResign(data, socket, gameSocket);
 		});
 		socket.on('decline resign', data => {
 
 		});
 		socket.on('accept draw', data => {
-
+			resignOrDraw.acceptDraw(data, socket, gameSocket);
 		});
 		socket.on('decline draw', data => {
 

@@ -23,11 +23,13 @@ export default class GameActionsPanelComponent extends React.Component {
 	handleOfferResign() {
 		socketGame.emit('offer resign', { id: this.props.id, userPosition: this.props.userPosition });
 		this.props.updateDisplayResignChoice(false);
+		this.setState({ offerResignDisabled: true });
 	}
 
 	handleOfferDraw() {
 		socketGame.emit('offer draw', { id: this.props.id, userPosition: this.props.userPosition });
 		this.props.updateDisplayDrawChoice(false);
+		this.setState({ offerDrawDisabled: true });
 	}
 
 	handleAcceptResign() {
@@ -53,6 +55,11 @@ export default class GameActionsPanelComponent extends React.Component {
 	render() {
 		let resignPanel = null;
 		let drawPanel = null;
+		let resignDropdownButtonClassName = 'btn-secondary-no-hover';
+		if (!this.state.resignChoiceDisabled) resignDropdownButtonClassName += ' flash-button';
+		let drawDropdownButtonClassName = 'btn-secondary-no-hover';
+		if (!this.state.drawChoiceDisabled) drawDropdownButtonClassName += ' flash-button';
+
 		if (!this.props.displayResignChoice) {
 			resignPanel = (
 				<Button
@@ -66,7 +73,7 @@ export default class GameActionsPanelComponent extends React.Component {
 		} else {
 			resignPanel = (
 				<Dropdown id="resignChoice" disabled={this.state.resignChoiceDisabled}>
-					<Dropdown.Toggle className="btn-secondary-no-hover flash-button">
+					<Dropdown.Toggle className={resignDropdownButtonClassName}>
 						<Glyphicon glyph="flag" /> Resign?
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
@@ -89,7 +96,7 @@ export default class GameActionsPanelComponent extends React.Component {
 		} else {
 			drawPanel = (
 				<Dropdown id="drawChoice" disabled={this.state.drawChoiceDisabled}>
-					<Dropdown.Toggle className="btn-secondary-no-hover flash-button">
+					<Dropdown.Toggle className={drawDropdownButtonClassName}>
 						<Glyphicon glyph="hand-right" /> Draw?
 					</Dropdown.Toggle>
 					<Dropdown.Menu>
