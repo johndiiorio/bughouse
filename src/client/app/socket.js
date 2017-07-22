@@ -15,6 +15,7 @@ function onSameTeam(userPosition1, userPosition2) {
 		|| (userPosition1 === 2 && userPosition2 === 3)
 		|| (userPosition1 === 3 && userPosition2 === 2)
 		|| (userPosition1 === 4 && userPosition2 === 1)
+		|| (userPosition1 === userPosition2)
 	);
 }
 
@@ -28,12 +29,21 @@ socketLoading.on('start game', id => {
 });
 
 socketGame.on('offer resign', resigningUserPosition => {
-	const userPosition = store.getState().game.userPosition;
-	if (onSameTeam(userPosition, resigningUserPosition)) {
+	if (onSameTeam(store.getState().game.userPosition, resigningUserPosition)) {
 		store.dispatch(updateDisplayResignChoice(true));
 	}
 });
 
 socketGame.on('offer draw', () => {
 	store.dispatch(updateDisplayDrawChoice(true));
+});
+
+socketGame.on('decline resign', decliningUserPosition => {
+	if (onSameTeam(store.getState().game.userPosition, decliningUserPosition)) {
+		store.dispatch(updateDisplayResignChoice(false));
+	}
+});
+
+socketGame.on('decline draw', () => {
+	store.dispatch(updateDisplayDrawChoice(false));
 });

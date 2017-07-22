@@ -20,6 +20,19 @@ export default class GameActionsPanelComponent extends React.Component {
 		this.handleDeclineDraw = this.handleDeclineDraw.bind(this);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.displayResignChoice) {
+			this.setState({ resignChoiceDisabled: false });
+		} else {
+			this.setState({ offerResignDisabled: false });
+		}
+		if (nextProps.displayDrawChoice) {
+			this.setState({ drawChoiceDisabled: false });
+		} else {
+			this.setState({ offerDrawDisabled: false });
+		}
+	}
+
 	handleOfferResign() {
 		socketGame.emit('offer resign', { id: this.props.id, userPosition: this.props.userPosition });
 		this.props.updateDisplayResignChoice(false);

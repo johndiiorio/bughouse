@@ -38,13 +38,13 @@ module.exports = io => {
 			resignOrDraw.acceptResign(data, socket, gameSocket);
 		});
 		socket.on('decline resign', data => {
-
+			resignOrDraw.declineResign(data, socket, gameSocket);
 		});
 		socket.on('accept draw', data => {
 			resignOrDraw.acceptDraw(data, socket, gameSocket);
 		});
 		socket.on('decline draw', data => {
-
+			resignOrDraw.declineDraw(data, socket, gameSocket);
 		});
 	});
 };

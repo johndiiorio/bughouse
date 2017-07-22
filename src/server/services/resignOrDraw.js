@@ -54,8 +54,22 @@ async function acceptResign(data, socket, gameSocket) {
 	}
 }
 
-async function declineResign(data, socket) {
-
+async function declineResign(data, socket, gameSocket) {
+	try {
+		const row = await Game.getByID(data.id);
+		const resignState = row.resign_state.split(',').map(Number);
+		if (data.userPosition === 1 || data.userPosition === 4) {
+			resignState[0] = 0;
+			resignState[3] = 0;
+		} else {
+			resignState[1] = 0;
+			resignState[2] = 0;
+		}
+		await db.none('UPDATE Games SET resign_state = $1 WHERE id = $2', [resignState.join(), data.id]);
+		gameSocket.in(socket.room).emit('decline resign', data.userPosition);
+	} catch (err) {
+		console.log(`Error handling declineResign for game id ${data.id}: ${err}`);
+	}
 }
 
 async function acceptDraw(data, socket, gameSocket) {
@@ -79,8 +93,13 @@ async function acceptDraw(data, socket, gameSocket) {
 	}
 }
 
-async function declineDraw(data, socket) {
-
+async function declineDraw(data, socket, gameSocket) {
+	try {
+		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', ['0,0,0,0', data.id]);
+		gameSocket.in(socket.room).emit('decline draw');
+	} catch (err) {
+		console.log(`Error handling declineDraw for game id ${data.id}: ${err}`);
+	}
 }
 
 module.exports = {

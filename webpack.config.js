@@ -1,5 +1,6 @@
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
 
 const BUILD_DIR = path.resolve(__dirname, 'src/client/public');
 const APP_DIR = path.resolve(__dirname, 'src/client/app');
@@ -30,5 +31,16 @@ const config = {
 		new LodashModuleReplacementPlugin()
 	]
 };
+
+if (process.env.NODE_ENV === 'production') {
+	config.plugins.push(
+		new webpack.DefinePlugin({
+			'process.env': {
+				NODE_ENV: JSON.stringify('production')
+			}
+		}),
+		new webpack.optimize.UglifyJsPlugin()
+	);
+}
 
 module.exports = config;
