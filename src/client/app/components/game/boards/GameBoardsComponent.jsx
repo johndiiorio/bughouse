@@ -77,10 +77,10 @@ export default class GameBoardsComponent extends React.Component {
 		// Clocks
 		const minutesInMilliseconds = this.props.game.minutes * 60 * 1000;
 		const incrementInMilliseconds = this.props.game.increment * 1000;
-		this.timer1 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer2 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer3 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer4 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		this.timer1 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer2 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer3 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer4 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
 		function format(display) {
 			return (minutes, seconds, deciseconds) => {
 				const minutesDisplay = minutes < 10 ? `0${minutes}` : minutes;

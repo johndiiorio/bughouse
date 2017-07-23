@@ -1,10 +1,11 @@
 export default class Clock {
-	constructor(minutes, increment, granularity = 100) {
+	constructor(minutes, increment, gameSocket, gameId) {
 		this.duration = minutes;
 		this.minutes = minutes;
 		this.increment = increment;
+		this.gameSocket = gameSocket;
+		this.gameId = gameId;
 		this.intervalStartTime = null;
-		this.granularity = granularity;
 		this.tickFtns = [];
 		this.running = false;
 		this.toggle = this.toggle.bind(this);
@@ -31,11 +32,11 @@ export default class Clock {
 				if (that.running) {
 					diff = that.duration - (Date.now() - that.intervalStartTime);
 					if (diff > 0) {
-						setTimeout(timer, that.granularity);
+						setTimeout(timer, 100);
 					} else {
 						diff = 0;
 						that.running = false;
-						// TODO emit game over
+						that.gameSocket.emit('time out', that.gameId);
 					}
 					const obj = that.parse(diff);
 					that.tickFtns.forEach(ftn => {

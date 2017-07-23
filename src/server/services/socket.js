@@ -1,5 +1,6 @@
 const Game = require('../models/Game');
 const updateGame = require('./updateGame');
+const timeOut = require('./timeOut');
 const resignOrDraw = require('./resignOrDraw');
 
 module.exports = io => {
@@ -27,6 +28,9 @@ module.exports = io => {
 		});
 		socket.on('update game', data => {
 			updateGame(data, socket, gameSocket);
+		});
+		socket.on('time out', data => {
+			timeOut(data, socket, gameSocket);
 		});
 		socket.on('offer resign', data => {
 			resignOrDraw.offerResign(data, socket);
