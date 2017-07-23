@@ -157,7 +157,9 @@ router.get('/state/:id', async (req, res) => {
 			rightColorToPlay: game.right_color_to_play,
 			clocks: game.clocks.split(',').map(Number),
 			leftLastTime: parseInt(game.left_last_time),
-			rightLastTime: parseInt(game.right_last_time)
+			rightLastTime: parseInt(game.right_last_time),
+			resignState: game.resign_state,
+			drawState: game.draw_state
 		};
 		res.json(state);
 	} catch (err) {

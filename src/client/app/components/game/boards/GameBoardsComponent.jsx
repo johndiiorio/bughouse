@@ -124,6 +124,21 @@ export default class GameBoardsComponent extends React.Component {
 				const data = res.data;
 				if (data.moves) this.updateMoves(data.moves);
 				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+
+				// Hydrate resign and draw action buttons
+				const resignState = data.resignState.split(',').map(Number);
+				const drawState = data.drawState.split(',').map(Number);
+				if ((this.props.userPosition === 1 && resignState[3] === 1)
+					|| (this.props.userPosition === 2 && resignState[2] === 1)
+					|| (this.props.userPosition === 3 && resignState[1] === 1)
+					|| (this.props.userPosition === 4 && resignState[0] === 1)) {
+					this.props.updateDisplayResignChoice(true);
+				}
+				if ((drawState[0] === 1 || drawState[1] === 1 || drawState[2] === 1 || drawState[3] === 1) && drawState[this.props.userPosition - 1] !== 1) {
+					this.props.updateDisplayDrawChoice(true);
+				}
+
+				// Hydrate board configs
 				const leftConfig = {
 					fen: data.leftFen,
 					lastMove: data.leftLastMove,
