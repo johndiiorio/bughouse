@@ -32,7 +32,7 @@ export default class ReservePieceComponent extends React.Component {
 
 		return (
 			<div draggable="true" onDragStart={this.handleOnDragStart}>
-				<img src={`../../app/static/img/pieces/${this.props.piece}.svg`} className="pieceStyle" style={pieceStyle} />
+				<img src={`/app/static/img/pieces/${this.props.piece}.svg`} className="pieceStyle" style={pieceStyle} />
 				<p className="absoluteTextStyle" style={absoluteTextStyle}>{this.props.pieceNum}</p>
 			</div>
 		);

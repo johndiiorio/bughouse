@@ -31,8 +31,6 @@ export default class GameSidebarComponent extends React.Component {
 				<GameInfoPanelContainer />
 				<br />
 				<GameMovesPanelContainer />
-				<br />
-				<GameActionsPanelContainer />
 			</div>
 		);
 	}

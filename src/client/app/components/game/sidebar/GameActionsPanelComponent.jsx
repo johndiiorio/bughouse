@@ -76,7 +76,7 @@ export default class GameActionsPanelComponent extends React.Component {
 		if (!this.props.displayResignChoice) {
 			resignPanel = (
 				<Button
-					bsClass="btn btn-secondary"
+					bsClass="btn btn-secondary leftActionButton"
 					onClick={this.handleOfferResign}
 					disabled={this.state.offerResignDisabled}
 				>
@@ -85,7 +85,7 @@ export default class GameActionsPanelComponent extends React.Component {
 			);
 		} else {
 			resignPanel = (
-				<Dropdown id="resignChoice" disabled={this.state.resignChoiceDisabled}>
+				<Dropdown id="resignChoice" disabled={this.state.resignChoiceDisabled} className="leftActionButton">
 					<Dropdown.Toggle className={resignDropdownButtonClassName}>
 						<Glyphicon glyph="flag" /> Resign?
 					</Dropdown.Toggle>

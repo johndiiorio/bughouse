@@ -1,10 +1,9 @@
 .gameActionsPanelContainer {
-	width: 450px;
-	background-color: #262626;
-	margin: 0 auto;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	border: 1px solid #3d3d3d;
+	padding-top: 17px;
+}
+
+.leftActionButton {
+	margin-right: 10px;
 }
 
 .flash-button {

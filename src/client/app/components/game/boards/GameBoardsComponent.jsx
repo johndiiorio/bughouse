@@ -379,37 +379,37 @@ export default class GameBoardsComponent extends React.Component {
 						</div>
 					</div>
 					<div id="whitePromotion" className="promotion-box">
-						<img src="../../app/static/img/pieces/wQ.svg"
+						<img src="/app/static/img/pieces/wQ.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'pawn' })}
 						/>
-						<img src="../../app/static/img/pieces/wN.svg"
+						<img src="/app/static/img/pieces/wN.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'knight' })}
 						/>
-						<img src="../../app/static/img/pieces/wR.svg"
+						<img src="/app/static/img/pieces/wR.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'rook' })}
 						/>
-						<img src="../../app/static/img/pieces/wB.svg"
+						<img src="/app/static/img/pieces/wB.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'bishop' })}
 						/>
 					</div>
 					<div id="blackPromotion" className="promotion-box">
-						<img src="../../app/static/img/pieces/bQ.svg"
+						<img src="/app/static/img/pieces/bQ.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'pawn' })}
 						/>
-						<img src="../../app/static/img/pieces/bN.svg"
+						<img src="/app/static/img/pieces/bN.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'knight' })}
 						/>
-						<img src="../../app/static/img/pieces/bR.svg"
+						<img src="/app/static/img/pieces/bR.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'rook' })}
 						/>
-						<img src="../../app/static/img/pieces/bB.svg"
+						<img src="/app/static/img/pieces/bB.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'bishop' })}
 						/>
