@@ -44,7 +44,7 @@ function convertReserveToSparePieces(reserve) {
 	});
 }
 
-module.exports = async (data, socket, gameSocket, io) => {
+module.exports = async (data, socket, gameSocket) => {
 	try {
 		const row = await Game.getByID(data.id);
 		const currentTime = Date.now();
@@ -177,9 +177,24 @@ module.exports = async (data, socket, gameSocket, io) => {
 			// update everyone in game
 			gameSocket.in(socket.room).emit('update game', emitData);
 
-			// TODO add game over support
 			if (game.game_over()) {
-				io.in(socket.room).emit('game over', { termination: 'TODO' });
+				let termination = null;
+				if (game.in_checkmate()) {
+					if (data.userPosition === 1 || data.userPosition === 4) {
+						termination = 'Checkmate, Team 1 is victorious';
+					} else {
+						termination = 'Checkmate, Team 2 is victorious';
+					}
+				} else if (game.in_stalemate) {
+					termination = 'Drawn by stalemate';
+				} else if (game.in_threefold_repetition) {
+					termination = 'Drawn by three-fold repetition';
+				} else {
+					termination = 'Drawn by the 50 move rule';
+				}
+				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
+				await db.none(terminationQueryString, [termination, 'terminated', data.id]);
+				gameSocket.in(socket.room).emit('game over', { termination });
 			}
 		} else { // illegal move
 			socket.emit('snapback move', { fen: game.fen() });

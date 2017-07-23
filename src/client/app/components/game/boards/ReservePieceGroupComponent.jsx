@@ -1,19 +1,16 @@
 import React from 'react';
-import ReservePieceContainer from '../../containers/game/ReservePieceContainer';
+import ReservePieceContainer from '../../../containers/game/boards/ReservePieceContainer';
+import './css/reservePieceGroup.css';
 
 export default function ReservePieceGroupComponent(props) {
 	const reserveContainerStyle = {
-		width: '310px',
-		height: '63px',
-		backgroundColor: '#b0b0b0',
 		float: props.floatRight ? 'right' : 'auto',
 		marginTop: props.margin === 'top' ? '15px' : '0em',
 		marginBottom: props.margin === 'bottom' ? '15px' : '0em',
-		display: 'inline-block'
 	};
 
 	return (
-		<div style={reserveContainerStyle}>
+		<div className="reserveContainer" style={reserveContainerStyle}>
 			{ props.reserveColor === 'white' ?
 				(
 					<div>

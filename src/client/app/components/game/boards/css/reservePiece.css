@@ -1,0 +1,23 @@
+.reservePieceContainer {
+	position: relative;
+}
+
+.pieceStyle {
+	width: 62px;
+	height: 62px;
+	display: block;
+	float: left;
+	position: relative;
+}
+
+.absoluteTextStyle {
+	transform: translate(-20px, 39px);
+	padding: 5px 5px 5px 5px;
+	text-align: center;
+	line-height: 14px;
+	font-weight: bold;
+	color: #ffffff;
+	background: #d85000;
+	position: absolute;
+	z-index: 1;
+}

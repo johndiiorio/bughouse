@@ -1,11 +1,13 @@
 import React from 'react';
+import { browserHistory } from 'react-router';
 import axios from 'axios';
 import _ from 'lodash';
 import { Chessground } from 'chessground';
-import ReserveContainer from '../../containers/game/ReserveContainer';
-import { socketGame } from '../../socket';
-import Clock from '../../util/Clock';
-import playSound from '../../util/sound';
+import ReserveContainer from '../../../containers/game/boards/ReserveContainer';
+import { socketGame } from '../../../socket';
+import Clock from '../../../util/Clock';
+import playSound from '../../../util/sound';
+import './css/gameBoards.css';
 
 export default class GameBoardsComponent extends React.Component {
 	constructor(props) {
@@ -75,10 +77,10 @@ export default class GameBoardsComponent extends React.Component {
 		// Clocks
 		const minutesInMilliseconds = this.props.game.minutes * 60 * 1000;
 		const incrementInMilliseconds = this.props.game.increment * 1000;
-		this.timer1 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer2 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer3 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
-		this.timer4 = new Clock(minutesInMilliseconds, incrementInMilliseconds);
+		this.timer1 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer2 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer3 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
+		this.timer4 = new Clock(minutesInMilliseconds, incrementInMilliseconds, socketGame, this.props.game.id);
 		function format(display) {
 			return (minutes, seconds, deciseconds) => {
 				const minutesDisplay = minutes < 10 ? `0${minutes}` : minutes;
@@ -120,8 +122,23 @@ export default class GameBoardsComponent extends React.Component {
 		axios.get(`/api/games/state/${this.props.game.id}`)
 			.then(res => {
 				const data = res.data;
-				this.updateMoves(data.moves);
+				if (data.moves) this.updateMoves(data.moves);
 				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
+
+				// Hydrate resign and draw action buttons
+				const resignState = data.resignState.split(',').map(Number);
+				const drawState = data.drawState.split(',').map(Number);
+				if ((this.props.userPosition === 1 && resignState[3] === 1)
+					|| (this.props.userPosition === 2 && resignState[2] === 1)
+					|| (this.props.userPosition === 3 && resignState[1] === 1)
+					|| (this.props.userPosition === 4 && resignState[0] === 1)) {
+					this.props.updateDisplayResignChoice(true);
+				}
+				if ((drawState[0] === 1 || drawState[1] === 1 || drawState[2] === 1 || drawState[3] === 1) && drawState[this.props.userPosition - 1] !== 1) {
+					this.props.updateDisplayDrawChoice(true);
+				}
+
+				// Hydrate board configs
 				const leftConfig = {
 					fen: data.leftFen,
 					lastMove: data.leftLastMove,
@@ -357,19 +374,15 @@ export default class GameBoardsComponent extends React.Component {
 	handleGameOver() {
 		this.board1.stop();
 		this.board2.stop();
+		this.timer1.running = false;
+		this.timer2.running = false;
+		this.timer3.running = false;
+		this.timer4.running = false;
+		playSound('notify');
+		browserHistory.push(`/overview/${this.props.game.id}`);
 	}
 
 	render() {
-		const boardStyle = {
-			width: 500,
-			height: 500
-		};
-		const rightGameStyle = {
-			width: 500,
-			height: 500,
-			paddingLeft: 0,
-			paddingRight: 0
-		};
 		return (
 			<div>
 				<div className="col-md-4">
@@ -381,55 +394,55 @@ export default class GameBoardsComponent extends React.Component {
 						</div>
 					</div>
 					<div id="whitePromotion" className="promotion-box">
-						<img src="../../app/static/img/pieces/wQ.svg"
+						<img src="/app/static/img/pieces/wQ.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'pawn' })}
 						/>
-						<img src="../../app/static/img/pieces/wN.svg"
+						<img src="/app/static/img/pieces/wN.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'knight' })}
 						/>
-						<img src="../../app/static/img/pieces/wR.svg"
+						<img src="/app/static/img/pieces/wR.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'rook' })}
 						/>
-						<img src="../../app/static/img/pieces/wB.svg"
+						<img src="/app/static/img/pieces/wB.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'bishop' })}
 						/>
 					</div>
 					<div id="blackPromotion" className="promotion-box">
-						<img src="../../app/static/img/pieces/bQ.svg"
+						<img src="/app/static/img/pieces/bQ.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'pawn' })}
 						/>
-						<img src="../../app/static/img/pieces/bN.svg"
+						<img src="/app/static/img/pieces/bN.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'knight' })}
 						/>
-						<img src="../../app/static/img/pieces/bR.svg"
+						<img src="/app/static/img/pieces/bR.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'rook' })}
 						/>
-						<img src="../../app/static/img/pieces/bB.svg"
+						<img src="/app/static/img/pieces/bB.svg"
 							className="promotionPiece"
 							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'bishop' })}
 						/>
 					</div>
-					<div id="board1" style={boardStyle} />
+					<div id="board1" className="boardContainer" />
 					<div className="align-reserve-clock-bottom">
 						<ReserveContainer clickable floatRight={false} margin="top" reservePosition={1} />
 						<h3 id="left-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
 					<h3 id="left-game-bottom-username">{`${this.props.display.player1.username} (${this.getRating(this.props.display.player1)})`}</h3>
 				</div>
-				<div className="col-md-4" style={rightGameStyle}>
+				<div className="col-md-4 rightGame">
 					<h3 id="right-game-top-username">{`${this.props.display.player3.username} (${this.getRating(this.props.display.player3)})`}</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<h3 id="right-game-top-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 						<ReserveContainer clickable={false} floatRight margin="bottom" reservePosition={3} />
 					</div>
-					<div id="board2" style={boardStyle} />
+					<div id="board2" className="boardContainer" />
 					<div className="align-reserve-clock-bottom">
 						<ReserveContainer clickable={false} floatRight margin="top" reservePosition={4} />
 						<h3 id="right-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>

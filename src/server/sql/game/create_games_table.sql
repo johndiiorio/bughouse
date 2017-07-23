@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS games (
 	clocks TEXT NULL DEFAULT '0,0,0,0',
 	termination TEXT NULL,
 	join_random BOOLEAN NULL DEFAULT TRUE,
+	resign_state TEXT NULL DEFAULT '0,0,0,0',
+	draw_state TEXT NULL DEFAULT '0,0,0,0',
 	player1 INT NULL REFERENCES users (id),
 	player2 INT NULL REFERENCES users (id),
 	player3 INT NULL REFERENCES users (id),

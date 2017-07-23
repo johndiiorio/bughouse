@@ -1551,7 +1551,8 @@ var Bug = function (fen) {
         },
 
         insufficient_material: function () {
-            return insufficient_material();
+			// return insufficient_material();
+			return false;
         },
 
         in_threefold_repetition: function () {

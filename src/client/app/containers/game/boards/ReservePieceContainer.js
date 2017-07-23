@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { updatePieceToDragFromReserve } from '../../actions/game';
-import ReservePieceComponent from '../../components/game/ReservePieceComponent';
+import { updatePieceToDragFromReserve } from '../../../actions/game';
+import ReservePieceComponent from '../../../components/game/boards/ReservePieceComponent';
 
 function mapDispatchToProps(dispatch) {
 	return {

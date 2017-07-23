@@ -95,13 +95,16 @@ export default class CreateGameComponent extends React.Component {
 	}
 
 	render() {
+		const containerStyle = {
+			maxWidth: 600
+		};
 		const underlineStyle = {
 			textDecoration: 'underline'
 		};
 		return (
 			<div>
 				{!_.isEmpty(this.props.currentUser) &&
-				<div className="col-md-2">
+				<div className="col-md-2" style={containerStyle}>
 					<h3 className="brighter-color" style={underlineStyle}>Create a new game:</h3>
 					<p className="brighter-color" type="text" id="minutesDisplay">Minutes: {this.state.minutes}</p>
 					<Slider min={1} max={20} tooltip={false} value={this.state.minutes} onChange={this.handleMinutesChange} />

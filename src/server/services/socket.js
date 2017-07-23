@@ -1,5 +1,7 @@
 const Game = require('../models/Game');
 const updateGame = require('./updateGame');
+const timeOut = require('./timeOut');
+const resignOrDraw = require('./resignOrDraw');
 
 module.exports = io => {
 	const lobbySocket = io.of('/lobby');
@@ -25,7 +27,28 @@ module.exports = io => {
 			socket.join(room);
 		});
 		socket.on('update game', data => {
-			updateGame(data, socket, gameSocket, io);
+			updateGame(data, socket, gameSocket);
+		});
+		socket.on('time out', data => {
+			timeOut(data, socket, gameSocket);
+		});
+		socket.on('offer resign', data => {
+			resignOrDraw.offerResign(data, socket);
+		});
+		socket.on('offer draw', data => {
+			resignOrDraw.offerDraw(data, socket);
+		});
+		socket.on('accept resign', data => {
+			resignOrDraw.acceptResign(data, socket, gameSocket);
+		});
+		socket.on('decline resign', data => {
+			resignOrDraw.declineResign(data, socket, gameSocket);
+		});
+		socket.on('accept draw', data => {
+			resignOrDraw.acceptDraw(data, socket, gameSocket);
+		});
+		socket.on('decline draw', data => {
+			resignOrDraw.declineDraw(data, socket, gameSocket);
 		});
 	});
 };

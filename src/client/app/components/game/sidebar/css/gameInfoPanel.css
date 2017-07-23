@@ -1,0 +1,19 @@
+.gameInfoPanelContainer {
+	text-align: center;
+	width: 450px;
+	background-color: #262626;
+	margin: 0 auto;
+	padding-top: 10px;
+	padding-bottom: 15px;
+	border: 1px solid #3d3d3d;
+}
+
+.alignPlayerInfo {
+	top: 3px;
+	position: relative;
+}
+
+.versus {
+	top: 7px;
+	position: relative;
+}

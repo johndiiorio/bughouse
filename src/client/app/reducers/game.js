@@ -12,7 +12,9 @@ const defaultState = {
 		rightWhite: [],
 		rightBlack: []
 	},
-	pieceToDragFromReserve: {}
+	pieceToDragFromReserve: {},
+	displayResignChoice: false,
+	displayDrawChoice: false
 };
 
 export default function user(state = defaultState, action) {
@@ -41,6 +43,18 @@ export default function user(state = defaultState, action) {
 			return {
 				...state,
 				pieceToDragFromReserve: action.piece
+			};
+		}
+		case gameActions.UPDATE_DISPLAY_RESIGN_CHOICE: {
+			return {
+				...state,
+				displayResignChoice: action.display
+			};
+		}
+		case gameActions.UPDATE_DISPLAY_DRAW_CHOICE: {
+			return {
+				...state,
+				displayDrawChoice: action.display
 			};
 		}
 		case gameActions.RECEIVE_GAME_INFO: {
