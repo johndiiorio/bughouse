@@ -3,6 +3,7 @@ import * as gameActions from '../actions/game';
 
 const defaultState = {
 	game: {},
+	isPlaying: false,
 	userPosition: null,
 	moves: [],
 	clocks: [],
@@ -19,6 +20,11 @@ const defaultState = {
 
 export default function user(state = defaultState, action) {
 	switch (action.type) {
+		case gameActions.RECEIVE_IS_PLAYING:
+			return {
+				...state,
+				isPlaying: action.isPlaying
+			};
 		case gameActions.UPDATE_MOVES:
 			return {
 				...state,

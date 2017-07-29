@@ -4,7 +4,8 @@ import GameInfoPanelComponent from '../../../components/game/sidebar/GameInfoPan
 function mapStateToProps(state) {
 	return {
 		game: state.game.game,
-		moves: state.game.moves
+		moves: state.game.moves,
+		isPlaying: state.game.isPlaying
 	};
 }
 

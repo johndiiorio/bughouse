@@ -5,6 +5,7 @@ import GameComponent from '../../components/game/GameComponent';
 
 function mapStateToProps(state) {
 	return {
+		isPlaying: state.game.isPlaying,
 		renderGameBoards: !_.isEmpty(state.game.game)
 	};
 }

@@ -5,6 +5,7 @@ export const UPDATE_CLOCKS = 'UPDATE_CLOCKS';
 export const UPDATE_RESERVES = 'UPDATE_RESERVES';
 export const UPDATE_PIECE_TO_DRAG_FROM_RESERVE = 'UPDATE_PIECE_TO_DRAG_FROM_RESERVE';
 export const RECEIVE_GAME_INFO = 'RECEIVE_GAME_INFO';
+export const RECEIVE_IS_PLAYING = 'RECEIVE_IS_PLAYING';
 export const UPDATE_DISPLAY_RESIGN_CHOICE = 'UPDATE_DISPLAY_RESIGN_CHOICE';
 export const UPDATE_DISPLAY_DRAW_CHOICE = 'UPDATE_DISPLAY_DRAW_CHOICE';
 
@@ -35,6 +36,20 @@ export function updateDisplayResignChoice(display) {
 
 export function updateDisplayDrawChoice(display) {
 	return { type: UPDATE_DISPLAY_DRAW_CHOICE, display };
+}
+
+export function receiveIsPlaying(isPlaying) {
+	return { type: RECEIVE_IS_PLAYING, isPlaying };
+}
+
+export function updateIsPlaying(gameID) {
+	return dispatch => {
+		axios.put(`/api/games/userIsPlayingOrObserving/${gameID}`, { token: localStorage.getItem('token') })
+			.then(response => {
+				dispatch(receiveIsPlaying(response.data.isPlaying));
+			})
+			.catch(() => dispatch(receiveIsPlaying(false)));
+	};
 }
 
 export function getGameInfo(id) {

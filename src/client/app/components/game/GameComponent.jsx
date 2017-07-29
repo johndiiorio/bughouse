@@ -26,7 +26,7 @@ export default class GameComponent extends React.Component {
 				{ this.state.renderGameBoards &&
 				<div className="container-fluid">
 					<GameSidebarComponent />
-					<GameBoardsContainer />
+					<GameBoardsContainer isPlaying={this.props.isPlaying} />
 				</div>
 				}
 			</div>

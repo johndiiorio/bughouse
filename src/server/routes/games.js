@@ -60,7 +60,7 @@ router.put('/withUsers/:id', async (req, res) => {
 		if (req.body.token) {
 			jwt.verify(req.body.token, secretToken, (err, decoded) => {
 				if (err) {
-					res.json({ showGame: false });
+					row.userPosition = 1;
 				} else {
 					if (row.player2.id === decoded.id) row.userPosition = 2;
 					else if (row.player3.id === decoded.id) row.userPosition = 3;
@@ -79,8 +79,8 @@ router.put('/withUsers/:id', async (req, res) => {
 	}
 });
 
-/* Get if a user should be shown game or overview component */
-router.put('/showGameOrOverview/:id', async (req, res) => {
+/* Get if a user is a game player or an observer */
+router.put('/userIsPlayingOrObserving/:id', async (req, res) => {
 	try {
 		const token = req.body.token;
 		if (req.params.id === 'undefined' || !token) {
@@ -88,23 +88,23 @@ router.put('/showGameOrOverview/:id', async (req, res) => {
 		}
 		const row = await Game.getGameWithUsersByID(req.params.id);
 		if (row.status !== 'playing') {
-			res.json({ showGame: false });
+			res.json({ isPlaying: false });
 		} else {
 			jwt.verify(token, secretToken, (err, decoded) => {
 				if (err) {
-					res.json({ showGame: false });
+					res.json({ isPlaying: false });
 				} else {
 					if (row.player1.id === decoded.id || row.player2.id === decoded.id || row.player3.id === decoded.id || row.player4.id === decoded.id) {
-						res.json({ showGame: true });
+						res.json({ isPlaying: true });
 					} else {
-						res.json({ showGame: false });
+						res.json({ isPlaying: false });
 					}
 				}
 			});
 		}
 	} catch (err) {
-		console.error(`Error while performing GET if user should be shown game or overview component by id: ${err}`);
-		res.status(400).send({ showGame: false });
+		console.error(`Error while performing GET if user is playing or observing: ${err}`);
+		res.status(400).send({ isPlaying: false });
 	}
 });
 
