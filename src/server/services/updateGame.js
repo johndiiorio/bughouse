@@ -44,7 +44,7 @@ function convertReserveToSparePieces(reserve) {
 	});
 }
 
-module.exports = async (data, socket, gameSocket) => {
+module.exports = async (data, socket, gameSocket, clearRoom) => {
 	try {
 		const row = await Game.getByID(data.id);
 		const currentTime = Date.now();
@@ -195,12 +195,12 @@ module.exports = async (data, socket, gameSocket) => {
 				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
 				await db.none(terminationQueryString, [termination, 'terminated', data.id]);
 				gameSocket.in(socket.room).emit('game over', { termination });
+				clearRoom(socket.room, '/game');
 			}
 		} else { // illegal move
 			socket.emit('snapback move', { fen: game.fen() });
 		}
 	} catch (err) {
-		// TODO possible error could occur from null fen
 		socket.emit('snapback move', { fen: null });
 	}
 };

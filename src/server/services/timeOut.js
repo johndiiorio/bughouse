@@ -23,7 +23,7 @@ function checkIfTimeOut(game) {
 	return '';
 }
 
-module.exports = async (id, socket, gameSocket) => {
+module.exports = async (id, socket, gameSocket, clearRoom) => {
 	try {
 		const game = await Game.getByID(id);
 		if (game && game.status === 'playing') {
@@ -32,6 +32,7 @@ module.exports = async (id, socket, gameSocket) => {
 				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
 				await db.none(terminationQueryString, [termination, 'terminated', id]);
 				gameSocket.in(socket.room).emit('game over', { termination });
+				clearRoom(socket.room, '/game');
 			}
 		}
 	} catch (err) {

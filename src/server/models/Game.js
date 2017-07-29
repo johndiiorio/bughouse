@@ -7,7 +7,7 @@ const sqlFile = database.sqlFile;
 
 class Game {
 	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange,
-				mode, status, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
+				mode, status, termination, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
 				leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack,
 				leftLastMove, rightLastMove, leftColorToPlay, rightColorToPlay, resignState, drawState) {
 		this.id = id;
@@ -20,6 +20,7 @@ class Game {
 		this.ratingRange = ratingRange;
 		this.mode = mode;
 		this.status = status;
+		this.termination = termination;
 		this.joinRandom = joinRandom;
 		this.timestamp = timestamp;
 		this.clocks = clocks;
@@ -47,7 +48,7 @@ class Game {
 	static mapRow(row) {
 		return new Game(
 			row.id, row.player1, row.player2, row.player3, row.player4,
-			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random,
+			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.termination, row.join_random,
 			row.timestamp, row.clocks, row.moves, row.left_last_time, row.right_last_time, row.left_fen, row.right_fen,
 			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black,
 			row.left_last_move, row.right_last_move, row.left_color_to_play, row.right_color_to_play,

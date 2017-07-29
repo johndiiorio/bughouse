@@ -143,7 +143,7 @@ router.get('/state/:id', async (req, res) => {
 	}
 	try {
 		const game = await Game.getByID(req.params.id);
-		const state = {
+		res.json({
 			leftReserveWhite: convertReserveToSparePieces(game.left_reserve_white),
 			leftReserveBlack: convertReserveToSparePieces(game.left_reserve_black),
 			rightReserveWhite: convertReserveToSparePieces(game.right_reserve_white),
@@ -159,9 +159,9 @@ router.get('/state/:id', async (req, res) => {
 			leftLastTime: parseInt(game.left_last_time),
 			rightLastTime: parseInt(game.right_last_time),
 			resignState: game.resign_state,
-			drawState: game.draw_state
-		};
-		res.json(state);
+			drawState: game.draw_state,
+			termination: game.termination
+		});
 	} catch (err) {
 		console.error(`Error while performing fetch game state: ${err}`);
 		res.status(500).send({ error: 'Failed to fetch game state' });

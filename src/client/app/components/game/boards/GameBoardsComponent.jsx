@@ -33,7 +33,10 @@ export default class GameBoardsComponent extends React.Component {
 		this.timer4 = null;
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', this.snapbackMove);
-		socketGame.on('game over', this.handleGameOver);
+		socketGame.on('game over', data => {
+			playSound('notify');
+			this.handleGameOver(data.termination);
+		});
 	}
 
 	componentDidMount() {
@@ -177,6 +180,9 @@ export default class GameBoardsComponent extends React.Component {
 						this.timer3.setDuration(minutesInMilliseconds - data.clocks[2]);
 						this.timer4.toggle(data.clocks[3] + diffTime);
 					}
+				}
+				if (data.termination) {
+					this.handleGameOver(data.termination);
 				}
 			}).catch(console.error);
 	}
@@ -371,14 +377,14 @@ export default class GameBoardsComponent extends React.Component {
 		this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: oldTurnColor });
 	}
 
-	handleGameOver() {
+	handleGameOver(gameTermination) {
 		this.board1.stop();
 		this.board2.stop();
 		this.timer1.running = false;
 		this.timer2.running = false;
 		this.timer3.running = false;
 		this.timer4.running = false;
-		playSound('notify');
+		this.props.updateGameTermination(gameTermination);
 	}
 
 	render() {

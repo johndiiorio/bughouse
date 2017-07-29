@@ -46,7 +46,15 @@ export default class GameInfoPanelComponent extends React.Component {
 						{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
 					</span>
 				</div>
-				{ this.props.isPlaying && <GameActionsPanelContainer /> }
+				{ this.props.gameTermination ? (
+					<p className="gameTermination">
+						{this.props.gameTermination}
+					</p>
+				) : (
+					<div>
+						{ this.props.isPlaying && <GameActionsPanelContainer /> }
+					</div>
+				)}
 			</div>
 		);
 	}
