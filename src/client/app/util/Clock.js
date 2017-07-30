@@ -36,7 +36,10 @@ export default class Clock {
 					} else {
 						diff = 0;
 						that.running = false;
-						that.gameSocket.emit('time out', that.gameId);
+						that.gameSocket.emit('time out', {
+							id: that.gameId,
+							token: localStorage.getItem('token')
+						});
 					}
 					const obj = that.parse(diff);
 					that.tickFtns.forEach(ftn => {

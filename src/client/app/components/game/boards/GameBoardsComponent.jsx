@@ -233,7 +233,8 @@ export default class GameBoardsComponent extends React.Component {
 				target,
 				piece,
 				promotion: this.tmpPromotionPiece
-			}
+			},
+			token: localStorage.getItem('token')
 		};
 		socketGame.emit('update game', data);
 	}
