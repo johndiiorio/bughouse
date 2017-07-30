@@ -87,6 +87,9 @@ router.put('/userIsPlayingOrObserving/:id', async (req, res) => {
 			throw new Error('No id or token given');
 		}
 		const row = await Game.getGameWithUsersByID(req.params.id);
+		if (!Object.prototype.hasOwnProperty.call(row, 'id')) {
+			throw new Error('Invalid id');
+		}
 		if (row.status !== 'playing') {
 			res.json({ isPlaying: false });
 		} else {

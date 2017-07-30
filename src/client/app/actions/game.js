@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { browserHistory } from 'react-router';
 
 export const UPDATE_MOVES = 'UPDATE_MOVES';
 export const UPDATE_CLOCKS = 'UPDATE_CLOCKS';
@@ -49,11 +50,12 @@ export function receiveIsPlaying(isPlaying) {
 
 export function updateIsPlaying(gameID) {
 	return dispatch => {
-		axios.put(`/api/games/userIsPlayingOrObserving/${gameID}`, { token: localStorage.getItem('token') })
+		axios.put(`/api/games/userIsPlayingOrObserving/${gameID}`, { token: localStorage.getItem('token') },
+			{ validateStatus: status => (status >= 200 && status < 300) || (status === 401 || status === 403) })
 			.then(response => {
 				dispatch(receiveIsPlaying(response.data.isPlaying));
 			})
-			.catch(() => dispatch(receiveIsPlaying(false)));
+			.catch(() => browserHistory.push('/'));
 	};
 }
 
