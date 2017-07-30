@@ -200,9 +200,9 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	getRating(player) {
-		if (this.props.game.minutes < 3) return player.ratingBullet;
-		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return player.ratingBlitz;
-		return player.ratingClassical;
+		if (this.props.game.minutes < 3) return Math.round(player.ratingBullet);
+		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return Math.round(player.ratingBlitz);
+		return Math.round(player.ratingClassical);
 	}
 
 	getDurationFormat(duration) {

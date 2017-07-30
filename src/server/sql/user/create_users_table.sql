@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(15) NOT NULL UNIQUE,
 	password_hash CHAR(60) NOT NULL,
 	title VARCHAR(2) NULL,
-	rating_bullet INT NOT NULL DEFAULT 1500,
-	rd_bullet INT NOT NULL DEFAULT 350,
-	rating_blitz INT NOT NULL DEFAULT 1500,
-	rd_blitz INT NOT NULL DEFAULT 350,
-	rating_classical INT NOT NULL DEFAULT 1500,
-	rd_classical INT NOT NULL DEFAULT 350
+	rating_bullet REAL NOT NULL DEFAULT 1500,
+	rd_bullet REAL NOT NULL DEFAULT 350,
+	rating_blitz REAL NOT NULL DEFAULT 1500,
+	rd_blitz REAL NOT NULL DEFAULT 350,
+	rating_classical REAL NOT NULL DEFAULT 1500,
+	rd_classical REAL NOT NULL DEFAULT 350
 );

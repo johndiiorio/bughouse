@@ -45,10 +45,7 @@ async function acceptResign(data, socket, gameSocket, clearRoom) {
 			resignedAgreed = true;
 		}
 		if (resignedAgreed) {
-			const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
-			await db.none(terminationQueryString, [termination, 'terminated', data.id]);
-			gameSocket.in(socket.room).emit('game over', { termination });
-			clearRoom(socket.room, '/game');
+			await Game.endGame(row, termination, socket, gameSocket, clearRoom);
 		}
 	} catch (err) {
 		console.log(`Error updating acceptResign for game id ${data.id}: ${err}`);
@@ -84,10 +81,7 @@ async function acceptDraw(data, socket, gameSocket, clearRoom) {
 		}
 		if (drawAgreed) {
 			const termination = 'Draw by agreement';
-			const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
-			await db.none(terminationQueryString, [termination, 'terminated', data.id]);
-			gameSocket.in(socket.room).emit('game over', { termination });
-			clearRoom(socket.room, '/game');
+			await Game.endGame(row, termination, socket, gameSocket, clearRoom);
 		}
 		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', [drawState.join(), data.id]);
 	} catch (err) {

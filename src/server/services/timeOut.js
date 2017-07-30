@@ -1,8 +1,6 @@
 const Game = require('../models/Game');
 const database = require('../models/database');
 
-const db = database.db;
-
 /**
  * Check if any user has timed out in a game
  * @param {Game} game - Game row from database
@@ -29,10 +27,7 @@ module.exports = async (id, socket, gameSocket, clearRoom) => {
 		if (game && game.status === 'playing') {
 			const termination = checkIfTimeOut(game);
 			if (termination) {
-				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
-				await db.none(terminationQueryString, [termination, 'terminated', id]);
-				gameSocket.in(socket.room).emit('game over', { termination });
-				clearRoom(socket.room, '/game');
+				await Game.endGame(game, termination, socket, gameSocket, clearRoom);
 			}
 		}
 	} catch (err) {

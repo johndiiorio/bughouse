@@ -192,10 +192,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				} else {
 					termination = 'Drawn by the 50 move rule';
 				}
-				const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
-				await db.none(terminationQueryString, [termination, 'terminated', data.id]);
-				gameSocket.in(socket.room).emit('game over', { termination });
-				clearRoom(socket.room, '/game');
+				await Game.endGame(row, termination, socket, gameSocket, clearRoom);
 			}
 		} else { // illegal move
 			socket.emit('snapback move', { fen: game.fen() });

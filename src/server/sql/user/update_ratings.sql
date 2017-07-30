@@ -1,8 +1,8 @@
 UPDATE users
-SET ${updateRatingsMode} = CASE id
-	WHEN ${id1} THEN ROUND(${p1Value})
-	WHEN ${id2} THEN ROUND(${p2Value})
-	WHEN ${id3} THEN ROUND(${p3Value})
-	WHEN ${id4} THEN ROUND(${p4Value})
+SET ${updateRatingsMode~} = CASE id
+	WHEN ${id1} THEN ${p1Value}
+	WHEN ${id2} THEN ${p2Value}
+	WHEN ${id3} THEN ${p3Value}
+	WHEN ${id4} THEN ${p4Value}
 	END
-WHERE id IN (${id1},${id2},${id3},${id4})
+WHERE id IN (${id1}, ${id2}, ${id3}, ${id4})

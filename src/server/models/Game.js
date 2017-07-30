@@ -151,6 +151,30 @@ class Game {
 		}
 		return id;
 	}
+
+	/**
+	 * End a game
+	 * @param {Object} game
+	 * @param {String} termination
+	 * @param {Object} socket
+	 * @param {Object} gameSocket
+	 * @param {Function} clearRoom
+	 * @returns {Promise.<void>}
+	 */
+	static async endGame(game, termination, socket, gameSocket, clearRoom) {
+		const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
+		await db.none(terminationQueryString, [termination, 'terminated', game.id]);
+		gameSocket.in(socket.room).emit('game over', { termination });
+
+		let winner = 'draw';
+		if (termination.includes('Team 1 is victorious')) winner = 'team1';
+		if (termination.includes('Team 2 is victorious')) winner = 'team2';
+
+		if (game.mode === 'Rated') {
+			await User.updateRatings(game, winner);
+		}
+		clearRoom(socket.room, '/game');
+	}
 }
 
 module.exports = Game;

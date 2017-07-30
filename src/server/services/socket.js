@@ -14,7 +14,7 @@ module.exports = io => {
 		const roomObj = io.nsps[namespace].adapter.rooms[room];
 		if (roomObj) {
 			Object.keys(roomObj.sockets).forEach(id => {
-				io.sockets.connected[id].leave(room);
+				io.nsps[namespace].connected[id].leave(room);
 			});
 		}
 	}
