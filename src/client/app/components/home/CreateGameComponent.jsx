@@ -61,9 +61,9 @@ export default class CreateGameComponent extends React.Component {
 	formatRatingRange() {
 		const userRating = this.getUserRating();
 		if (this.state.ratingRange === 0) {
-			return `Rating range: ${userRating}`;
+			return `Rating range: ${Math.round(userRating)}`;
 		}
-		return `Rating range: ${userRating - this.state.ratingRange} to ${userRating + this.state.ratingRange}`;
+		return `Rating range: ${Math.round(userRating - this.state.ratingRange)} to ${Math.round(userRating + this.state.ratingRange)}`;
 	}
 
 	/**

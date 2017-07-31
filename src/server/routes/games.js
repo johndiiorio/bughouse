@@ -53,7 +53,9 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-/* Get a single game with users information, include user's position */
+/* Get a single game with users information, include user's position
+ * Note that the users ratings are relative to the start of the game, not their current rating
+ */
 router.put('/withUsers/:id', async (req, res) => {
 	try {
 		const row = await Game.getGameWithUsersByID(req.params.id);

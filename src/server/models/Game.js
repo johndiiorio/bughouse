@@ -119,7 +119,8 @@ class Game {
 			if (playerNum !== game.player1 && playerNum !== game.player2 && playerNum !== game.player3 && playerNum !== game.player4) {
 				// Check if player's rating is within game rating range and not overriding other player
 				if (userRating >= gameRatingRange[0] && userRating <= gameRatingRange[1] && game[playerPosition] === null) {
-					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player });
+					const playerRatingColumn = `${playerPosition}_rating`;
+					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player, playerRatingColumn, userRating });
 					return true;
 				}
 			}
@@ -139,13 +140,33 @@ class Game {
 	}
 
 	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
+		// Only player1 or player2 will be defined, add initial rating of player who created game to game row, others updated later
+		let ratingColumnOfFirstPlayer = 'player1_rating';
+		let user;
+		let rating;
+		if (player2 === null) {
+			user = await User.getByID(player1);
+		} else {
+			ratingColumnOfFirstPlayer = 'player2_rating';
+			user = await User.getByID(player2);
+		}
+		if (minutes < 3) {
+			rating = user.ratingBullet;
+		} else if (minutes >= 3 && minutes <= 8) {
+			rating = user.ratingBlitz;
+		} else {
+			rating = user.ratingClassical;
+		}
+
+		// Calculate random unique game id
 		const rowNumStart = await db.one(sqlFile('game/get_number_games.sql'));
 		const numGamesStart = rowNumStart.count;
 		let numGamesEnd = numGamesStart;
 		let id;
 		while (numGamesStart === numGamesEnd) {
 			id = (Math.random() + 1).toString(36).substr(2, 12);
-			await db.none(sqlFile('game/create_game.sql'), { id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom });
+			await db.none(sqlFile('game/create_game.sql'),
+				{ id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom, ratingColumnOfFirstPlayer, rating });
 			const rowNumEnd = await db.one(sqlFile('game/get_number_games.sql'));
 			numGamesEnd = rowNumEnd.count;
 		}

@@ -88,7 +88,7 @@ export default class LobbyComponent extends React.Component {
 		}
 
 		function formatRange(game) {
-			return `${game.ratingRange.substring(0, game.ratingRange.indexOf('-'))} to ${game.ratingRange.substring(game.ratingRange.indexOf('-') + 1)}`;
+			return `${parseInt(game.ratingRange.substring(0, game.ratingRange.indexOf('-')))} to ${parseInt(game.ratingRange.substring(game.ratingRange.indexOf('-') + 1))}`;
 		}
 
 		function formatRandom(game) {

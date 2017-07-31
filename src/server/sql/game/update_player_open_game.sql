@@ -1,4 +1,5 @@
 UPDATE games
 SET
-	${playerPosition~} = ${player}
+	${playerPosition~} = ${player},
+	${playerRatingColumn~} = ${userRating}
 WHERE id = ${id};

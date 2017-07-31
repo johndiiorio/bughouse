@@ -1,5 +1,4 @@
 const Game = require('../models/Game');
-const database = require('../models/database');
 
 /**
  * Check if any user has timed out in a game
