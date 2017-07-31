@@ -3,7 +3,6 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const secretToken = require('../config').secretToken;
-const authentication = require('../services/authenticator');
 
 const router = express.Router();
 
@@ -51,19 +50,6 @@ router.post('/', async (req, res) => {
 		}
 	} catch (err) {
 		res.status(400).send({ error: 'Failed to create new user' });
-	}
-});
-
-router.use(authentication);
-
-/* Update player ratings */
-router.post('/ratings', async (req, res) => {
-	try {
-		await User.updateRatings(req.body.id1, req.body.id2, req.body.id3, req.body.id4, req.body.winner, req.body.mode);
-		res.end();
-	} catch (err) {
-		console.error(`Error while performing POST update player ratings: ${err}`);
-		res.status(400).send({ error: 'Failed to update player ratings' });
 	}
 });
 

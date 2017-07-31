@@ -7,7 +7,7 @@ const sqlFile = database.sqlFile;
 
 class Game {
 	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange,
-				mode, status, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
+				mode, status, termination, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
 				leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack,
 				leftLastMove, rightLastMove, leftColorToPlay, rightColorToPlay, resignState, drawState) {
 		this.id = id;
@@ -20,6 +20,7 @@ class Game {
 		this.ratingRange = ratingRange;
 		this.mode = mode;
 		this.status = status;
+		this.termination = termination;
 		this.joinRandom = joinRandom;
 		this.timestamp = timestamp;
 		this.clocks = clocks;
@@ -47,7 +48,7 @@ class Game {
 	static mapRow(row) {
 		return new Game(
 			row.id, row.player1, row.player2, row.player3, row.player4,
-			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.join_random,
+			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.termination, row.join_random,
 			row.timestamp, row.clocks, row.moves, row.left_last_time, row.right_last_time, row.left_fen, row.right_fen,
 			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black,
 			row.left_last_move, row.right_last_move, row.left_color_to_play, row.right_color_to_play,
@@ -118,7 +119,8 @@ class Game {
 			if (playerNum !== game.player1 && playerNum !== game.player2 && playerNum !== game.player3 && playerNum !== game.player4) {
 				// Check if player's rating is within game rating range and not overriding other player
 				if (userRating >= gameRatingRange[0] && userRating <= gameRatingRange[1] && game[playerPosition] === null) {
-					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player });
+					const playerRatingColumn = `${playerPosition}_rating`;
+					await db.none(sqlFile('game/update_player_open_game.sql'), { id, playerPosition, player, playerRatingColumn, userRating });
 					return true;
 				}
 			}
@@ -138,17 +140,61 @@ class Game {
 	}
 
 	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
+		// Only player1 or player2 will be defined, add initial rating of player who created game to game row, others updated later
+		let ratingColumnOfFirstPlayer = 'player1_rating';
+		let user;
+		let rating;
+		if (player2 === null) {
+			user = await User.getByID(player1);
+		} else {
+			ratingColumnOfFirstPlayer = 'player2_rating';
+			user = await User.getByID(player2);
+		}
+		if (minutes < 3) {
+			rating = user.ratingBullet;
+		} else if (minutes >= 3 && minutes <= 8) {
+			rating = user.ratingBlitz;
+		} else {
+			rating = user.ratingClassical;
+		}
+
+		// Calculate random unique game id
 		const rowNumStart = await db.one(sqlFile('game/get_number_games.sql'));
 		const numGamesStart = rowNumStart.count;
 		let numGamesEnd = numGamesStart;
 		let id;
 		while (numGamesStart === numGamesEnd) {
 			id = (Math.random() + 1).toString(36).substr(2, 12);
-			await db.none(sqlFile('game/create_game.sql'), { id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom });
+			await db.none(sqlFile('game/create_game.sql'),
+				{ id, player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom, ratingColumnOfFirstPlayer, rating });
 			const rowNumEnd = await db.one(sqlFile('game/get_number_games.sql'));
 			numGamesEnd = rowNumEnd.count;
 		}
 		return id;
+	}
+
+	/**
+	 * End a game
+	 * @param {Object} game
+	 * @param {String} termination
+	 * @param {Object} socket
+	 * @param {Object} gameSocket
+	 * @param {Function} clearRoom
+	 * @returns {Promise.<void>}
+	 */
+	static async endGame(game, termination, socket, gameSocket, clearRoom) {
+		const terminationQueryString = 'UPDATE Games SET termination = $1, status = $2 WHERE id = $3';
+		await db.none(terminationQueryString, [termination, 'terminated', game.id]);
+		gameSocket.in(socket.room).emit('game over', { termination });
+
+		let winner = 'draw';
+		if (termination.includes('Team 1 is victorious')) winner = 'team1';
+		if (termination.includes('Team 2 is victorious')) winner = 'team2';
+
+		if (game.mode === 'Rated') {
+			await User.updateRatings(game, winner);
+		}
+		clearRoom(socket.room, '/game');
 	}
 }
 

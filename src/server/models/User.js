@@ -25,7 +25,7 @@ class User {
 	}
 
 	static mapRow(row) {
-		return new User(row.id, row.username, row.email, row.password_hash, row.title, row.rating_bullet, row.rd_bullet, row.rating_blitz, row.rd_blitz, row.rating_classical, row.rd_classical);
+		return new User(row.id, row.username, row.email, undefined, row.title, row.rating_bullet, row.rd_bullet, row.rating_blitz, row.rd_blitz, row.rating_classical, row.rd_classical);
 	}
 
 	static async getAll() {
@@ -70,17 +70,13 @@ class User {
 
 	/**
 	 * Returns a promise to update four players ratings (to be used at the end of a game)
-	 * @param {int} id1 Player 1's ID
-	 * @param {int} id2 Player 2's ID
-	 * @param {int} id3 Player 3's ID
-	 * @param {int} id4 Player 4's ID
-	 * @param {string} winner Either 'near' (1 and 4 won) or 'far' (2 and 3 won)
-	 * @param {string} mode Either 'bullet', 'blitz', or 'classical'
+	 * @param {Object} game
+	 * @param {string} winner Either 'team1' (1 and 4 won), 'team2' (2 and 3 won), or 'draw'
 	 * @returns {Promise.<>}
 	 */
-	static async updateRatings(id1, id2, id3, id4, winner, mode) {
+	static async updateRatings(game, winner) {
 		try {
-			const rows = await db.any(sqlFile('user/get_associated_users.sql'), { id1, id2, id3, id4 });
+			const rows = await db.any(sqlFile('user/get_associated_users.sql'), { id1: game.player1, id2: game.player2, id3: game.player3, id4: game.player4 });
 			const users = rows.map(User.mapRow);
 			const settings = {
 				tau: 0.5,
@@ -96,14 +92,14 @@ class User {
 			let race;
 			let updateRatingsMode;
 			let updateRdMode;
-			if (mode === 'bullet') {
+			if (game.minutes < 3) {
 				player1 = ranking.makePlayer(users[0].ratingBullet, users[0].rdBullet, 0.06);
 				player2 = ranking.makePlayer(users[1].ratingBullet, users[1].rdBullet, 0.06);
 				player3 = ranking.makePlayer(users[2].ratingBullet, users[2].rdBullet, 0.06);
 				player4 = ranking.makePlayer(users[3].ratingBullet, users[3].rdBullet, 0.06);
 				updateRatingsMode = 'rating_bullet';
 				updateRdMode = 'rd_bullet';
-			} else if (mode === 'blitz') {
+			} else if (game.minutes >= 3 && game.minutes <= 8) {
 				player1 = ranking.makePlayer(users[0].ratingBlitz, users[0].rdBlitz, 0.06);
 				player2 = ranking.makePlayer(users[1].ratingBlitz, users[1].rdBlitz, 0.06);
 				player3 = ranking.makePlayer(users[2].ratingBlitz, users[2].rdBlitz, 0.06);
@@ -118,9 +114,9 @@ class User {
 				updateRatingsMode = 'rating_classical';
 				updateRdMode = 'rd_classical';
 			}
-			if (winner === 'near') { // players 1 and 4 won
+			if (winner === 'team1') { // players 1 and 4 won
 				race = ranking.makeRace([[player1, player4], [player2, player3]]);
-			} else if (winner === 'far') { // players 2 and 3 won
+			} else if (winner === 'team2') { // players 2 and 3 won
 				race = ranking.makeRace([[player2, player3], [player1, player4]]);
 			} else { // game drawn
 				race = ranking.makeRace([[player1, player2, player3, player4]]);
@@ -128,15 +124,21 @@ class User {
 			ranking.updateRatings(race);
 			const updateRatingsArgs = {
 				updateRatingsMode,
-				id1,
+				id1: game.player1,
+				id2: game.player2,
+				id3: game.player3,
+				id4: game.player4,
 				p1Value: player1.getRating(),
 				p2Value: player2.getRating(),
 				p3Value: player3.getRating(),
 				p4Value: player4.getRating(),
 			};
 			const updateRdArgs = {
-				updateRdMode,
-				id1,
+				updateRatingsMode: updateRdMode,
+				id1: game.player1,
+				id2: game.player2,
+				id3: game.player3,
+				id4: game.player4,
 				p1Value: player1.getRd(),
 				p2Value: player2.getRd(),
 				p3Value: player3.getRd(),

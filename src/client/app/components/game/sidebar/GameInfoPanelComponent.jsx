@@ -18,9 +18,7 @@ export default class GameInfoPanelComponent extends React.Component {
 	}
 
 	getRating(player) {
-		if (this.props.game.minutes < 3) return this.props.game[player].ratingBullet;
-		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return this.props.game[player].ratingBlitz;
-		return this.props.game[player].ratingClassical;
+		return Math.round(this.props.game[player].rating);
 	}
 
 	render() {
@@ -46,7 +44,15 @@ export default class GameInfoPanelComponent extends React.Component {
 						{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
 					</span>
 				</div>
-				<GameActionsPanelContainer />
+				{ this.props.gameTermination ? (
+					<p className="gameTermination">
+						{this.props.gameTermination}
+					</p>
+				) : (
+					<div>
+						{ this.props.isPlaying && <GameActionsPanelContainer /> }
+					</div>
+				)}
 			</div>
 		);
 	}

@@ -53,14 +53,16 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-/* Get a single game with users information, include user's position */
+/* Get a single game with users information, include user's position
+ * Note that the users ratings are relative to the start of the game, not their current rating
+ */
 router.put('/withUsers/:id', async (req, res) => {
 	try {
 		const row = await Game.getGameWithUsersByID(req.params.id);
 		if (req.body.token) {
 			jwt.verify(req.body.token, secretToken, (err, decoded) => {
 				if (err) {
-					res.json({ showGame: false });
+					row.userPosition = 1;
 				} else {
 					if (row.player2.id === decoded.id) row.userPosition = 2;
 					else if (row.player3.id === decoded.id) row.userPosition = 3;
@@ -79,32 +81,35 @@ router.put('/withUsers/:id', async (req, res) => {
 	}
 });
 
-/* Get if a user should be shown game or overview component */
-router.put('/showGameOrOverview/:id', async (req, res) => {
+/* Get if a user is a game player or an observer */
+router.put('/userIsPlayingOrObserving/:id', async (req, res) => {
 	try {
 		const token = req.body.token;
 		if (req.params.id === 'undefined' || !token) {
 			throw new Error('No id or token given');
 		}
 		const row = await Game.getGameWithUsersByID(req.params.id);
+		if (!Object.prototype.hasOwnProperty.call(row, 'id')) {
+			throw new Error('Invalid id');
+		}
 		if (row.status !== 'playing') {
-			res.json({ showGame: false });
+			res.json({ isPlaying: false });
 		} else {
 			jwt.verify(token, secretToken, (err, decoded) => {
 				if (err) {
-					res.json({ showGame: false });
+					res.json({ isPlaying: false });
 				} else {
 					if (row.player1.id === decoded.id || row.player2.id === decoded.id || row.player3.id === decoded.id || row.player4.id === decoded.id) {
-						res.json({ showGame: true });
+						res.json({ isPlaying: true });
 					} else {
-						res.json({ showGame: false });
+						res.json({ isPlaying: false });
 					}
 				}
 			});
 		}
 	} catch (err) {
-		console.error(`Error while performing GET if user should be shown game or overview component by id: ${err}`);
-		res.status(400).send({ showGame: false });
+		console.error(`Error while performing GET if user is playing or observing: ${err}`);
+		res.status(400).send({ isPlaying: false });
 	}
 });
 
@@ -143,7 +148,7 @@ router.get('/state/:id', async (req, res) => {
 	}
 	try {
 		const game = await Game.getByID(req.params.id);
-		const state = {
+		res.json({
 			leftReserveWhite: convertReserveToSparePieces(game.left_reserve_white),
 			leftReserveBlack: convertReserveToSparePieces(game.left_reserve_black),
 			rightReserveWhite: convertReserveToSparePieces(game.right_reserve_white),
@@ -159,9 +164,9 @@ router.get('/state/:id', async (req, res) => {
 			leftLastTime: parseInt(game.left_last_time),
 			rightLastTime: parseInt(game.right_last_time),
 			resignState: game.resign_state,
-			drawState: game.draw_state
-		};
-		res.json(state);
+			drawState: game.draw_state,
+			termination: game.termination
+		});
 	} catch (err) {
 		console.error(`Error while performing fetch game state: ${err}`);
 		res.status(500).send({ error: 'Failed to fetch game state' });

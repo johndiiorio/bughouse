@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS games (
 	id TEXT PRIMARY KEY NOT NULL,
 	moves TEXT NULL,
-	left_fen TEXT  NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+	left_fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 	right_fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 	left_reserve_white TEXT NULL,
 	left_reserve_black TEXT NULL,
@@ -27,5 +27,9 @@ CREATE TABLE IF NOT EXISTS games (
 	player1 INT NULL REFERENCES users (id),
 	player2 INT NULL REFERENCES users (id),
 	player3 INT NULL REFERENCES users (id),
-	player4 INT NULL REFERENCES users (id)
+	player4 INT NULL REFERENCES users (id),
+	player1_rating INT NULL,
+	player2_rating INT NULL,
+	player3_rating INT NULL,
+	player4_rating INT NULL
 );

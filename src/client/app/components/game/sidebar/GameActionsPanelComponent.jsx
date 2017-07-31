@@ -12,6 +12,11 @@ export default class GameActionsPanelComponent extends React.Component {
 			resignChoiceDisabled: false,
 			drawChoiceDisabled: false
 		};
+		this.emitData = {
+			id: this.props.id,
+			userPosition: this.props.userPosition,
+			token: localStorage.getItem('token')
+		};
 		this.handleOfferResign = this.handleOfferResign.bind(this);
 		this.handleOfferDraw = this.handleOfferDraw.bind(this);
 		this.handleAcceptResign = this.handleAcceptResign.bind(this);
@@ -34,34 +39,34 @@ export default class GameActionsPanelComponent extends React.Component {
 	}
 
 	handleOfferResign() {
-		socketGame.emit('offer resign', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('offer resign', this.emitData);
 		this.props.updateDisplayResignChoice(false);
 		this.setState({ offerResignDisabled: true });
 	}
 
 	handleOfferDraw() {
-		socketGame.emit('offer draw', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('offer draw', this.emitData);
 		this.props.updateDisplayDrawChoice(false);
 		this.setState({ offerDrawDisabled: true });
 	}
 
 	handleAcceptResign() {
-		socketGame.emit('accept resign', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('accept resign', this.emitData);
 		this.setState({ resignChoiceDisabled: true });
 	}
 
 	handleDeclineResign() {
-		socketGame.emit('decline resign', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('decline resign', this.emitData);
 		this.setState({ resignChoiceDisabled: true });
 	}
 
 	handleAcceptDraw() {
-		socketGame.emit('accept draw', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('accept draw', this.emitData);
 		this.setState({ drawChoiceDisabled: true });
 	}
 
 	handleDeclineDraw() {
-		socketGame.emit('decline draw', { id: this.props.id, userPosition: this.props.userPosition });
+		socketGame.emit('decline draw', this.emitData);
 		this.setState({ drawChoiceDisabled: true });
 	}
 

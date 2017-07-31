@@ -68,7 +68,6 @@ export default class RegisterComponent extends React.Component {
 			.then(response => {
 				localStorage.setItem('token', response.data.token);
 				this.props.updateCurrentUser(response.data.user);
-				browserHistory.push('/');
 			})
 			.catch(() => {
 				this.props.sendNotification({
@@ -77,6 +76,9 @@ export default class RegisterComponent extends React.Component {
 					position: 'tc',
 					autoDismiss: 4
 				});
+			})
+			.then(() => {
+				browserHistory.push('/');
 			});
 	}
 

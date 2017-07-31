@@ -17,3 +17,10 @@
 	top: 7px;
 	position: relative;
 }
+
+.gameTermination {
+	padding-top: 17px;
+	font-weight: bold;
+	text-decoration: underline;
+	color: #759900;
+}

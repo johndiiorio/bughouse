@@ -1,5 +1,4 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
 import axios from 'axios';
 import _ from 'lodash';
 import { Chessground } from 'chessground';
@@ -34,14 +33,17 @@ export default class GameBoardsComponent extends React.Component {
 		this.timer4 = null;
 		socketGame.on('update game', this.updateGame);
 		socketGame.on('snapback move', this.snapbackMove);
-		socketGame.on('game over', this.handleGameOver);
+		socketGame.on('game over', data => {
+			playSound('notify');
+			this.handleGameOver(data.termination);
+		});
 	}
 
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
 
 		// Game boards
-		const board1Config = {
+		const playingConfig = {
 			predroppable: {
 				enabled: true,
 			},
@@ -53,13 +55,14 @@ export default class GameBoardsComponent extends React.Component {
 				dropNewPiece: this.onDropFromReserve
 			}
 		};
-		const board2Config = {
+		const viewOnlyConfig = {
 			viewOnly: true,
 			disableContextMenu: true,
 		};
+		const board1Config = this.props.isPlaying ? playingConfig : viewOnlyConfig;
 
 		this.board1 = Chessground(document.getElementById('board1'), board1Config);
-		this.board2 = Chessground(document.getElementById('board2'), board2Config);
+		this.board2 = Chessground(document.getElementById('board2'), viewOnlyConfig);
 		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
 			this.board2.toggleOrientation();
 		} else {
@@ -178,6 +181,9 @@ export default class GameBoardsComponent extends React.Component {
 						this.timer4.toggle(data.clocks[3] + diffTime);
 					}
 				}
+				if (data.termination) {
+					this.handleGameOver(data.termination);
+				}
 			}).catch(console.error);
 	}
 
@@ -194,9 +200,7 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	getRating(player) {
-		if (this.props.game.minutes < 3) return player.ratingBullet;
-		else if (this.props.game.minutes >= 3 && this.props.game.minutes <= 8) return player.ratingBlitz;
-		return player.ratingClassical;
+		return Math.round(player.rating);
 	}
 
 	getDurationFormat(duration) {
@@ -227,7 +231,8 @@ export default class GameBoardsComponent extends React.Component {
 				target,
 				piece,
 				promotion: this.tmpPromotionPiece
-			}
+			},
+			token: localStorage.getItem('token')
 		};
 		socketGame.emit('update game', data);
 	}
@@ -371,15 +376,14 @@ export default class GameBoardsComponent extends React.Component {
 		this.board1.set({ fen: data.fen, lastMove: this.squaresToHighlight, turnColor: oldTurnColor });
 	}
 
-	handleGameOver() {
+	handleGameOver(gameTermination) {
 		this.board1.stop();
 		this.board2.stop();
 		this.timer1.running = false;
 		this.timer2.running = false;
 		this.timer3.running = false;
 		this.timer4.running = false;
-		playSound('notify');
-		browserHistory.push(`/overview/${this.props.game.id}`);
+		this.props.updateGameTermination(gameTermination);
 	}
 
 	render() {

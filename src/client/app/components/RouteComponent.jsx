@@ -9,7 +9,6 @@ import NotFoundComponent from './NotFoundComponent';
 import RegisterContainer from '../containers/header/RegisterContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
-import GameOverviewComponent from './game/GameOverviewComponent';
 import ProfileComponent from './header/ProfileComponent';
 
 export default class RouteComponent extends React.Component {
@@ -31,22 +30,10 @@ export default class RouteComponent extends React.Component {
 		}
 	}
 
-	requireGame(nextState, replace) {
+	requireGame(nextState) {
 		const gameID = nextState.params.splat;
-		const token = localStorage.getItem('token');
-		function routeToOverview() {
-			replace({
-				pathname: `/overview/${gameID}`,
-				state: { nextPathname: nextState.location.pathname }
-			});
-		}
-		if (!token) routeToOverview();
-		else {
-			axios.put(`/api/games/showGameOrOverview/${gameID}`, { token })
-				.then(res => {
-					if (!res.data.showGame) browserHistory.push(`/overview/${gameID}`);
-				})
-				.catch(() => routeToOverview);
+		if (localStorage.getItem('token')) {
+			this.props.updateIsPlaying(gameID);
 		}
 	}
 
@@ -82,7 +69,6 @@ export default class RouteComponent extends React.Component {
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/loading" component={LoadingComponent} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />
-					<Route path="/overview/*" component={GameOverviewComponent} />
 					<Route path="*" component={NotFoundComponent} />
 				</Router>
 			</div>

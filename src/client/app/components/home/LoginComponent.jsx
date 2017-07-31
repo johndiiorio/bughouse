@@ -33,7 +33,7 @@ export default class LoginComponent extends React.Component {
 	}
 
 	componentDidMount() {
-		this.inputUsername.focus();
+		if (this.inputUsername)	this.inputUsername.focus();
 	}
 
 	handleUsernameChange(e) {
