@@ -14,6 +14,11 @@ export default function lobby(state = defaultState, action) {
 				...state,
 				selectedGame: action.game
 			};
+		case lobbyActions.CLEAR_SELECTED_GAME:
+			return {
+				...state,
+				selectedGame: {}
+			};
 		case lobbyActions.UPDATE_MODAL_DISPLAYED_GAME:
 			return {
 				...state,

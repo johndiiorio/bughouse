@@ -3,6 +3,7 @@ import { browserHistory } from 'react-router';
 import { socketLobby, socketLoading } from '../socket';
 
 export const UPDATE_SELECTED_GAME = 'UPDATE_SELECTED_GAME';
+export const CLEAR_SELECTED_GAME = 'CLEAR_SELECTED_GAME';
 export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
 export const TOGGLE_MODAL_DISPLAY = 'TOGGLE_MODAL_DISPLAY';
 export const RECEIVE_GAMES_INFO = 'RECEIVE_GAMES_INFO';
@@ -12,6 +13,10 @@ export function updateSelectedGame(game) {
 	socketLobby.emit('update game list');
 	browserHistory.push('/loading');
 	return { type: UPDATE_SELECTED_GAME, game };
+}
+
+export function clearSelectedGame() {
+	return { type: CLEAR_SELECTED_GAME };
 }
 
 export function updateModalDisplayedGame(game) {

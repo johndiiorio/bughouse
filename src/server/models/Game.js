@@ -92,8 +92,13 @@ class Game {
 	}
 
 	static async getByID(id) {
-		const row = await db.oneOrNone(sqlFile('game/get_game_by_id.sql'), { id: id });
-		return Game.mapRow(row);
+		try {
+			const row = await db.oneOrNone(sqlFile('game/get_game_by_id.sql'), { id: id });
+			return Game.mapRow(row);
+		} catch (err) {
+			err.status = 403;
+			throw err;
+		}
 	}
 
 	static async getGameWithUsersByID(id) {

@@ -10,6 +10,7 @@ export const RECEIVE_IS_PLAYING = 'RECEIVE_IS_PLAYING';
 export const UPDATE_DISPLAY_RESIGN_CHOICE = 'UPDATE_DISPLAY_RESIGN_CHOICE';
 export const UPDATE_DISPLAY_DRAW_CHOICE = 'UPDATE_DISPLAY_DRAW_CHOICE';
 export const UPDATE_GAME_TERMINATION = 'UPDATE_GAME_TERMINATION';
+export const RESET_GAME_STATE = 'RESET_GAME_STATE';
 
 export function updateMoves(moves) {
 	return { type: UPDATE_MOVES, moves };
@@ -46,6 +47,10 @@ export function updateGameTermination(gameTermination) {
 
 export function receiveIsPlaying(isPlaying) {
 	return { type: RECEIVE_IS_PLAYING, isPlaying };
+}
+
+export function resetGameState() {
+	return { type: RESET_GAME_STATE };
 }
 
 export function updateIsPlaying(gameID) {

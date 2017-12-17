@@ -270,7 +270,7 @@ export default class GameBoardsComponent extends React.Component {
 					}
 					this.board1.set({ fen: data.fen });
 				})
-				.catch(console.log('Error validating pawn promotion'));
+				.catch(console.error('Error validating pawn promotion'));
 		} else { // not a promotion, handle move normally
 			this.handleMove(source, target, piece);
 		}

@@ -5,7 +5,7 @@ const secretToken = require('../config').secretToken;
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	try {
 		const user = await User.validatePassword(req.body.username, req.body.password);
 		if (user) {
@@ -15,21 +15,19 @@ router.post('/', async (req, res) => {
 			res.status(401).send({ error: 'Failed to login' });
 		}
 	} catch (err) {
-		console.error(`Error while performing POST login: ${err}`);
-		res.status(500).send({ error: 'Failed to login' });
+		next(err);
 	}
 });
 
 router.post('/token', async (req, res) => {
 	const token = req.headers.token || req.body.token || req.query.token;
 	if (token) {
-		jwt.verify(token, secretToken, (err, decoded) => {
+		jwt.verify(token, secretToken, async (err, decoded) => {
 			if (err) {
 				res.status(401).json({ success: false, error: 'Failed to authenticate token.' });
 			} else {
-				delete decoded.iat;
-				delete decoded.exp;
-				res.json(decoded);
+				const user = await User.getByID(decoded.id);
+				res.json(user);
 			}
 		});
 	} else {

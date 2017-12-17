@@ -77,6 +77,9 @@ export default function user(state = defaultState, action) {
 				userPosition: action.userPosition
 			};
 		}
+		case gameActions.RESET_GAME_STATE: {
+			return _.cloneDeep(defaultState);
+		}
 		default:
 			return state;
 	}

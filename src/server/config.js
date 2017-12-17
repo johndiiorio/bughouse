@@ -1,13 +1,14 @@
 const path = require('path');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const debug = require('debug')('bughouse');
 
 const envPath = path.join(__dirname, '..', '..', '.env');
 try {
 	fs.accessSync(envPath);
 	dotenv.config({ path: envPath });
 } catch (err) {
-	console.log("Couldn't load a .env file");
+	debug("Couldn't load a .env file");
 }
 
 

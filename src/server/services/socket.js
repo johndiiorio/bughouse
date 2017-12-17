@@ -41,66 +41,70 @@ module.exports = io => {
 
 	loadingSocket.on('connection', socket => {
 		socket.on('room', async room => {
-			socket.join(room);
-			const gameStarted = await Game.tryToStartGame(room);
-			if (gameStarted) {
-				io.of('/loading').in(room).emit('start game', room);
-				clearRoom(room, '/loading');
+			if (room) {
+				socket.join(room);
+				const gameStarted = await Game.tryToStartGame(room);
+				if (gameStarted) {
+					loadingSocket.in(room).emit('start game', room);
+					clearRoom(room, '/loading');
+				}
 			}
 		});
 	});
 
 	gameSocket.on('connection', socket => {
 		socket.on('room', room => {
-			socket.room = room;
-			socket.join(room);
+			if (room) {
+				socket.room = room;
+				socket.join(room);
+			}
 		});
 		socket.on('update game', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				updateGame(data, socket, gameSocket, clearRoom);
+				await updateGame(data, socket, gameSocket, clearRoom);
 			}
 		});
 		socket.on('time out', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				timeOut(data.id, socket, gameSocket, clearRoom);
+				await timeOut(data.id, socket, gameSocket, clearRoom);
 			}
 		});
 		socket.on('offer resign', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.offerResign(data, socket);
+				await resignOrDraw.offerResign(data, socket);
 			}
 		});
 		socket.on('offer draw', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.offerDraw(data, socket);
+				await resignOrDraw.offerDraw(data, socket);
 			}
 		});
 		socket.on('accept resign', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.acceptResign(data, socket, gameSocket, clearRoom);
+				await resignOrDraw.acceptResign(data, socket, gameSocket, clearRoom);
 			}
 		});
 		socket.on('decline resign', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.declineResign(data, socket, gameSocket);
+				await resignOrDraw.declineResign(data, socket, gameSocket);
 			}
 		});
 		socket.on('accept draw', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.acceptDraw(data, socket, gameSocket, clearRoom);
+				await resignOrDraw.acceptDraw(data, socket, gameSocket, clearRoom);
 			}
 		});
 		socket.on('decline draw', async data => {
 			const userInGame = await checkIfUserInGame(data.id, data.token);
 			if (userInGame) {
-				resignOrDraw.declineDraw(data, socket, gameSocket);
+				await resignOrDraw.declineDraw(data, socket, gameSocket);
 			}
 		});
 	});
