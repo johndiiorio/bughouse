@@ -2,18 +2,44 @@ const express = require('express');
 const Game = require('../models/Game');
 const Bug = require('../services/bug');
 const jwt = require('jsonwebtoken');
+const validate = require('jsonschema').validate;
 const secretToken = require('../config').secretToken;
 
 const router = express.Router();
 
 /* Create a new game */
 router.post('/', async (req, res) => {
-	try {
-		if (req.body.minutes < 1 || req.body.minutes > 20 || req.body.increment < 0 || req.body.increment > 30) {
-			throw new Error('Invalid minutes or increment');
+	const validReq = {
+		type: 'object',
+		maxProperties: 9,
+		required: ['minutes', 'increment', 'ratingRange', 'mode', 'joinRandom'],
+		properties: {
+			minutes: { type: 'integer' },
+			increment: { type: 'integer' },
+			player1: { type: ['integer', null] },
+			player2: { type: ['integer', null] },
+			player3: { type: ['integer', null] },
+			player4: { type: ['integer', null] },
+			ratingRange: { type: 'string' },
+			mode: { type: 'string' },
+			joinRandom: { type: 'boolean' },
 		}
-		const id = await Game.createGame(req.body.player1, req.body.player2, req.body.player3, req.body.player4, req.body.minutes, req.body.increment, req.body.ratingRange, req.body.mode, req.body.status, req.body.joinRandom);
-		res.json({ id });
+	};
+	try {
+		if ((!validate(req.body, validReq).valid)
+			|| (req.body.mode !== 'Rated' && req.body.mode !== 'Casual')
+			|| (req.body.minutes < 1)
+			|| (req.body.minutes > 20)
+			|| (req.body.increment < 0)
+			|| (req.body.increment > 30)
+			|| (req.body.ratingRange.split(' - ').length === 1)
+			|| (parseInt(req.body.ratingRange.split(' - ')[0]) < 0)
+			|| (parseInt(req.body.ratingRange.split(' - ')[1]) > 3000)) {
+			res.sendStatus(400);
+		} else {
+			const id = await Game.createGame(req.body.player1, req.body.player2, req.body.player3, req.body.player4, req.body.minutes, req.body.increment, req.body.ratingRange, req.body.mode, req.body.joinRandom);
+			res.json({ id });
+		}
 	} catch (err) {
 		res.status(400).send({ error: 'Failed to create game' });
 	}

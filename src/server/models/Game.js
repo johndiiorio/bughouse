@@ -144,8 +144,9 @@ class Game {
 		return false;
 	}
 
-	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
+	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, joinRandom) {
 		// Only player1 or player2 will be defined, add initial rating of player who created game to game row, others updated later
+		const status = 'open';
 		let ratingColumnOfFirstPlayer = 'player1_rating';
 		let user;
 		let rating;
