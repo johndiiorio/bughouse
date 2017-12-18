@@ -18,7 +18,7 @@ export default class GameBoardsComponent extends React.Component {
 		this.onDropFromBoard = this.onDropFromBoard.bind(this);
 		this.onDropFromReserve = this.onDropFromReserve.bind(this);
 		this.updateGame = this.updateGame.bind(this);
-		this.updateMoves = this.updateMoves.bind(this);
+		this.parseAndUpdateMoves = this.parseAndUpdateMoves.bind(this);
 		this.snapbackMove = this.snapbackMove.bind(this);
 		this.handleGameOver = this.handleGameOver.bind(this);
 		this.board1 = null;
@@ -125,7 +125,7 @@ export default class GameBoardsComponent extends React.Component {
 		axios.get(`/api/games/state/${this.props.game.id}`)
 			.then(res => {
 				const data = res.data;
-				if (data.moves) this.updateMoves(data.moves);
+				if (data.moves) this.parseAndUpdateMoves(data.moves);
 				this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
 
 				// Hydrate resign and draw action buttons
@@ -270,7 +270,7 @@ export default class GameBoardsComponent extends React.Component {
 					}
 					this.board1.set({ fen: data.fen });
 				})
-				.catch(console.log('Error validating pawn promotion'));
+				.catch(console.error('Error validating pawn promotion'));
 		} else { // not a promotion, handle move normally
 			this.handleMove(source, target, piece);
 		}
@@ -319,7 +319,7 @@ export default class GameBoardsComponent extends React.Component {
 		}
 		this.props.updateReserves(data.leftReserveWhite, data.leftReserveBlack, data.rightReserveWhite, data.rightReserveBlack);
 		this.props.updateClocks(data.clocks);
-		this.updateMoves(data.moves);
+		this.parseAndUpdateMoves(data.moves);
 		this.board1.playPremove();
 		this.board1.playPredrop();
 	}
@@ -346,7 +346,7 @@ export default class GameBoardsComponent extends React.Component {
 		}
 	}
 
-	updateMoves(moves) {
+	parseAndUpdateMoves(moves) {
 		const newMoves = this.props.moves;
 		const arrMoves = moves.trim().split(' ');
 		for (let i = 0; i < arrMoves.length; i += 2) {

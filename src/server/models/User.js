@@ -1,6 +1,7 @@
 const database = require('./database');
 const glicko = require('glicko2');
 const bcrypt = require('bcryptjs');
+const debug = require('debug')('bughouse');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -44,14 +45,21 @@ class User {
 	}
 
 	static async validatePassword(username, password) {
-		const row = await db.oneOrNone(sqlFile('user/get_password_by_username.sql'), { username });
-		if (row) {
-			const isValid = await bcrypt.compare(password, row.password_hash);
-			if (isValid) {
-				return await User.getByUsername(username);
+		try {
+			const row = await db.oneOrNone(sqlFile('user/get_password_by_username.sql'), { username });
+			if (row) {
+				const isValid = await bcrypt.compare(password, row.password_hash);
+				if (isValid) {
+					return await User.getByUsername(username);
+				}
 			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			err.status = 401;
+			throw err;
 		}
-		return null;
 	}
 
 	static async getByEmail(email) {
@@ -147,7 +155,7 @@ class User {
 			await db.none(sqlFile('user/update_ratings.sql'), updateRatingsArgs);
 			await db.none(sqlFile('user/update_ratings.sql'), updateRdArgs);
 		} catch (err) {
-			console.log(`Error while performing update user ratings: ${err}`);
+			debug(`Error while performing update user ratings: ${err}`);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const app = require('../server/app');
-const debug = require('debug')('Bughouse-Chess:server');
+const app = require('./app');
+const debug = require('debug')('bughouse');
 const http = require('http');
 
-const serverPort = require('../server/config').serverPort;
+const serverPort = require('./config').serverPort;
 
 function normalizePort(val) {
 	const portParsed = parseInt(val);
@@ -23,7 +23,7 @@ app.set('port', port);
 const server = http.createServer(app);
 
 const io = require('socket.io')(server);
-require('../server/services/socket')(io);
+require('./services/socket')(io);
 
 function onError(error) {
 	if (error.syscall !== 'listen') {

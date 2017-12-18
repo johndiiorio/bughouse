@@ -16,6 +16,7 @@ export default class RouteComponent extends React.Component {
 		super(props);
 		this.requireGame = this.requireGame.bind(this);
 		this.requireAuth = this.requireAuth.bind(this);
+		this.enterHomeComponent = this.enterHomeComponent.bind(this);
 	}
 
 	shouldComponentUpdate() {
@@ -58,12 +59,20 @@ export default class RouteComponent extends React.Component {
 			})
 			.catch(console.error);
 	}
+
+	enterHomeComponent() {
+		// Clear game information
+		this.props.resetGameState();
+		this.props.clearSelectedGame();
+		return true;
+	}
+
 	render() {
 		return (
 			<div>
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<Router history={browserHistory}>
-					<Route path="/" component={HomeComponent} />
+					<Route path="/" component={HomeComponent} onEnter={this.enterHomeComponent} />
 					<Route path="/about" component={AboutComponent} />
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />

@@ -1,6 +1,7 @@
 const express = require('express');
 
 const app = express();
+const debug = require('debug')('bughouse');
 const path = require('path');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
@@ -12,7 +13,9 @@ const games = require('./routes/games');
 const login = require('./routes/login');
 
 app.use(favicon(path.join(__dirname, '..', 'client', 'favicon.ico')));
-app.use(logger('dev'));
+if (process.env.NODE_ENV !== 'production') {
+	app.use(logger('dev'));
+}
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -32,8 +35,11 @@ app.use((req, res, next) => {
 	next(err);
 });
 
-app.use((err, req, res) => {
-	res.status(err.status || 500);
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+	if (!err.status) err.status = 500;
+	res.status(err.status);
+	debug(err);
 	if (err.status === 404) res.send(`<h1>${err.status} Not found</h1>`);
 	else res.send(`<h1>${err.status} Server Error</h1>`);
 });
