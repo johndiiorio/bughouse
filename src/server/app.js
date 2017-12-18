@@ -22,7 +22,7 @@ app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/login', login);
 
-app.get('*', (req, res) => {
+app.get('\\/|about|profile|register|loading|game/*', (req, res) => {
 	res.sendFile(path.resolve(__dirname, '..', 'client', 'index.html'));
 });
 
@@ -33,11 +33,13 @@ app.use((req, res, next) => {
 });
 
 // eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-	if (!err.status) err.status = 500;
+app.use((err, req, res) => {
+	if (!err.status) {
+		err.status = 500;
+		logger.error(err);
+	}
 	res.status(err.status);
-	logger.error(err);
-	if (err.status === 404) res.send(`<h1>${err.status} Not found</h1>`);
+	if (err.status === 404) res.send('<h1>404 Not Found<h1/>');
 	else res.send(`<h1>${err.status} Server Error</h1>`);
 });
 

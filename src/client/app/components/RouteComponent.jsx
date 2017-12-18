@@ -5,7 +5,6 @@ import _ from 'lodash';
 import NotificationSystem from 'react-notification-system';
 import HomeComponent from './home/HomeComponent';
 import AboutComponent from './header/AboutComponent';
-import NotFoundComponent from './NotFoundComponent';
 import RegisterContainer from '../containers/header/RegisterContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
@@ -72,13 +71,12 @@ export default class RouteComponent extends React.Component {
 			<div>
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<Router history={browserHistory}>
-					<Route path="/" component={HomeComponent} onEnter={this.enterHomeComponent} />
 					<Route path="/about" component={AboutComponent} />
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/loading" component={LoadingComponent} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />
-					<Route path="*" component={NotFoundComponent} />
+					<Route path="*" component={HomeComponent} onEnter={this.enterHomeComponent} />
 				</Router>
 			</div>
 		);
