@@ -14,13 +14,14 @@ This web application is designed for the purpose for chess players to play [Bugh
 5. In psql, run ```CREATE DATABASE bughouse;``` to create the database.
 6. Create a .env file in the root directory of the project with the following, replacing (?) with the desired information: <br>
 ```
-SERVER_PORT=?              // The port that the server should run on. 3000 is a good default choice
-DB_USER=?                  // The user that should be used to connect to Postgres
-DB_DATABASE=?              // The database you just created, so likely bughouse
-DB_PASSWORD=?              // The password for your postgres user
-DB_HOST=?                  // The host for your postgres db, likely localhost
-DB_PORT=?                  // The port for your postgres db, likely 5432
-TOKEN_SECRET=?             // Token for authentication. Generate something secure and random
+BUGHOUSE_SERVER_PORT=?              // The port that the server should run on. 3000 is a good default choice
+BUGHOUSE_DB_USER=?                  // The user that should be used to connect to Postgres
+BUGHOUSE_DB_DATABASE=?              // The database you just created, so likely bughouse
+BUGHOUSE_DB_PASSWORD=?              // The password for your postgres user
+BUGHOUSE_DB_HOST=?                  // The host for your postgres db, likely localhost
+BUGHOUSE_DB_PORT=?                  // The port for your postgres db, likely 5432
+BUGHOUSE_TOKEN_SECRET=?             // Token for authentication. Generate something secure and random
+BUGHOUSE_LOG_FILE=?                 // Path to log file, defaults to ./log.txt
 ```
 7. Run ```npm run createdb``` to create the database schema.
 8. Run ```npm run build``` to create the Webpack bundle for production, otherwise run ```npm run dev``` for development.
