@@ -1,11 +1,11 @@
 const express = require('express');
 
 const app = express();
-const logger = require('./logger');
 const path = require('path');
 const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const logger = require('./logger');
 
 const users = require('./routes/users');
 const games = require('./routes/games');
@@ -26,21 +26,18 @@ app.get('\\/|about|profile|register|loading|game/*', (req, res) => {
 	res.sendFile(path.resolve(__dirname, '..', 'client', 'index.html'));
 });
 
-app.use((req, res, next) => {
-	const err = new Error('Not Found');
-	err.status = 404;
-	next(err);
+app.use((req, res) => {
+	res.status(404).send('<h1>404 Not Found<h1/>');
 });
 
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res) => {
-	if (!err.status) {
-		err.status = 500;
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+	if (err.status === 401) {
+		res.sendStatus(401);
+	} else {
 		logger.error(err);
+		res.status(500).send('<h1>Internal Server Error<h1/>');
 	}
-	res.status(err.status);
-	if (err.status === 404) res.send('<h1>404 Not Found<h1/>');
-	else res.send(`<h1>${err.status} Server Error</h1>`);
 });
+
 
 module.exports = app;

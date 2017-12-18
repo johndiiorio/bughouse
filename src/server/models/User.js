@@ -1,7 +1,6 @@
 const database = require('./database');
 const glicko = require('glicko2');
 const bcrypt = require('bcryptjs');
-const logger = require('../logger');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -35,13 +34,37 @@ class User {
 	}
 
 	static async getByID(id) {
-		const row = await db.one(sqlFile('user/get_user_by_id.sql'), { id: id });
-		return User.mapRow(row);
+		try {
+			const row = await db.oneOrNone(sqlFile('user/get_user_by_id.sql'), { id: id });
+			if (row) {
+				return User.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
 	}
 
 	static async getByUsername(username) {
-		const row = await db.one(sqlFile('user/get_user_by_username.sql'), { username: username });
-		return User.mapRow(row);
+		try {
+			const row = await db.oneOrNone(sqlFile('user/get_user_by_username.sql'), { username: username });
+			if (row) {
+				return User.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
 	}
 
 	static async validatePassword(username, password) {
@@ -57,14 +80,28 @@ class User {
 			err.status = 401;
 			throw err;
 		} catch (err) {
-			err.status = 401;
+			if (!err.status) {
+				err.status = 500;
+			}
 			throw err;
 		}
 	}
 
 	static async getByEmail(email) {
-		const row = await db.one(sqlFile('user/get_user_by_email.sql'), { email: email });
-		return User.mapRow(row);
+		try {
+			const row = await db.one(sqlFile('user/get_user_by_email.sql'), { email: email });
+			if (row) {
+				return User.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
 	}
 
 	async insert() {
@@ -155,7 +192,7 @@ class User {
 			await db.none(sqlFile('user/update_ratings.sql'), updateRatingsArgs);
 			await db.none(sqlFile('user/update_ratings.sql'), updateRdArgs);
 		} catch (err) {
-			logger.error(`Error while performing update user ratings: ${err}`);
+			throw err;
 		}
 	}
 }
