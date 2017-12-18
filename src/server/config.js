@@ -1,28 +1,28 @@
 const path = require('path');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const debug = require('debug')('bughouse');
 
 const envPath = path.join(__dirname, '..', '..', '.env');
 try {
 	fs.accessSync(envPath);
 	dotenv.config({ path: envPath });
 } catch (err) {
-	debug("Couldn't load a .env file");
+	console.error("Couldn't load a .env file");
 }
 
 
 const config = {};
 
 config.database = {
-	user: process.env.DB_USER,
-	database: process.env.DB_DATABASE,
-	password: process.env.DB_PASSWORD,
-	host: process.env.DB_HOST,
-	port: process.env.DB_PORT
+	user: process.env.BUGHOUSE_DB_USER,
+	database: process.env.BUGHOUSE_DB_DATABASE,
+	password: process.env.BUGHOUSE_DB_PASSWORD,
+	host: process.env.BUGHOUSE_DB_HOST,
+	port: process.env.BUGHOUSE_DB_PORT
 };
 
-config.secretToken = process.env.TOKEN_SECRET;
-config.serverPort = process.env.SERVER_PORT;
+config.secretToken = process.env.BUGHOUSE_TOKEN_SECRET;
+config.serverPort = process.env.BUGHOUSE_SERVER_PORT;
+config.logFile = process.env.BUGHOUSE_LOG_FILE || 'log.txt';
 
 module.exports = config;

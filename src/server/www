@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const app = require('./app');
-const debug = require('debug')('bughouse');
+const logger = require('./logger');
 const http = require('http');
 
 const serverPort = require('./config').serverPort;
@@ -53,7 +53,7 @@ function onListening() {
 	const bind = typeof addr === 'string'
     ? `pipe ${addr}`
     : `port ${addr.port}`;
-	debug(`Listening on ${bind}`);
+	logger.log(`Listening on ${bind}`);
 }
 
 server.listen(port);

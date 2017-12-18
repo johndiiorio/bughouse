@@ -1,10 +1,9 @@
 const express = require('express');
 
 const app = express();
-const debug = require('debug')('bughouse');
+const logger = require('./logger');
 const path = require('path');
 const favicon = require('serve-favicon');
-const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
@@ -13,9 +12,7 @@ const games = require('./routes/games');
 const login = require('./routes/login');
 
 app.use(favicon(path.join(__dirname, '..', 'client', 'favicon.ico')));
-if (process.env.NODE_ENV !== 'production') {
-	app.use(logger('dev'));
-}
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -39,7 +36,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
 	if (!err.status) err.status = 500;
 	res.status(err.status);
-	debug(err);
+	logger.error(err);
 	if (err.status === 404) res.send(`<h1>${err.status} Not found</h1>`);
 	else res.send(`<h1>${err.status} Server Error</h1>`);
 });

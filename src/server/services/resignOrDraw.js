@@ -1,6 +1,6 @@
 const Game = require('../models/Game');
 const database = require('../models/database');
-const debug = require('debug')('bughouse');
+const logger = require('../logger');
 
 const db = database.db;
 
@@ -12,7 +12,7 @@ async function offerResign(data, socket) {
 		await db.none('UPDATE Games SET resign_state = $1 WHERE id = $2', [resignState.join(), data.id]);
 		socket.to(socket.room).emit('offer resign', data.userPosition);
 	} catch (err) {
-		debug(`Error handling offerResign for game id ${data.id}: ${err}`);
+		logger.error(`Error handling offerResign for game id ${data.id}: ${err}`);
 	}
 }
 
@@ -24,7 +24,7 @@ async function offerDraw(data, socket) {
 		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', [drawState.join(), data.id]);
 		socket.to(socket.room).emit('offer draw');
 	} catch (err) {
-		debug(`Error handling offerDraw for game id ${data.id}: ${err}`);
+		logger.error(`Error handling offerDraw for game id ${data.id}: ${err}`);
 	}
 }
 
@@ -49,7 +49,7 @@ async function acceptResign(data, socket, gameSocket, clearRoom) {
 			await Game.endGame(row, termination, socket, gameSocket, clearRoom);
 		}
 	} catch (err) {
-		debug(`Error updating acceptResign for game id ${data.id}: ${err}`);
+		logger.error(`Error updating acceptResign for game id ${data.id}: ${err}`);
 	}
 }
 
@@ -67,7 +67,7 @@ async function declineResign(data, socket, gameSocket) {
 		await db.none('UPDATE Games SET resign_state = $1 WHERE id = $2', [resignState.join(), data.id]);
 		gameSocket.in(socket.room).emit('decline resign', data.userPosition);
 	} catch (err) {
-		debug(`Error handling declineResign for game id ${data.id}: ${err}`);
+		logger.error(`Error handling declineResign for game id ${data.id}: ${err}`);
 	}
 }
 
@@ -86,7 +86,7 @@ async function acceptDraw(data, socket, gameSocket, clearRoom) {
 		}
 		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', [drawState.join(), data.id]);
 	} catch (err) {
-		debug(`Error updating acceptDraw for game id ${data.id}: ${err}`);
+		logger.error(`Error updating acceptDraw for game id ${data.id}: ${err}`);
 	}
 }
 
@@ -95,7 +95,7 @@ async function declineDraw(data, socket, gameSocket) {
 		await db.none('UPDATE Games SET draw_state = $1 WHERE id = $2', ['0,0,0,0', data.id]);
 		gameSocket.in(socket.room).emit('decline draw');
 	} catch (err) {
-		debug(`Error handling declineDraw for game id ${data.id}: ${err}`);
+		logger.error(`Error handling declineDraw for game id ${data.id}: ${err}`);
 	}
 }
 
