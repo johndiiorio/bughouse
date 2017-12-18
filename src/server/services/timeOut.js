@@ -1,5 +1,5 @@
 const Game = require('../models/Game');
-const debug = require('debug')('bughouse');
+const logger = require('../logger');
 
 /**
  * Check if any user has timed out in a game
@@ -31,6 +31,6 @@ module.exports = async (id, socket, gameSocket, clearRoom) => {
 			}
 		}
 	} catch (err) {
-		debug(`Error handling timeOut for game id ${id}: ${err}`);
+		logger.error(`Error handling timeOut for game id ${id}: ${err}`);
 	}
 };

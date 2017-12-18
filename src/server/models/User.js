@@ -1,7 +1,7 @@
 const database = require('./database');
 const glicko = require('glicko2');
 const bcrypt = require('bcryptjs');
-const debug = require('debug')('bughouse');
+const logger = require('../logger');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -155,7 +155,7 @@ class User {
 			await db.none(sqlFile('user/update_ratings.sql'), updateRatingsArgs);
 			await db.none(sqlFile('user/update_ratings.sql'), updateRdArgs);
 		} catch (err) {
-			debug(`Error while performing update user ratings: ${err}`);
+			logger.error(`Error while performing update user ratings: ${err}`);
 		}
 	}
 }

@@ -1,11 +1,12 @@
+const logger = require('../server/logger');
 const { createSchema, pgp } = require('../server/models/database');
 
 (async function createSchemaWrapper() {
 	try {
 		await createSchema();
-		console.log('Schema created');
+		logger.log('Schema created');
 	} catch (err) {
-		console.error(`Error creating schema: ${err}`);
+		logger.error(`Error creating schema: ${err}`);
 	} finally {
 		pgp.end();
 	}
