@@ -27,10 +27,7 @@ export default function user(state = defaultState, action) {
 				isPlaying: action.isPlaying
 			};
 		case gameActions.UPDATE_MOVES:
-			return {
-				...state,
-				moves: _.cloneDeep(action.moves)
-			};
+			return _.merge({}, state, action.moves);
 		case gameActions.UPDATE_CLOCKS:
 			return {
 				...state,
