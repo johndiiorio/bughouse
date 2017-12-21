@@ -2,20 +2,35 @@ const express = require('express');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const secretToken = require('../config').secretToken;
+const validate = require('jsonschema').validate;
 
 const router = express.Router();
 
 router.post('/', async (req, res, next) => {
-	try {
-		const user = await User.validatePassword(req.body.username, req.body.password);
-		if (user) {
-			const token = jwt.sign(user, secretToken, { expiresIn: '7 days' });
-			res.json({ user: user, token: token });
-		} else {
-			res.status(401).send({ error: 'Failed to login' });
+	const validReq = {
+		type: 'object',
+		maxProperties: 3,
+		required: ['username', 'password'],
+		properties: {
+			username: { type: 'string' },
+			password: { type: 'string' },
+			email: { type: 'string' }
 		}
-	} catch (err) {
-		next(err);
+	};
+	if (!validate(req.body, validReq)) {
+		res.sendStatus(400);
+	} else {
+		try {
+			const user = await User.validatePassword(req.body.username, req.body.password);
+			if (user) {
+				const token = jwt.sign(user, secretToken, { expiresIn: '7 days' });
+				res.json({ user, token });
+			} else {
+				res.sendStatus(401);
+			}
+		} catch (err) {
+			next(err);
+		}
 	}
 });
 

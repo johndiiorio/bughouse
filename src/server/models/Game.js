@@ -94,16 +94,35 @@ class Game {
 	static async getByID(id) {
 		try {
 			const row = await db.oneOrNone(sqlFile('game/get_game_by_id.sql'), { id: id });
-			return Game.mapRow(row);
+			if (row) {
+				return Game.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
 		} catch (err) {
-			err.status = 403;
+			if (!err.status) {
+				err.status = 500;
+			}
 			throw err;
 		}
 	}
 
 	static async getGameWithUsersByID(id) {
-		const row = await db.oneOrNone(sqlFile('game/get_game_with_users_by_id.sql'), { id: id });
-		return Game.mapRowGameWithUsers(row);
+		try {
+			const row = await db.oneOrNone(sqlFile('game/get_game_with_users_by_id.sql'), { id: id });
+			if (row) {
+				return Game.mapRowGameWithUsers(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
 	}
 
 	static async updatePlayer(id, playerPosition, player) {
@@ -144,8 +163,9 @@ class Game {
 		return false;
 	}
 
-	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, status, joinRandom) {
+	static async createGame(player1, player2, player3, player4, minutes, increment, ratingRange, mode, joinRandom) {
 		// Only player1 or player2 will be defined, add initial rating of player who created game to game row, others updated later
+		const status = 'open';
 		let ratingColumnOfFirstPlayer = 'player1_rating';
 		let user;
 		let rating;

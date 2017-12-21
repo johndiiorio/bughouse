@@ -31,6 +31,7 @@
     "es6-promisify": "^5.0.0",
     "express": "~4.13.4",
     "glicko2": "^0.8.4",
+    "jsonschema": "^1.2.2",
     "jsonwebtoken": "^7.4.2",
     "lodash": "^4.17.4",
     "lodash-webpack-plugin": "^0.11.0",

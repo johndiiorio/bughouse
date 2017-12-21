@@ -75,7 +75,6 @@ export default class CreateGameComponent extends React.Component {
 			minutes: this.state.minutes,
 			increment: this.state.increment,
 			joinRandom: this.state.randomSwitch,
-			status: 'open',
 			mode: this.state.mode ? 'Rated' : 'Casual',
 			ratingRange: `${userRating - this.state.ratingRange} - ${userRating + this.state.ratingRange}`
 		};
