@@ -13,6 +13,7 @@ import ProfileComponent from './header/ProfileComponent';
 export default class RouteComponent extends React.Component {
 	constructor(props) {
 		super(props);
+		this.requireAboutToPlay = this.requireAboutToPlay.bind(this);
 		this.requireGame = this.requireGame.bind(this);
 		this.requireAuth = this.requireAuth.bind(this);
 		this.enterHomeComponent = this.enterHomeComponent.bind(this);
@@ -27,6 +28,12 @@ export default class RouteComponent extends React.Component {
 		if (!_.isEmpty(nextProps.notification)) {
 			this.notificationSystem.addNotification(nextProps.notification);
 			this.props.clearNotifications();
+		}
+	}
+
+	requireAboutToPlay() {
+		if (!localStorage.getItem('token') || !this.props.selectedGame.id) {
+			browserHistory.push('/');
 		}
 	}
 
@@ -74,7 +81,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/about" component={AboutComponent} />
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />
-					<Route path="/loading" component={LoadingComponent} />
+					<Route path="/loading" component={LoadingComponent} onEnter={this.requireAboutToPlay} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />
 					<Route path="*" component={HomeComponent} onEnter={this.enterHomeComponent} />
 				</Router>
