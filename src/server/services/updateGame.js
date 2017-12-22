@@ -44,6 +44,11 @@ function convertReserveToSparePieces(reserve) {
 	});
 }
 
+function convertPieceToSANLetter(piece) {
+	const mapping = { pawn: 'P', knight: 'N', bishop: 'B', rook: 'R', queen: 'Q' };
+	return mapping[piece];
+}
+
 module.exports = async (data, socket, gameSocket, clearRoom) => {
 	try {
 		const row = await Game.getByID(data.id);
@@ -63,7 +68,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 		}
 		let lastMove = [data.move.target];
 		if (data.move.source === 'spare') {
-			move = game.move(`${data.move.piece.role.charAt(0).toUpperCase()}@${data.move.target}`);
+			move = game.move(`${convertPieceToSANLetter(data.move.piece.role)}@${data.move.target}`);
 		} else {
 			move = game.move({
 				from: data.move.source,
