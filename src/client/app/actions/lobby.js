@@ -8,11 +8,17 @@ export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
 export const TOGGLE_MODAL_DISPLAY = 'TOGGLE_MODAL_DISPLAY';
 export const RECEIVE_GAMES_INFO = 'RECEIVE_GAMES_INFO';
 
-export function updateSelectedGame(game) {
-	socketLoading.emit('room', game.id);
-	socketLobby.emit('update game list');
-	browserHistory.push('/loading');
+function updateSelectedGameInternal(game) {
 	return { type: UPDATE_SELECTED_GAME, game };
+}
+
+export function updateSelectedGame(game) {
+	return dispatch => {
+		dispatch(updateSelectedGameInternal(game));
+		socketLoading.emit('room', game.id);
+		socketLobby.emit('update game list');
+		browserHistory.push('/loading');
+	};
 }
 
 export function clearSelectedGame() {

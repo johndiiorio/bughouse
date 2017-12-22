@@ -24,6 +24,7 @@ module.exports = {
 		"no-param-reassign": 0,
 		"no-plusplus": 0,
 		"no-lonely-if": 0,
+		"no-else-return": 0,
 		'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement'],
 		"react/jsx-indent": ["error", "tab"], // Still tabs, not spaces
 		"react/no-direct-mutation-state": ["error"],

@@ -7,6 +7,7 @@ import { updateIsPlaying, resetGameState } from '../actions/game';
 function mapStateToProps(state) {
 	return {
 		notification: state.topLevel.notification,
+		selectedGame: state.lobby.selectedGame
 	};
 }
 
