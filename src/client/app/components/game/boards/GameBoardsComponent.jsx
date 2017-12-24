@@ -235,6 +235,7 @@ export default class GameBoardsComponent extends React.Component {
 			token: localStorage.getItem('token')
 		};
 		socketGame.emit('update game', data);
+		this.tmpPromotionPiece = null;
 	}
 
 	onDropFromBoard(source, target) {

@@ -57,8 +57,8 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 		row.left_reserve_black = row.left_reserve_black ? JSON.parse(row.left_reserve_black) : [];
 		row.right_reserve_white = row.right_reserve_white ? JSON.parse(row.right_reserve_white) : [];
 		row.right_reserve_black = row.right_reserve_black ? JSON.parse(row.right_reserve_black) : [];
-		row.left_promoted_pieces = row.left_promoted_pieces.split(',');
-		row.right_promoted_pieces = row.right_promoted_pieces.split(',');
+		row.left_promoted_pieces = row.left_promoted_pieces ? JSON.parse(row.left_promoted_pieces) : [];
+		row.right_promoted_pieces = row.right_promoted_pieces ? JSON.parse(row.right_promoted_pieces) : [];
 		let game;
 		let move;
 		if (data.userPosition === 1 || data.userPosition === 2) { // Create game for left board
@@ -91,10 +91,11 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 			let boardNum;
 			let emitData;
 			let diffTime;
+			const isPromotion = data.move.promotion !== null;
 			let argOtherReserveWhite = [];
 			let argOtherReserveBlack = [];
-			const leftPromotedPieces = row.left_promoted_pieces;
-			const rightPromotedPieces = row.right_promoted_pieces;
+			let leftPromotedPieces = row.left_promoted_pieces;
+			let rightPromotedPieces = row.right_promoted_pieces;
 			const argFen = game.fen();
 			const turn = game.turn() === 'w' ? 'white' : 'black';
 			let capture = false;
@@ -128,12 +129,12 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				// If there was a promotion, add that square to the promotion list
 				// Otherwise if there was a capture that involved a square in the promoted pieces, remove it from the list
 				// Otherwise update the list if the promoted piece moves
-				if (data.move.promotion) {
+				if (isPromotion) {
 					leftPromotedPieces.push(data.move.target);
 				} else if (capture && leftPromotedPieces.includes(data.move.target)) {
-					leftPromotedPieces.filter(item => item !== data.move.target);
+					leftPromotedPieces = leftPromotedPieces.filter(item => item !== data.move.target);
 				} else if (leftPromotedPieces.includes(data.move.source)) {
-					leftPromotedPieces.filter(item => item !== data.move.target);
+					leftPromotedPieces = leftPromotedPieces.filter(item => item !== data.move.source);
 					leftPromotedPieces.push(data.move.target);
 				}
 
@@ -148,7 +149,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					'clocks', arrClocks.join(),
 					'left_last_move', lastMove,
 					'left_color_to_play', turn,
-					'left_promoted_pieces', leftPromotedPieces.join(),
+					'left_promoted_pieces', JSON.stringify(leftPromotedPieces),
 					data.id
 				];
 				emitData = {
@@ -179,12 +180,12 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				// If there was a promotion, add that square to the promotion list
 				// Otherwise if there was a capture that involved a square in the promoted pieces, remove it from the list
 				// Otherwise update the list if the promoted piece moves
-				if (data.move.promotion) {
+				if (isPromotion) {
 					rightPromotedPieces.push(data.move.target);
 				} else if (capture && rightPromotedPieces.includes(data.move.target)) {
-					rightPromotedPieces.filter(item => item !== data.move.target);
+					rightPromotedPieces = rightPromotedPieces.filter(item => item !== data.move.target);
 				} else if (rightPromotedPieces.includes(data.move.source)) {
-					rightPromotedPieces.filter(item => item !== data.move.target);
+					rightPromotedPieces = rightPromotedPieces.filter(item => item !== data.move.source);
 					rightPromotedPieces.push(data.move.target);
 				}
 
@@ -199,7 +200,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					'clocks', arrClocks.join(),
 					'right_last_move', lastMove,
 					'right_color_to_play', turn,
-					'right_promoted_pieces', rightPromotedPieces.join(),
+					'right_promoted_pieces', JSON.stringify(rightPromotedPieces),
 					data.id
 				];
 				emitData = {
@@ -217,6 +218,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					clocks: arrClocks
 				};
 			}
+			// update database
 			await db.none(queryString, argsQuery);
 			// update everyone in game
 			gameSocket.in(socket.room).emit('update game', emitData);
