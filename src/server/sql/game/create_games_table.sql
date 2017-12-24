@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS games (
 	left_reserve_black TEXT NULL,
 	right_reserve_white TEXT NULL,
 	right_reserve_black TEXT NULL,
+	left_promoted_pieces TEXT NOT NULL DEFAULT '',
+	right_promoted_pieces TEXT NOT NULL DEFAULT '',
 	left_last_move TEXT NULL DEFAULT '[]',
 	right_last_move TEXT NULL DEFAULT '[]',
 	left_color_to_play TEXT NULL DEFAULT 'white',

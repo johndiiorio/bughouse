@@ -215,6 +215,7 @@ var Bug = function (fen) {
     var other_reserve_black = [];
     var tmp_reserve_white = [];
     var tmp_reserve_black = [];
+    var promoted_piece_squares = [];
 
     /* if the user passes in a fen string, load it, else default to
      * starting position
@@ -1595,6 +1596,10 @@ var Bug = function (fen) {
             };
         },
 
+        setPromotedPieceSquares: function(promotedPieceSquares) {
+            promoted_piece_squares = promotedPieceSquares;
+        },
+
         removePieceFromReserve: function (piece) {
             return removePieceFromReserve(piece);
         },
@@ -1928,11 +1933,20 @@ var Bug = function (fen) {
             reserve_black = tmp_reserve_black;
             make_move(move_obj);
 
+            var targetInPromotedPieceSquares = promoted_piece_squares.includes(algebraic(move_obj.to));
             if (move_obj.captured) {
                 if (move_obj.color == 'w') {
-                    other_reserve_black.push({type: move_obj.captured, color: BLACK})
+                    if (targetInPromotedPieceSquares) {
+                        other_reserve_black.push({type: 'p', color: BLACK});
+                    } else {
+                        other_reserve_black.push({type: move_obj.captured, color: BLACK});
+                    }
                 } else {
-                    other_reserve_white.push({type: move_obj.captured, color: WHITE})
+                    if (targetInPromotedPieceSquares) {
+                        other_reserve_white.push({type: 'p', color: WHITE});
+                    } else {
+                        other_reserve_white.push({type: move_obj.captured, color: WHITE});
+                    }
                 }
             }
 
