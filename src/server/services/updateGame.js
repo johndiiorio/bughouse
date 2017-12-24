@@ -57,14 +57,18 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 		row.left_reserve_black = row.left_reserve_black ? JSON.parse(row.left_reserve_black) : [];
 		row.right_reserve_white = row.right_reserve_white ? JSON.parse(row.right_reserve_white) : [];
 		row.right_reserve_black = row.right_reserve_black ? JSON.parse(row.right_reserve_black) : [];
+		row.left_promoted_pieces = row.left_promoted_pieces ? JSON.parse(row.left_promoted_pieces) : [];
+		row.right_promoted_pieces = row.right_promoted_pieces ? JSON.parse(row.right_promoted_pieces) : [];
 		let game;
 		let move;
 		if (data.userPosition === 1 || data.userPosition === 2) { // Create game for left board
 			game = new Bug(row.left_fen);
 			game.setReserves(row.left_reserve_white, row.left_reserve_black);
+			game.setPromotedPieceSquares(row.left_promoted_pieces);
 		} else { // Create game for right board
 			game = new Bug(row.right_fen);
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
+			game.setPromotedPieceSquares(row.right_promoted_pieces);
 		}
 		let lastMove = [data.move.target];
 		if (data.move.source === 'spare') {
@@ -82,13 +86,16 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 			const queryString =
 				'UPDATE Games SET $1~ = $2, $3~ = $4, $5~ = $6, ' +
 				'$7~ = $8, $9~ = $10, $11~ = $12, $13~ = $14, ' +
-				'$15~ = $16, $17~ = $18, $19~ = $20 WHERE id = $21';
+				'$15~ = $16, $17~ = $18, $19~ = $20, $21~ = $22 WHERE id = $23';
 			let argsQuery;
 			let boardNum;
 			let emitData;
 			let diffTime;
+			const isPromotion = data.move.promotion !== null;
 			let argOtherReserveWhite = [];
 			let argOtherReserveBlack = [];
+			let leftPromotedPieces = row.left_promoted_pieces;
+			let rightPromotedPieces = row.right_promoted_pieces;
 			const argFen = game.fen();
 			const turn = game.turn() === 'w' ? 'white' : 'black';
 			let capture = false;
@@ -110,6 +117,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				boardNum = 1;
 				argOtherReserveWhite = JSON.stringify(row.right_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.right_reserve_black.concat(newReserves.other_reserve_black));
+
 				// don't change clock if white's first move
 				diffTime = moveNum === 1 && turn === 'black' ? row.increment : currentTime - row.left_last_time;
 				if (data.userPosition === 1) {
@@ -117,7 +125,21 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				} else {
 					arrClocks[1] += diffTime - row.increment;
 				}
-				argsQuery = ['left_fen', argFen,
+
+				// If there was a promotion, add that square to the promotion list
+				// Otherwise if there was a capture that involved a square in the promoted pieces, remove it from the list
+				// Otherwise update the list if the promoted piece moves
+				if (isPromotion) {
+					leftPromotedPieces.push(data.move.target);
+				} else if (capture && leftPromotedPieces.includes(data.move.target)) {
+					leftPromotedPieces = leftPromotedPieces.filter(item => item !== data.move.target);
+				} else if (leftPromotedPieces.includes(data.move.source)) {
+					leftPromotedPieces = leftPromotedPieces.filter(item => item !== data.move.source);
+					leftPromotedPieces.push(data.move.target);
+				}
+
+				argsQuery = [
+					'left_fen', argFen,
 					'left_reserve_white', argReserveWhite,
 					'left_reserve_black', argReserveBlack,
 					'right_reserve_white', argOtherReserveWhite,
@@ -127,7 +149,9 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					'clocks', arrClocks.join(),
 					'left_last_move', lastMove,
 					'left_color_to_play', turn,
-					data.id];
+					'left_promoted_pieces', JSON.stringify(leftPromotedPieces),
+					data.id
+				];
 				emitData = {
 					fen: argFen,
 					leftReserveWhite: convertReserveToSparePieces(argReserveWhite),
@@ -152,7 +176,21 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				} else {
 					arrClocks[3] += diffTime - row.increment;
 				}
-				argsQuery = ['right_fen', argFen,
+
+				// If there was a promotion, add that square to the promotion list
+				// Otherwise if there was a capture that involved a square in the promoted pieces, remove it from the list
+				// Otherwise update the list if the promoted piece moves
+				if (isPromotion) {
+					rightPromotedPieces.push(data.move.target);
+				} else if (capture && rightPromotedPieces.includes(data.move.target)) {
+					rightPromotedPieces = rightPromotedPieces.filter(item => item !== data.move.target);
+				} else if (rightPromotedPieces.includes(data.move.source)) {
+					rightPromotedPieces = rightPromotedPieces.filter(item => item !== data.move.source);
+					rightPromotedPieces.push(data.move.target);
+				}
+
+				argsQuery = [
+					'right_fen', argFen,
 					'right_reserve_white', argReserveWhite,
 					'right_reserve_black', argReserveBlack,
 					'left_reserve_white', argOtherReserveWhite,
@@ -162,7 +200,9 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					'clocks', arrClocks.join(),
 					'right_last_move', lastMove,
 					'right_color_to_play', turn,
-					data.id];
+					'right_promoted_pieces', JSON.stringify(rightPromotedPieces),
+					data.id
+				];
 				emitData = {
 					fen: argFen,
 					leftReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
@@ -178,6 +218,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					clocks: arrClocks
 				};
 			}
+			// update database
 			await db.none(queryString, argsQuery);
 			// update everyone in game
 			gameSocket.in(socket.room).emit('update game', emitData);
