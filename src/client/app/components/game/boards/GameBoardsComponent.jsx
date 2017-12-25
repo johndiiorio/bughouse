@@ -212,7 +212,8 @@ export default class GameBoardsComponent extends React.Component {
 	}
 
 	selectPromotionPiece(piece) {
-		this.tmpPromotionPiece = piece.role.charAt(0);
+		const mapping = { pawn: 'p', knight: 'n', bishop: 'b', rook: 'r', queen: 'q' };
+		this.tmpPromotionPiece = mapping[piece.role];
 		this.board1.newPiece(piece, this.tmpTargetSquare);
 		document.getElementById('whitePromotion').style.display = 'none';
 		document.getElementById('blackPromotion').style.display = 'none';
@@ -401,7 +402,7 @@ export default class GameBoardsComponent extends React.Component {
 					<div id="whitePromotion" className="promotion-box">
 						<img src="/app/static/img/pieces/wQ.svg"
 							className="promotionPiece"
-							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'pawn' })}
+							onClick={() => this.selectPromotionPiece({ color: 'white', role: 'queen' })}
 						/>
 						<img src="/app/static/img/pieces/wN.svg"
 							className="promotionPiece"
@@ -419,7 +420,7 @@ export default class GameBoardsComponent extends React.Component {
 					<div id="blackPromotion" className="promotion-box">
 						<img src="/app/static/img/pieces/bQ.svg"
 							className="promotionPiece"
-							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'pawn' })}
+							onClick={() => this.selectPromotionPiece({ color: 'black', role: 'queen' })}
 						/>
 						<img src="/app/static/img/pieces/bN.svg"
 							className="promotionPiece"
