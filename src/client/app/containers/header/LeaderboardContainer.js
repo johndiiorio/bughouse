@@ -4,13 +4,15 @@ import { fetchLeaderboardIfNeeded } from '../../actions/leaderboard';
 
 function mapStateToProps(state) {
 	return {
-		data: state.leaderboard.data
+		bullet: state.leaderboard.data.bullet,
+		blitz: state.leaderboard.data.blitz,
+		classical: state.leaderboard.data.classical
 	};
 }
 
 function mapDispatchToProps(dispatch) {
 	return {
-		fetchLeaderBoard: () => dispatch(fetchLeaderboardIfNeeded())
+		fetchLeaderboard: () => dispatch(fetchLeaderboardIfNeeded())
 	};
 }
 

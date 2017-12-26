@@ -1,5 +1,4 @@
 import axios from 'axios';
-import _ from 'lodash';
 
 export const REQUEST_LEADERBOARD = 'REQUEST_LEADERBOARD';
 export const RECEIVE_LEADERBOARD = 'RECEIVE_LEADERBOARD';
@@ -13,7 +12,7 @@ function receiveLeaderboard(data) {
 }
 
 function shouldFetchLeaderboard(state) {
-	return _.isEmpty(state.leaderboard.data) && !state.leaderboard.isFetching;
+	return !state.leaderboard.hasFetched && !state.leaderboard.isFetching;
 }
 
 function fetchLeaderboard() {

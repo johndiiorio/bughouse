@@ -2,7 +2,12 @@ import * as leaderboardActions from '../actions/leaderboard';
 
 const defaultState = {
 	isFetching: false,
-	data: {}
+	hasFetched: false,
+	data: {
+		bullet: [],
+		blitz: [],
+		classical: []
+	}
 };
 
 export default function leaderboard(state = defaultState, action) {
@@ -16,6 +21,7 @@ export default function leaderboard(state = defaultState, action) {
 			return {
 				...state,
 				isFetching: false,
+				hasFetched: true,
 				data: action.data
 			};
 		default:
