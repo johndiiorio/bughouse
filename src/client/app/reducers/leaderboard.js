@@ -1,18 +1,18 @@
-import * as leaderBoardActions from '../actions/leaderBoard';
+import * as leaderboardActions from '../actions/leaderboard';
 
 const defaultState = {
 	isFetching: false,
 	data: {}
 };
 
-export default function leaderBoard(state = defaultState, action) {
+export default function leaderboard(state = defaultState, action) {
 	switch (action.type) {
-		case leaderBoardActions.REQUEST_LEADER_BOARD:
+		case leaderboardActions.REQUEST_LEADERBOARD:
 			return {
 				...state,
 				isFetching: true
 			};
-		case leaderBoardActions.RECEIVE_LEADER_BOARD:
+		case leaderboardActions.RECEIVE_LEADERBOARD:
 			return {
 				...state,
 				isFetching: false,
