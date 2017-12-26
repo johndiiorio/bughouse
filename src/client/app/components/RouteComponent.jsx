@@ -6,6 +6,7 @@ import NotificationSystem from 'react-notification-system';
 import HomeComponent from './home/HomeComponent';
 import AboutComponent from './header/AboutComponent';
 import RegisterContainer from '../containers/header/RegisterContainer';
+import LeaderBoardContainer from '../containers/header/LeaderBoardContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
 import ProfileComponent from './header/ProfileComponent';
@@ -81,6 +82,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/about" component={AboutComponent} />
 					<Route path="/profile" component={ProfileComponent} />
 					<Route path="/register" component={RegisterContainer} />
+					<Route path="/leaderboard" component={LeaderBoardContainer} />
 					<Route path="/loading" component={LoadingComponent} onEnter={this.requireAboutToPlay} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />
 					<Route path="*" component={HomeComponent} onEnter={this.enterHomeComponent} />
