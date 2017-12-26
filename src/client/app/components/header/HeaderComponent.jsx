@@ -38,6 +38,7 @@ export default function HeaderComponent(props) {
 					<h4 style={displayAlwaysStyle}><Link to="/about">About</Link></h4>
 					<h4 style={loggedOutStyle}><Link to="/register">Register</Link></h4>
 					<h4 style={loggedInStyle}><Link to="/profile">{props.username}</Link></h4>
+					<h4 style={displayAlwaysStyle}><Link to="/leaderboard">Leaderboard</Link></h4>
 					<h4 style={loggedInStyle}><Link to="/" onClick={logout}>Logout</Link></h4>
 				</div>
 			</div>

@@ -10,6 +10,7 @@ const logger = require('./logger');
 const users = require('./routes/users');
 const games = require('./routes/games');
 const login = require('./routes/login');
+const leaderboard = require('./routes/leaderboard');
 
 app.use(favicon(path.join(__dirname, '..', 'client', 'favicon.ico')));
 
@@ -21,8 +22,9 @@ app.use(express.static(path.join(__dirname, '..', 'client')));
 app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/login', login);
+app.use('/api/leaderboard', leaderboard);
 
-app.get('\\/|about|profile|register|loading|game/*', (req, res) => {
+app.get('\\/|about|profile|leaderboard|register|loading|game/*', (req, res) => {
 	res.sendFile(path.resolve(__dirname, '..', 'client', 'index.html'));
 });
 

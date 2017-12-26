@@ -104,6 +104,27 @@ class User {
 		}
 	}
 
+	static async getLeaderboard() {
+		try {
+			const rows = await db.tx(t => t.batch([
+				t.any(sqlFile('user/get_bullet_leaderboard.sql')),
+				t.any(sqlFile('user/get_blitz_leaderboard.sql')),
+				t.any(sqlFile('user/get_classical_leaderboard.sql'))
+			]));
+
+			return {
+				bullet: rows[0].map(row => User.mapRow(row)),
+				blitz: rows[1].map(row => User.mapRow(row)),
+				classical: rows[2].map(row => User.mapRow(row)),
+			};
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
 	async insert() {
 		const user = this;
 		if (user.id !== undefined) {
