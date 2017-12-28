@@ -4,12 +4,12 @@ import axios from 'axios';
 import _ from 'lodash';
 import NotificationSystem from 'react-notification-system';
 import HomeComponent from './home/HomeComponent';
-import AboutComponent from './header/AboutComponent';
-import RegisterContainer from '../containers/header/RegisterContainer';
-import LeaderboardContainer from '../containers/header/LeaderboardContainer';
+import AboutComponent from './about/AboutComponent';
+import RegisterContainer from '../containers/register/RegisterContainer';
+import LeaderboardContainer from '../containers/leaderboard/LeaderboardContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
-import ProfileComponent from './header/ProfileComponent';
+import ProfileComponent from './profile/ProfileComponent';
 
 export default class RouteComponent extends React.Component {
 	constructor(props) {
