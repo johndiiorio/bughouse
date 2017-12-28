@@ -1,0 +1,14 @@
+.title {
+	display: inline;
+	padding-right: 5px;
+	color: #bf811d;
+}
+
+.username {
+	display: inline;
+}
+
+.rating {
+	display: inline;
+	margin-left: 5px;
+}

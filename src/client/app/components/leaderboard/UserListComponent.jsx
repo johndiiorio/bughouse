@@ -1,4 +1,5 @@
 import React from 'react';
+import UserLinkComponent from '../common/UserLinkComponent';
 import './css/userList.css';
 
 export default function UserListComponent(props) {
@@ -6,9 +7,10 @@ export default function UserListComponent(props) {
 		<div>
 			{props.data.map(user =>
 				<div key={user.username}>
-					{ user.title && <div className="title-color title">{user.title}</div> }
-					<div className="brighter-color name">{user.username}</div>
-					<div className="brighter-color rating">{Math.round(user[props.ratingType])}</div>
+					<div className="inline-block">
+						<UserLinkComponent user={user} />
+					</div>
+					<div className="brighter-color rating-right">{Math.round(user[props.ratingType])}</div>
 				</div>
 			)}
 		</div>

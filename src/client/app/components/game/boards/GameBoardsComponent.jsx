@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { Chessground } from 'chessground';
+import UserLinkComponent from '../../common/UserLinkComponent';
 import ReserveContainer from '../../../containers/game/boards/ReserveContainer';
 import { socketGame } from '../../../socket';
 import Clock from '../../../util/Clock';
@@ -11,7 +12,6 @@ import './css/gameBoards.css';
 export default class GameBoardsComponent extends React.Component {
 	constructor(props) {
 		super(props);
-		this.getRating = this.getRating.bind(this);
 		this.getDurationFormat = this.getDurationFormat.bind(this);
 		this.selectPromotionPiece = this.selectPromotionPiece.bind(this);
 		this.handleMove = this.handleMove.bind(this);
@@ -67,14 +67,6 @@ export default class GameBoardsComponent extends React.Component {
 			this.board2.toggleOrientation();
 		} else {
 			this.board1.toggleOrientation();
-		}
-
-		// Username styling
-		if (this.props.userPosition === 2 || this.props.userPosition === 3) {
-			document.getElementById('left-game-top-username').style.color = '#46BCDE';
-			document.getElementById('left-game-bottom-username').style.color = '#FB667A';
-			document.getElementById('right-game-top-username').style.color = '#46BCDE';
-			document.getElementById('right-game-bottom-username').style.color = '#FB667A';
 		}
 
 		// Clocks
@@ -197,10 +189,6 @@ export default class GameBoardsComponent extends React.Component {
 			this.board1.dragNewPiece(nextProps.pieceToDragFromReserve, mouseEvent);
 			this.props.updatePieceToDragFromReserve({});
 		}
-	}
-
-	getRating(player) {
-		return Math.round(player.rating);
 	}
 
 	getDurationFormat(duration) {
@@ -392,7 +380,9 @@ export default class GameBoardsComponent extends React.Component {
 		return (
 			<div>
 				<div className="col-md-4">
-					<h3 id="left-game-top-username">{`${this.props.display.player2.username} (${this.getRating(this.props.display.player2)})`}</h3>
+					<h3>
+						<UserLinkComponent user={this.props.display.player2} rating={this.props.display.player2.rating} />
+					</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<ReserveContainer clickable={false} floatRight={false} margin="bottom" reservePosition={2} />
 						<div id="left-game-top-clock">
@@ -440,10 +430,14 @@ export default class GameBoardsComponent extends React.Component {
 						<ReserveContainer clickable floatRight={false} margin="top" reservePosition={1} />
 						<h3 id="left-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
-					<h3 id="left-game-bottom-username">{`${this.props.display.player1.username} (${this.getRating(this.props.display.player1)})`}</h3>
+					<h3 className="left-game-bottom-username">
+						<UserLinkComponent user={this.props.display.player1} rating={this.props.display.player1.rating} />
+					</h3>
 				</div>
 				<div className="col-md-4 rightGame">
-					<h3 id="right-game-top-username">{`${this.props.display.player3.username} (${this.getRating(this.props.display.player3)})`}</h3>
+					<h3 className="right-game-top-username">
+						<UserLinkComponent user={this.props.display.player3} rating={this.props.display.player3.rating} />
+					</h3>
 					<div className="container-fluid align-reserve-clock-top">
 						<h3 id="right-game-top-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 						<ReserveContainer clickable={false} floatRight margin="bottom" reservePosition={3} />
@@ -453,7 +447,9 @@ export default class GameBoardsComponent extends React.Component {
 						<ReserveContainer clickable={false} floatRight margin="top" reservePosition={4} />
 						<h3 id="right-game-bottom-clock">{this.getDurationFormat(this.props.game.minutes * 60)}</h3>
 					</div>
-					<h3 id="right-game-bottom-username">{`${this.props.display.player4.username} (${this.getRating(this.props.display.player4)})`}</h3>
+					<h3 className="right-game-bottom-username">
+						<UserLinkComponent user={this.props.display.player4} rating={this.props.display.player4.rating} />
+					</h3>
 				</div>
 			</div>
 		);
