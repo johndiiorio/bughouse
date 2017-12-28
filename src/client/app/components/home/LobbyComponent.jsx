@@ -71,7 +71,11 @@ export default class LobbyComponent extends React.Component {
 		}
 		function formatPlayer(player, game) {
 			if (player.id !== null) {
-				let returnString = player.username;
+				let returnString = '';
+				if (player.title !== null) {
+					returnString += `${player.title} `;
+				}
+				returnString += player.username;
 				if (game.minutes < 3) {
 					returnString += ` (${Math.round(player.ratingBullet)})`;
 				} else if (game.minutes >= 3 && game.minutes <= 8) {
