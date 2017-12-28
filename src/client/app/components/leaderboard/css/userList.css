@@ -1,13 +1,8 @@
-.title {
-	display: inline;
-	padding-right: 5px;
-}
-
-.name {
-	display: inline
-}
-
-.rating {
+.rating-right {
 	float: right;
 	padding-right: 50px;
+}
+
+.inline-block {
+	display: inline-block;
 }

@@ -71,16 +71,17 @@ export default class LobbyComponent extends React.Component {
 		}
 		function formatPlayer(player, game) {
 			if (player.id !== null) {
-				let returnString = player.username;
+				let returnString = '';
+				if (player.title !== null) {
+					returnString += `${player.title} `;
+				}
+				returnString += player.username;
 				if (game.minutes < 3) {
 					returnString += ` (${Math.round(player.ratingBullet)})`;
 				} else if (game.minutes >= 3 && game.minutes <= 8) {
 					returnString += ` (${Math.round(player.ratingBlitz)})`;
 				} else {
 					returnString += ` (${Math.round(player.ratingClassical)})`;
-				}
-				if (player.title !== null) {
-					returnString = `${player.title} ${returnString}`;
 				}
 				return returnString;
 			}
@@ -117,7 +118,9 @@ export default class LobbyComponent extends React.Component {
 									<td width="15%">{game.mode}</td>
 									<td width="35%">
 										<div className="row">
-											<div className={`col-xs-6 ${formatColor(game.player2)}`}>{formatPlayer(game.player2, game)}
+											<div className={`col-xs-6 ${formatColor(game.player2)}`}>
+												{ game.player2.title && <div className="title-color title">{game.player2.title}</div> }
+												{formatPlayer(game.player2, game)}
 											</div>
 											<div className={`col-xs-6 ${formatColor(game.player3)}`}>{formatPlayer(game.player3, game)}
 											</div>

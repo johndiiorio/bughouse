@@ -1,4 +1,5 @@
 import React from 'react';
+import UserLinkComponent from '../../common/UserLinkComponent';
 import './css/gameMovesPanel.css';
 
 export default function GameMovesPanelComponent(props) {
@@ -8,10 +9,10 @@ export default function GameMovesPanelComponent(props) {
 				<thead>
 					<tr>
 						<th><h1>#</h1></th>
-						<th><h1>{props.game.player1.username}</h1></th>
-						<th><h1>{props.game.player2.username}</h1></th>
-						<th><h1>{props.game.player3.username}</h1></th>
-						<th><h1>{props.game.player4.username}</h1></th>
+						<th><h1><UserLinkComponent user={props.game.player1} /></h1></th>
+						<th><h1><UserLinkComponent user={props.game.player2} /></h1></th>
+						<th><h1><UserLinkComponent user={props.game.player3} /></h1></th>
+						<th><h1><UserLinkComponent user={props.game.player4} /></h1></th>
 					</tr>
 				</thead>
 				<tbody id="movesTableTBody">

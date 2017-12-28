@@ -1,12 +1,12 @@
 import React from 'react';
 import GameActionsPanelContainer from '../../../containers/game/sidebar/GameActionsPanelContainer';
+import UserLinkComponent from '../../common/UserLinkComponent';
 import './css/gameInfoPanel.css';
 
 export default class GameInfoPanelComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.getInfoFormat = this.getInfoFormat.bind(this);
-		this.getRating = this.getRating.bind(this);
 	}
 
 	getInfoFormat() {
@@ -17,35 +17,31 @@ export default class GameInfoPanelComponent extends React.Component {
 		return `${this.props.game.minutes}+${this.props.game.increment}, ${speed}, ${this.props.game.mode}`;
 	}
 
-	getRating(player) {
-		return Math.round(this.props.game[player].rating);
-	}
-
 	render() {
 		return (
-			<div className="gameInfoPanelContainer">
-				<h4 className="brighter-color underlined">{this.getInfoFormat()}</h4>
+			<div className="game-info-panel-container">
+				<h4 className="brighter-color">{this.getInfoFormat()}</h4>
 				<div>
 					<img src="/app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
-					<span className="blue-color alignPlayerInfo">
-						{` ${this.props.game.player1.username} (${this.getRating('player1')}) `}
+					<span className="align-player-info player-separation">
+						<UserLinkComponent user={this.props.game.player1} rating={this.props.game.player1.rating} />
 					</span>
 					<img src="/app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
-					<span className="blue-color alignPlayerInfo">
-						{` ${this.props.game.player4.username} (${this.getRating('player4')})`}
+					<span className="align-player-info">
+						<UserLinkComponent user={this.props.game.player4} rating={this.props.game.player4.rating} />
 					</span>
 					<p className="brighter-color versus">versus</p>
 					<img src="/app/static/img/pieces/bK.svg" alt="Black" width="20px" height="20px" />
-					<span className="red-color alignPlayerInfo">
-						{` ${this.props.game.player2.username} (${this.getRating('player2')}) `}
+					<span className="align-player-info player-separation">
+						<UserLinkComponent user={this.props.game.player2} rating={this.props.game.player2.rating} />
 					</span>
 					<img src="/app/static/img/pieces/wK.svg" alt="White" width="20px" height="20px" />
-					<span className="red-color alignPlayerInfo">
-						{` ${this.props.game.player3.username} (${this.getRating('player3')})`}
+					<span className="align-player-info">
+						<UserLinkComponent user={this.props.game.player3} rating={this.props.game.player3.rating} />
 					</span>
 				</div>
 				{ this.props.gameTermination ? (
-					<p className="gameTermination">
+					<p className="game-termination">
 						{this.props.gameTermination}
 					</p>
 				) : (

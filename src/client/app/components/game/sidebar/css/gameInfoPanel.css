@@ -1,4 +1,4 @@
-.gameInfoPanelContainer {
+.game-info-panel-container {
 	text-align: center;
 	width: 450px;
 	background-color: #262626;
@@ -8,9 +8,14 @@
 	border: 1px solid #3d3d3d;
 }
 
-.alignPlayerInfo {
+.align-player-info {
 	top: 3px;
 	position: relative;
+	display: inline-block;
+}
+
+.player-separation {
+	margin-right: 10px;
 }
 
 .versus {
@@ -18,7 +23,7 @@
 	position: relative;
 }
 
-.gameTermination {
+.game-termination {
 	padding-top: 17px;
 	font-weight: bold;
 	text-decoration: underline;

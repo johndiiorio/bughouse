@@ -23,22 +23,17 @@
 	padding-right: 0;
 }
 
-#left-game-top-username {
-	color: #FB667A;
+.left-game-bottom-username {
+	margin-top: 10px;
 }
 
-#left-game-bottom-username {
-	color: #46BCDE;
-}
-
-#right-game-top-username {
+.right-game-top-username {
 	float: right;
-	color: #FB667A;
 }
 
-#right-game-bottom-username {
+.right-game-bottom-username {
 	float: right;
-	color: #46BCDE;
+	margin-top: 10px;
 }
 
 #left-game-top-clock {
