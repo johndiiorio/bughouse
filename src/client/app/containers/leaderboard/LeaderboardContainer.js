@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import LeaderboardComponent from '../../components/header/LeaderboardComponent';
+import LeaderboardComponent from '../../components/leaderboard/LeaderboardComponent';
 import { fetchLeaderboardIfNeeded } from '../../actions/leaderboard';
 
 function mapStateToProps(state) {

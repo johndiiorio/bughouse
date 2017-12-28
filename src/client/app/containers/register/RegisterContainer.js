@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import RegisterComponent from '../../components/header/RegisterComponent';
+import RegisterComponent from '../../components/register/RegisterComponent';
 import { updateCurrentUser } from '../../actions/user';
 import { sendNotification } from '../../actions/topLevel';
 
