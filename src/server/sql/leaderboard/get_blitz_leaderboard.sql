@@ -1,9 +1,9 @@
 SELECT
   username,
   title,
-  rating AS rating
+  rating_blitz AS rating
 FROM users u
-  INNER JOIN most_recent_blitz_ratings r
-ON u.id = r.id
-ORDER BY rating DESC
+  INNER JOIN most_recent_ratings r
+ON u.id = r.user_id
+ORDER BY rating_blitz DESC
 LIMIT 10;

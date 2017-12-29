@@ -1,51 +1,27 @@
 SELECT
-	u.id,
-	username,
-	email,
-	title,
-	rd_bullet,
-	rd_blitz,
-	rd_classical,
-	rating_bullet,
-	rating_blitz,
-	rating_classical
-FROM users u
-	INNER JOIN (
-	SELECT
-	 rclassical.id,
-	 rating_bullet,
-	 rating_blitz,
-	 rating_classical
-	FROM (
-		SELECT
-			id,
-			rating AS rating_bullet
-		FROM ratings
-		WHERE rating_type = 'bullet'
-		ORDER BY rating_timestamp DESC
-		LIMIT 1
-	) AS rbullet
-	INNER JOIN (
-		SELECT
-			id,
-			rating AS rating_blitz
-		FROM ratings
-		WHERE rating_type = 'blitz'
-		ORDER BY rating_timestamp DESC
-		LIMIT 1
-	) AS rblitz
-	ON rbullet.id = rblitz.id
-	INNER JOIN (
-		SELECT
-			id,
-			rating AS rating_classical
-		FROM ratings
-		WHERE rating_type = 'classical'
-		ORDER BY rating_timestamp DESC
-		LIMIT 1
-	) AS rclassical
-	ON rblitz.id = rclassical.id
-	WHERE rclassical.id IN (1, 2, 3, 4)
-	) AS r
-	ON u.id = r.id
-WHERE u.id IN (1, 2, 3, 4);
+  new_ratings.user_id AS user_id,
+  -- I use max here because max(2, null) = 2. It really could be any aggregate with that property
+  -- Note that when FILTER sends zero arguments to max(), it returns null (I checked).
+
+  -- The FILTER clauses only feed rows that satisfy the filter to the function, so bullet_rating
+  -- will get the max rating that is a bullet rating. There's only 1 from the subquery, so it's that one.
+  -- The others work the same way.
+  MAX(new_ratings.rating) FILTER(WHERE new_ratings.rating_type = 'bullet') AS bullet_rating,
+  MAX(new_ratings.rating) FILTER(WHERE new_ratings.rating_type = 'blitz') AS blitz_rating,
+  MAX(new_ratings.rating) FILTER(WHERE new_ratings.rating_type = 'classical') AS classical_rating
+FROM
+-- This subquery gets exactly 1 row for each (user_id, rating_type) pair. The row contains the rating.
+(
+  SELECT
+  -- DISTINCT ON only gets the first row where all the columns match
+  DISTINCT ON (u.id, rts.rating_type)
+  u.id as user_id,
+  rts.rating_type as rating_type,
+  rts.rating as rating
+  FROM users u
+  -- LEFT JOIN so we get a row for users with no ratings
+  LEFT JOIN ratings rts ON u.id = rts.id
+  -- This must start with the columns in the DISTINCT ON, and then we add rating_timestamp to get what we want.
+  ORDER BY u.id, rts.rating_type, rts.rating_timestamp
+) new_ratings
+GROUP BY new_ratings.user_id;
