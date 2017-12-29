@@ -1,13 +1,51 @@
 SELECT
-	id,
+	u.id,
 	username,
 	email,
 	title,
-	rating_bullet,
 	rd_bullet,
-	rating_blitz,
 	rd_blitz,
-	rating_classical,
-	rd_classical
-FROM users
-WHERE id IN(${id1}, ${id2}, ${id3}, ${id4});
+	rd_classical,
+	rating_bullet,
+	rating_blitz,
+	rating_classical
+FROM users u
+	INNER JOIN (
+	SELECT
+	 rclassical.id,
+	 rating_bullet,
+	 rating_blitz,
+	 rating_classical
+	FROM (
+		SELECT
+			id,
+			rating AS rating_bullet
+		FROM ratings
+		WHERE rating_type = 'bullet'
+		ORDER BY rating_timestamp DESC
+		LIMIT 1
+	) AS rbullet
+	INNER JOIN (
+		SELECT
+			id,
+			rating AS rating_blitz
+		FROM ratings
+		WHERE rating_type = 'blitz'
+		ORDER BY rating_timestamp DESC
+		LIMIT 1
+	) AS rblitz
+	ON rbullet.id = rblitz.id
+	INNER JOIN (
+		SELECT
+			id,
+			rating AS rating_classical
+		FROM ratings
+		WHERE rating_type = 'classical'
+		ORDER BY rating_timestamp DESC
+		LIMIT 1
+	) AS rclassical
+	ON rblitz.id = rclassical.id
+	WHERE rclassical.id IN (1, 2, 3, 4)
+	) AS r
+	ON u.id = r.id
+WHERE u.id IN (1, 2, 3, 4);

@@ -18,7 +18,10 @@ async function createSchema() {
 	/* eslint-disable global-require */
 	const User = require('./User');
 	const Game = require('./Game');
+	const Rating = require('./Rating');
 	await User.createTable();
+	await Rating.createRatingTypesEnum();
+	await Rating.createTable();
 	await Game.createTable();
 }
 

@@ -1,5 +1,5 @@
 UPDATE users
-SET ${updateRatingsMode~} = CASE id
+SET ${updateRdMode~} = CASE id
 	WHEN ${id1} THEN ${p1Value}
 	WHEN ${id2} THEN ${p2Value}
 	WHEN ${id3} THEN ${p3Value}

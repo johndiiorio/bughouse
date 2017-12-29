@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const database = require('./database');
 const User = require('./User');
+const Rating = require('./Rating');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -220,7 +221,7 @@ class Game {
 		if (termination.includes('Team 2 is victorious')) winner = 'team2';
 
 		if (game.mode === 'Rated') {
-			await User.updateRatings(game, winner);
+			await Rating.updateRatings(game, winner);
 		}
 		clearRoom(socket.room, '/game');
 	}
