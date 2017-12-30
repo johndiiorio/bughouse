@@ -22,7 +22,7 @@ SELECT * FROM (
 				rts.rating AS rating
 			FROM users u
 				LEFT JOIN ratings rts ON u.id = rts.user_id
-			ORDER BY u.id, rts.rating_type, rts.rating_timestamp
+			ORDER BY u.id, rts.rating_type, rts.rating_timestamp DESC
 		) new_ratings
 	GROUP BY new_ratings.user_id
 	) AS most_recent_ratings

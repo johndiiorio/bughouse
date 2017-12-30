@@ -1,5 +1,6 @@
-const database = require('./database');
 const glicko = require('glicko2');
+const database = require('./database');
+const User = require('./User');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -90,22 +91,22 @@ class Rating {
 				p4Value: player4.getRd(),
 			};
 			await db.tx(t => t.batch([
-				t.none(sqlFile('ratings/insert_ratings.sql'), {
+				t.none(sqlFile('rating/insert_ratings.sql'), {
 					id: game.player1,
 					rating: player1.getRating(),
 					ratingType
 				}),
-				t.none(sqlFile('ratings/insert_ratings.sql'), {
+				t.none(sqlFile('rating/insert_ratings.sql'), {
 					id: game.player2,
 					rating: player2.getRating(),
 					ratingType
 				}),
-				t.none(sqlFile('ratings/insert_ratings.sql'), {
+				t.none(sqlFile('rating/insert_ratings.sql'), {
 					id: game.player3,
 					rating: player3.getRating(),
 					ratingType
 				}),
-				t.none(sqlFile('ratings/insert_ratings.sql'), {
+				t.none(sqlFile('rating/insert_ratings.sql'), {
 					id: game.player4,
 					rating: player4.getRating(),
 					ratingType
