@@ -51,6 +51,28 @@ router.get('/username/:username', async (req, res, next) => {
 	}
 });
 
+/* GET all user profile information about a user by username */
+router.get('/profile/:username', async (req, res, next) => {
+	const validReq = {
+		type: 'object',
+		maxProperties: 1,
+		required: ['username'],
+		properties: {
+			username: {	type: 'string' }
+		}
+	};
+	if (!validate(req.params, validReq).valid) {
+		res.sendStatus(400);
+	} else {
+		try {
+			const rows = await User.getAllUserInfoByUsername(req.params.username);
+			res.json(rows);
+		} catch (err) {
+			next(err);
+		}
+	}
+});
+
 /* Create a new user */
 router.post('/', async (req, res) => {
 	const validReq = {

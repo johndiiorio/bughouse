@@ -3,6 +3,7 @@ import RouteComponent from '../components/RouteComponent';
 import { clearNotifications } from '../actions/topLevel';
 import { clearSelectedGame } from '../actions/lobby';
 import { updateIsPlaying, resetGameState } from '../actions/game';
+import { fetchProfileUserIfNeeded } from '../actions/user';
 
 function mapStateToProps(state) {
 	return {
@@ -14,6 +15,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
 	return {
 		updateIsPlaying: gameID => dispatch(updateIsPlaying(gameID)),
+		fetchProfileUser: username => dispatch(fetchProfileUserIfNeeded(username)),
 		clearNotifications: () => dispatch(clearNotifications()),
 		resetGameState: () => dispatch(resetGameState()),
 		clearSelectedGame: () => dispatch(clearSelectedGame())
