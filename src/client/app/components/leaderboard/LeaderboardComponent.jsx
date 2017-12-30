@@ -14,15 +14,15 @@ export default class LeaderboardComponent extends React.Component {
 				<div className="container-fluid">
 					<div className="col-xs-3">
 						<h3 className="brighter-color">Bullet</h3>
-						<UserListComponent data={this.props.bullet} ratingType="ratingBullet" />
+						<UserListComponent data={this.props.bullet} />
 					</div>
 					<div className="col-xs-3">
 						<h3 className="brighter-color">Blitz</h3>
-						<UserListComponent data={this.props.blitz} ratingType="ratingBlitz" />
+						<UserListComponent data={this.props.blitz} />
 					</div>
 					<div className="col-xs-3">
 						<h3 className="brighter-color">Classical</h3>
-						<UserListComponent data={this.props.classical} ratingType="ratingClassical" />
+						<UserListComponent data={this.props.classical} />
 					</div>
 				</div>
 			</div>

@@ -32,9 +32,9 @@ SELECT
 	player4.rating_blitz AS "player4ratingBlitz",
 	player4.rating_classical AS "player4ratingClassical"
 FROM games AS g
-	LEFT JOIN users player1 ON g.player1 = player1.id
-	LEFT JOIN users player2 ON g.player2 = player2.id
-	LEFT JOIN users player3 ON g.player3 = player3.id
-	LEFT JOIN users player4 ON g.player4 = player4.id
+	LEFT JOIN users_with_most_recent_ratings player1 ON g.player1 = player1.id
+	LEFT JOIN users_with_most_recent_ratings player2 ON g.player2 = player2.id
+	LEFT JOIN users_with_most_recent_ratings player3 ON g.player3 = player3.id
+	LEFT JOIN users_with_most_recent_ratings player4 ON g.player4 = player4.id
 WHERE status = 'open'
 ORDER by timestamp ASC;

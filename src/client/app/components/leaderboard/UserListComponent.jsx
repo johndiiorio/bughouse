@@ -10,7 +10,7 @@ export default function UserListComponent(props) {
 					<div className="inline-block">
 						<UserLinkComponent user={user} />
 					</div>
-					<div className="brighter-color rating-right">{Math.round(user[props.ratingType])}</div>
+					<div className="brighter-color rating-right">{Math.round(user.rating)}</div>
 				</div>
 			)}
 		</div>

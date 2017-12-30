@@ -9,5 +9,5 @@ SELECT
 	rd_blitz,
 	rating_classical,
 	rd_classical
-FROM users
+FROM users_with_most_recent_ratings
 WHERE id = ${id};
