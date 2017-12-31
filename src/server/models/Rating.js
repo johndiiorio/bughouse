@@ -21,7 +21,7 @@ class Rating {
 	}
 
 	static mapRow(row) {
-		return new Rating(row.rating_type, row.rating_timestamp, row.rating);
+		return new Rating(row.rating_type, row.rating_timestamp, Math.round(row.rating));
 	}
 
 	static async getRatings(username) {

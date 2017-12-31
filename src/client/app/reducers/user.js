@@ -3,6 +3,7 @@ import * as userActions from '../actions/user';
 const defaultState = {
 	currentUser: {},
 	profileUsers: {},
+	selectedProfile: null,
 	profileUserFetching: false
 };
 
@@ -12,6 +13,11 @@ export default function user(state = defaultState, action) {
 			return {
 				...state,
 				currentUser: action.user
+			};
+		case userActions.UPDATE_SELECTED_PROFILE:
+			return {
+				...state,
+				selectedProfile: action.username
 			};
 		case userActions.REQUEST_PROFILE_USER:
 			return {

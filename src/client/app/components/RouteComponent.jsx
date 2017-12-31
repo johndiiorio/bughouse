@@ -41,7 +41,7 @@ export default class RouteComponent extends React.Component {
 
 	requireProfileUser(nextState) {
 		const username = nextState.params.splat;
-		this.props.fetchProfileUser(username);
+		this.props.updateSelectedProfile(username);
 	}
 
 	requireGame(nextState) {
