@@ -6,7 +6,7 @@ function getLineColor(ratingType) {
 	if (ratingType === 'Bullet') {
 		return '#ff0000';
 	} else if (ratingType === 'Blitz') {
-		return '#0000ff';
+		return '#00c6ff';
 	} else {
 		return '#00ff00';
 	}

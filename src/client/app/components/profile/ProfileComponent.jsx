@@ -1,7 +1,8 @@
 import React from 'react';
 import HeaderContainer from '../../containers/header/HeaderContainer';
 import RatingsChartContainer from '../../containers/profile/RatingsChartContainer';
-import UserLinkComponent from '../common/UserLinkComponent';
+import './css/profile.css';
+import DisplayRatingComponent from './DisplayRatingComponent';
 
 export default function ProfileComponent(props) {
 	const user = props.user;
@@ -9,29 +10,32 @@ export default function ProfileComponent(props) {
 		<div>
 			<HeaderContainer />
 			<div className="container-fluid">
-				<div className="col-xs-3">
+				<div className="col-xs-2">
 					{user && <div>
-						<h2>
-							<UserLinkComponent user={user} />
-						</h2>
-						<div>
-							<h3>Bullet</h3>
-							<h4>{props.bulletRating}</h4>
-							<h4>{props.bulletRd}</h4>
+						<div className="title-username">
+							<h2>
+								{ props.user.title && <div className="title">{props.user.title}</div> }
+								<div className="username">{props.user.username}</div>
+							</h2>
 						</div>
-						<div>
-							<h3>Blitz</h3>
-							<h4>{props.blitzRating}</h4>
-							<h4>{props.blitzRd}</h4>
-						</div>
-						<div>
-							<h3>Bullet</h3>
-							<h4>{props.classicalRating}</h4>
-							<h4>{props.classicalRd}</h4>
-						</div>
+						<DisplayRatingComponent
+							ratingType="Bullet"
+							rating={props.bulletRating}
+							rd={props.bulletRd}
+						/>
+						<DisplayRatingComponent
+							ratingType="Blitz"
+							rating={props.blitzRating}
+							rd={props.blitzRd}
+						/>
+						<DisplayRatingComponent
+							ratingType="Classical"
+							rating={props.classicalRating}
+							rd={props.classicalRd}
+						/>
 					</div>}
 				</div>
-				<div className="col-xs-9">
+				<div className="col-xs-10">
 					<RatingsChartContainer />
 				</div>
 			</div>
