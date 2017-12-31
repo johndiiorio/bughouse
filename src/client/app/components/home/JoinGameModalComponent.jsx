@@ -55,7 +55,7 @@ export default class JoinGameModalComponent extends React.Component {
 		return (
 			<Modal show={this.props.modalDisplay} onHide={this.toggleModal}>
 				<Modal.Header closeButton>
-					<Modal.Title>Join this game</Modal.Title>
+					<Modal.Title style={{ color: 'black' }}>Join this game</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<div className="row">

@@ -98,9 +98,9 @@ export default class LobbyComponent extends React.Component {
 		/* eslint-disable jsx-a11y/no-static-element-interactions */
 		return (
 			<div className="col-md-9">
-				<h3 className="brighter-color" style={underlineStyle}>Lobby:</h3>
+				<h3 style={underlineStyle}>Lobby:</h3>
 				<div id="lobbyTable">
-					<table className="table table-hover brighter-color table-condensed table-fixedheader">
+					<table className="table table-hover table-condensed table-fixedheader">
 						<thead>
 							<tr>
 								<th width="10%">Slots</th>

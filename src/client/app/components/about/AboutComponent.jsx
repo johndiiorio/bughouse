@@ -9,7 +9,7 @@ export default function AboutComponent() {
 	return (
 		<div>
 			<HeaderContainer />
-			<div className="container-fluid brighter-color" style={componentStyle}>
+			<div className="container-fluid" style={componentStyle}>
 				<div className="col-md-12">
 					<h3>About the Bughouse variant</h3>
 					<p>

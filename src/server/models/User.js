@@ -66,6 +66,13 @@ class User {
 		try {
 			const user = await db.oneOrNone(sqlFile('user/get_user_without_ratings_by_username.sql'), { username: username });
 			if (user) {
+				user.bulletRd = user.rd_bullet;
+				user.blitzRd = user.rd_blitz;
+				user.classicalRd = user.rd_classical;
+				delete user.rd_bullet;
+				delete user.rd_blitz;
+				delete user.rd_classical;
+
 				const ratings = await Rating.getRatings(username);
 				user.bulletRatings = [];
 				user.blitzRatings = [];

@@ -9,7 +9,7 @@ export default function LoadingComponent() {
 				<div className="spinner-inner-circle" />
 			</div>
 			<br /><br /><br />
-			<h3 className="brighter-color spinner-text">Waiting for other players to join the game...</h3>
+			<h3 className="spinner-text">Waiting for other players to join the game...</h3>
 		</div>
 	);
 }

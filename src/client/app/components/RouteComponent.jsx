@@ -9,7 +9,7 @@ import RegisterContainer from '../containers/register/RegisterContainer';
 import LeaderboardContainer from '../containers/leaderboard/LeaderboardContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
-import ProfileComponent from './profile/ProfileComponent';
+import ProfileContainer from '../containers/profile/ProfileContainer';
 
 export default class RouteComponent extends React.Component {
 	constructor(props) {
@@ -86,7 +86,7 @@ export default class RouteComponent extends React.Component {
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<Router history={browserHistory}>
 					<Route path="/about" component={AboutComponent} />
-					<Route path="/user/*" component={ProfileComponent} onEnter={this.requireProfileUser} />
+					<Route path="/user/*" component={ProfileContainer} onEnter={this.requireProfileUser} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/leaderboard" component={LeaderboardContainer} />
 					<Route path="/loading" component={LoadingComponent} onEnter={this.requireAboutToPlay} />

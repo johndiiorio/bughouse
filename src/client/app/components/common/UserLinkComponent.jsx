@@ -7,9 +7,9 @@ export default function UserLinkComponent(props) {
 		<div>
 			<Link to={`/user/${props.user.username}`}>
 				{ props.user.title && <div className="title">{props.user.title}</div> }
-				<div className="brighter-color username">{props.user.username}</div>
+				<div className="username">{props.user.username}</div>
 				{ props.rating &&
-					<div className="brighter-color rating">
+					<div className="rating">
 						({Math.round(props.rating)})
 					</div>
 				}
