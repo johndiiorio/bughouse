@@ -85,12 +85,12 @@ export default class LoginComponent extends React.Component {
 				{ _.isEmpty(this.props.currentUser) &&
 				<div className="col-md-2" style={containerStyle}>
 					<NotificationSystem	ref={c => {	this.notificationSystem = c; }}	/>
-					<h3 className="brighter-color" style={underlineStyle}>Log in:</h3>
+					<h3 style={underlineStyle}>Log in:</h3>
 					<div style={loginStyle}>
 						<form onSubmit={this.handleSubmit}>
 							<div className="row" style={marginStyle}>
 								<div className="col-md-12">
-									<h5 className="brighter-color">Username</h5>
+									<h5>Username</h5>
 								</div>
 								<div className="col-md-12">
 									<input
@@ -104,7 +104,7 @@ export default class LoginComponent extends React.Component {
 							</div>
 							<div className="row" style={marginStyle}>
 								<div className="col-md-12">
-									<h5 className="brighter-color">Password</h5>
+									<h5>Password</h5>
 								</div>
 								<div className="col-md-12">
 									<input

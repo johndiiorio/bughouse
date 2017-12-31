@@ -9,12 +9,13 @@ import RegisterContainer from '../containers/register/RegisterContainer';
 import LeaderboardContainer from '../containers/leaderboard/LeaderboardContainer';
 import LoadingComponent from './game/LoadingComponent';
 import GameContainer from '../containers/game/GameContainer';
-import ProfileComponent from './profile/ProfileComponent';
+import ProfileContainer from '../containers/profile/ProfileContainer';
 
 export default class RouteComponent extends React.Component {
 	constructor(props) {
 		super(props);
 		this.requireAboutToPlay = this.requireAboutToPlay.bind(this);
+		this.requireProfileUser = this.requireProfileUser.bind(this);
 		this.requireGame = this.requireGame.bind(this);
 		this.requireAuth = this.requireAuth.bind(this);
 		this.enterHomeComponent = this.enterHomeComponent.bind(this);
@@ -36,6 +37,11 @@ export default class RouteComponent extends React.Component {
 		if (!localStorage.getItem('token') || !this.props.selectedGame.id) {
 			browserHistory.push('/');
 		}
+	}
+
+	requireProfileUser(nextState) {
+		const username = nextState.params.splat;
+		this.props.updateSelectedProfile(username);
 	}
 
 	requireGame(nextState) {
@@ -80,7 +86,7 @@ export default class RouteComponent extends React.Component {
 				<NotificationSystem ref={c => { this.notificationSystem = c; }} />
 				<Router history={browserHistory}>
 					<Route path="/about" component={AboutComponent} />
-					<Route path="/profile" component={ProfileComponent} />
+					<Route path="/user/*" component={ProfileContainer} onEnter={this.requireProfileUser} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/leaderboard" component={LeaderboardContainer} />
 					<Route path="/loading" component={LoadingComponent} onEnter={this.requireAboutToPlay} />

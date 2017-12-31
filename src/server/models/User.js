@@ -1,5 +1,6 @@
-const database = require('./database');
 const bcrypt = require('bcryptjs');
+const database = require('./database');
+const Rating = require('./Rating');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -49,6 +50,43 @@ class User {
 			const row = await db.oneOrNone(sqlFile('user/get_user_by_username.sql'), { username: username });
 			if (row) {
 				return User.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
+	static async getAllUserInfoByUsername(username) {
+		try {
+			const user = await db.oneOrNone(sqlFile('user/get_user_without_ratings_by_username.sql'), { username: username });
+			if (user) {
+				user.bulletRd = user.rd_bullet;
+				user.blitzRd = user.rd_blitz;
+				user.classicalRd = user.rd_classical;
+				delete user.rd_bullet;
+				delete user.rd_blitz;
+				delete user.rd_classical;
+
+				const ratings = await Rating.getRatings(username);
+				user.bulletRatings = [];
+				user.blitzRatings = [];
+				user.classicalRatings = [];
+				for (const rating of ratings) {
+					if (rating.ratingType === 'bullet') {
+						user.bulletRatings.push([rating.ratingTimestamp, rating.rating]);
+					} else if (rating.ratingType === 'blitz') {
+						user.blitzRatings.push([rating.ratingTimestamp, rating.rating]);
+					} else {
+						user.classicalRatings.push([rating.ratingTimestamp, rating.rating]);
+					}
+				}
+				return user;
 			}
 			const err = new Error();
 			err.status = 401;

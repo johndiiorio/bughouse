@@ -89,7 +89,7 @@ export default class RegisterComponent extends React.Component {
 		return (
 			<div className="col-md-12">
 				<HeaderContainer />
-				<div className="container-fluid brighter-color">
+				<div className="container-fluid">
 					<h3 style={underlineStyle}>Register:</h3>
 					<Form horizontal onSubmit={this.handleSubmit}>
 						<FormGroup validationState={this.state.usernameValid}>

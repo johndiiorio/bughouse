@@ -6,8 +6,7 @@ const db = database.db;
 const sqlFile = database.sqlFile;
 
 class Rating {
-	constructor(id, ratingType, ratingTimestamp, rating) {
-		this.id = id;
+	constructor(ratingType, ratingTimestamp, rating) {
 		this.ratingType = ratingType;
 		this.ratingTimestamp = ratingTimestamp;
 		this.rating = rating;
@@ -22,7 +21,12 @@ class Rating {
 	}
 
 	static mapRow(row) {
-		return new Rating(row.id, row.rating_type, row.rating_timestamp, row.rating);
+		return new Rating(row.rating_type, row.rating_timestamp, Math.round(row.rating));
+	}
+
+	static async getRatings(username) {
+		const rows = await db.many(sqlFile('rating/get_ratings_by_username.sql'), { username: username });
+		return rows.map(row => Rating.mapRow(row));
 	}
 
 	/**

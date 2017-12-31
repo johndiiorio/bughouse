@@ -16,14 +16,15 @@ body {
 p, h1, h2, h3, h4, h5, h6 {
 	user-select: none;
 	cursor: default;
+	color: #ABABAB;
+}
+
+div, th, td {
+	color: #ABABAB;
 }
 
 .wrap-text {
     word-wrap: break-word;
-}
-
-.brighter-color {
-    color: #ABABAB;
 }
 
 .noBottomMargin {
