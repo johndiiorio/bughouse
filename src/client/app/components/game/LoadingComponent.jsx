@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap';
 import { browserHistory } from 'react-router';
 import axios from 'axios';
 import './css/loading.css';
+import { socketLobby } from '../../socket';
 
 export default class LoadingComponent extends React.Component {
 	constructor(props) {
@@ -27,6 +28,7 @@ export default class LoadingComponent extends React.Component {
 			token: localStorage.getItem('token'),
 			gameID: this.props.selectedGameID
 		}).then(() => {
+			socketLobby.emit('update game list');
 			this.props.toggleUserWaitingForGameToStart();
 			browserHistory.push('/');
 		});
