@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { showErrorNotification } from '../util/notifications';
 
 export const REQUEST_LEADERBOARD = 'REQUEST_LEADERBOARD';
 export const RECEIVE_LEADERBOARD = 'RECEIVE_LEADERBOARD';
@@ -18,7 +19,11 @@ function shouldFetchLeaderboard(state) {
 function fetchLeaderboard() {
 	return dispatch => {
 		dispatch(requestLeaderboard);
-		return axios.get('/api/leaderboard').then(response => dispatch(receiveLeaderboard(response.data)));
+		return axios.get('/api/leaderboard')
+			.then(response => dispatch(receiveLeaderboard(response.data)))
+			.catch(() => {
+				showErrorNotification('Failed to fetch leaderboard');
+			});
 	};
 }
 

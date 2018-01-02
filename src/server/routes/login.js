@@ -3,8 +3,17 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const secretToken = require('../config').secretToken;
 const validate = require('jsonschema').validate;
+const RateLimit = require('express-rate-limit');
 
 const router = express.Router();
+
+const limiter = new RateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 100,
+	delayMs: 0
+});
+
+router.use(limiter);
 
 router.post('/', async (req, res, next) => {
 	const validReq = {
