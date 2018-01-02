@@ -112,6 +112,17 @@ class Game {
 		}
 	}
 
+	static async getUserGames(id) {
+		try {
+			return await db.any(sqlFile('game/get_user_games.sql'), { id: id });
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
 	static async getGameWithUsersByID(id) {
 		try {
 			const row = await db.oneOrNone(sqlFile('game/get_game_with_users_by_id.sql'), { id: id });

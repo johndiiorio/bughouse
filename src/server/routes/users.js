@@ -65,7 +65,7 @@ router.get('/profile/:username', async (req, res, next) => {
 		res.sendStatus(400);
 	} else {
 		try {
-			const rows = await User.getAllUserInfoByUsername(req.params.username);
+			const rows = await User.getUserProfile(req.params.username);
 			res.json(rows);
 		} catch (err) {
 			next(err);

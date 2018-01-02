@@ -11,3 +11,7 @@
 .username {
 	display: inline;
 }
+
+.toggle-games-button {
+	margin-top: 20px;
+}

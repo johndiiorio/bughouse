@@ -1,44 +1,74 @@
 import React from 'react';
+import { Button } from 'react-bootstrap';
 import HeaderContainer from '../../containers/header/HeaderContainer';
 import RatingsChartContainer from '../../containers/profile/RatingsChartContainer';
-import './css/profile.css';
 import DisplayRatingComponent from './DisplayRatingComponent';
+import PreviousGameComponent from './PreviousGameComponent';
+import './css/profile.css';
 
-export default function ProfileComponent(props) {
-	const user = props.user;
-	return (
-		<div>
-			<HeaderContainer />
-			<div className="container-fluid">
-				<div className="col-xs-2">
-					{user && <div>
-						<div className="title-username">
-							<h2>
-								{ props.user.title && <div className="title">{props.user.title}</div> }
-								<div className="username">{props.user.username}</div>
-							</h2>
-						</div>
-						<DisplayRatingComponent
-							ratingType="Bullet"
-							rating={props.bulletRating}
-							rd={props.bulletRd}
-						/>
-						<DisplayRatingComponent
-							ratingType="Blitz"
-							rating={props.blitzRating}
-							rd={props.blitzRd}
-						/>
-						<DisplayRatingComponent
-							ratingType="Classical"
-							rating={props.classicalRating}
-							rd={props.classicalRd}
-						/>
-					</div>}
-				</div>
-				<div className="col-xs-10">
-					<RatingsChartContainer />
+export default class ProfileComponent extends React.Component {
+	constructor(props) {
+		super(props);
+		this.toggleShowGames = this.toggleShowGames.bind(this);
+		this.state = {
+			showGames: false
+		};
+	}
+
+	toggleShowGames() {
+		this.setState({ showGames: !this.state.showGames });
+	}
+
+	render() {
+		const user = this.props.user;
+		return (
+			<div>
+				<HeaderContainer />
+				<div className="container-fluid">
+					<div className="col-xs-2">
+						{user && <div>
+							<div className="title-username">
+								<h2>
+									{user.title && <div className="title">{user.title}</div>}
+									<div className="username">{user.username}</div>
+								</h2>
+							</div>
+							<DisplayRatingComponent
+								ratingType="Bullet"
+								rating={this.props.bulletRating}
+								rd={this.props.bulletRd}
+							/>
+							<DisplayRatingComponent
+								ratingType="Blitz"
+								rating={this.props.blitzRating}
+								rd={this.props.blitzRd}
+							/>
+							<DisplayRatingComponent
+								ratingType="Classical"
+								rating={this.props.classicalRating}
+								rd={this.props.classicalRd}
+							/>
+							<Button
+								className="toggle-games-button"
+								bsClass="btn btn-secondary"
+								onClick={this.toggleShowGames}
+							>
+								{ this.state.showGames ? 'Hide games' : 'Show games' }
+							</Button>
+						</div>}
+					</div>
+					<div className="col-xs-10">
+						{ !this.state.showGames && <RatingsChartContainer /> }
+						{ user && this.state.showGames &&
+							<div>
+								{user.gamesList.map((game, index) =>
+									<PreviousGameComponent key={index} game={game} />
+								)}
+							</div>
+						}
+					</div>
 				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 }

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const database = require('./database');
+const Game = require('./Game');
 const Rating = require('./Rating');
 
 const db = database.db;
@@ -62,10 +63,11 @@ class User {
 		}
 	}
 
-	static async getAllUserInfoByUsername(username) {
+	static async getUserProfile(username) {
 		try {
 			const user = await db.oneOrNone(sqlFile('user/get_user_without_ratings_by_username.sql'), { username: username });
 			if (user) {
+				user.gamesList = await Game.getUserGames(user.id);
 				user.bulletRd = user.rd_bullet;
 				user.blitzRd = user.rd_blitz;
 				user.classicalRd = user.rd_classical;
