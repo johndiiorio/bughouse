@@ -1,9 +1,9 @@
 import React from 'react';
+import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import { browserHistory } from 'react-router';
-import axios from 'axios';
-import './css/loading.css';
 import { socketLobby } from '../../socket';
+import './css/loading.css';
 
 export default class LoadingComponent extends React.Component {
 	constructor(props) {
