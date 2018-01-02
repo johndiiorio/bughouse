@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import NotificationSystem from 'react-notification-system';
 import { Button } from 'react-bootstrap';
+import { showErrorNotification } from '../../util/notifications';
 
 export default class LoginComponent extends React.Component {
 	constructor(props) {
@@ -14,7 +14,6 @@ export default class LoginComponent extends React.Component {
 		this.handleUsernameChange = this.handleUsernameChange.bind(this);
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
-		this.notificationSystem = null;
 	}
 
 	componentWillMount() {
@@ -56,12 +55,7 @@ export default class LoginComponent extends React.Component {
 		})
 		.catch(() => {
 			this.inputUsername.focus();
-			this.props.sendNotification({
-				message: 'Invalid username/password combination',
-				level: 'error',
-				position: 'tc',
-				autoDismiss: 2
-			});
+			showErrorNotification('Invalid username/password combination');
 		});
 		this.setState({ username: '', password: '' });
 	}
@@ -84,7 +78,6 @@ export default class LoginComponent extends React.Component {
 			<div>
 				{ _.isEmpty(this.props.currentUser) &&
 				<div className="col-md-2" style={containerStyle}>
-					<NotificationSystem	ref={c => {	this.notificationSystem = c; }}	/>
 					<h3 style={underlineStyle}>Log in:</h3>
 					<div style={loginStyle}>
 						<form onSubmit={this.handleSubmit}>
