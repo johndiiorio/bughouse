@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import { showErrorNotification } from '../../util/notifications';
 
 export default class LobbyComponent extends React.Component {
 	constructor(props) {
@@ -10,12 +11,7 @@ export default class LobbyComponent extends React.Component {
 
 	addPlayer(game) {
 		if (_.isEmpty(this.props.currentUser)) {
-			this.props.sendNotification({
-				message: 'Please log in to join a game',
-				level: 'error',
-				position: 'tc',
-				autoDismiss: 4
-			});
+			showErrorNotification('Please log in to join a game');
 		} else if (game.joinRandom) {
 			const openSlots = [];
 			if (game.player1.id === null) openSlots.push(1);
@@ -32,12 +28,7 @@ export default class LobbyComponent extends React.Component {
 					this.props.updateSelectedGame(game);
 				})
 				.catch(() => {
-					this.props.sendNotification({
-						message: 'You cannot join this game',
-						level: 'error',
-						position: 'tc',
-						autoDismiss: 4
-					});
+					showErrorNotification('You cannot join this game');
 				});
 		} else {
 			this.props.updateModalDisplayedGame(game);

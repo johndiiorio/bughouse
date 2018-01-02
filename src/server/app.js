@@ -7,17 +7,16 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('./logger');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(favicon(path.join(__dirname, '..', 'client', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, '..', 'client')));
+
 const users = require('./routes/users');
 const games = require('./routes/games');
 const login = require('./routes/login');
 const leaderboard = require('./routes/leaderboard');
-
-app.use(favicon(path.join(__dirname, '..', 'client', 'favicon.ico')));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'client')));
 
 app.use('/api/users', users);
 app.use('/api/games', games);

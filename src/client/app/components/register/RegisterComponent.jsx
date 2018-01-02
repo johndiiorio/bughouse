@@ -3,6 +3,7 @@ import { browserHistory } from 'react-router';
 import axios from 'axios';
 import { Button, Form, FormGroup, FormControl, HelpBlock, Col } from 'react-bootstrap';
 import HeaderContainer from '../../containers/header/HeaderContainer';
+import { showErrorNotification } from '../../util/notifications';
 
 export default class RegisterComponent extends React.Component {
 	constructor(props) {
@@ -70,12 +71,7 @@ export default class RegisterComponent extends React.Component {
 				this.props.updateCurrentUser(response.data.user);
 			})
 			.catch(() => {
-				this.props.sendNotification({
-					message: 'Failed to register',
-					level: 'error',
-					position: 'tc',
-					autoDismiss: 4
-				});
+				showErrorNotification('Failed to register');
 			})
 			.then(() => {
 				browserHistory.push('/');

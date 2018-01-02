@@ -23,6 +23,11 @@ div, th, td {
 	color: #ABABAB;
 }
 
+/* For react-notification-system */
+.notification-message {
+	color: black;
+}
+
 .wrap-text {
     word-wrap: break-word;
 }

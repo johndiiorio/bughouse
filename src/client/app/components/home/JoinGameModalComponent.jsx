@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { Modal, Button } from 'react-bootstrap';
+import { showErrorNotification } from '../../util/notifications';
 
 export default class JoinGameModalComponent extends React.Component {
 	constructor(props) {
@@ -25,12 +26,7 @@ export default class JoinGameModalComponent extends React.Component {
 				this.props.updateSelectedGame(this.props.modalDisplayedGame);
 			})
 			.catch(() => {
-				this.props.sendNotification({
-					message: 'You cannot join this game',
-					level: 'error',
-					position: 'tc',
-					autoDismiss: 4
-				});
+				showErrorNotification('You cannot join this game');
 			});
 	}
 

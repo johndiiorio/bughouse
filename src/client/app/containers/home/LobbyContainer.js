@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import LobbyComponent from '../../components/home/LobbyComponent';
 import { updateSelectedGame, updateModalDisplayedGame, toggleModalDisplay } from '../../actions/lobby';
-import { sendNotification } from '../../actions/topLevel';
 
 function mapStateToProps(state) {
 	return {
@@ -16,7 +15,6 @@ function mapDispatchToProps(dispatch) {
 		updateSelectedGame: game => dispatch(updateSelectedGame(game)),
 		updateModalDisplayedGame: game => dispatch(updateModalDisplayedGame(game)),
 		toggleModalDisplay: () => dispatch(toggleModalDisplay()),
-		sendNotification: notification => dispatch(sendNotification(notification))
 	};
 }
 
