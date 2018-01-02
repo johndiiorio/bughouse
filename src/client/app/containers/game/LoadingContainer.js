@@ -5,6 +5,7 @@ import { toggleUserWaitingForGameToStart } from '../../actions/lobby';
 function mapStateToProps(state) {
 	return {
 		userWaitingForGameToStart: state.lobby.userWaitingForGameToStart,
+		selectedGameID: state.lobby.selectedGame.id
 	};
 }
 

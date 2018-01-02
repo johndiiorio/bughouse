@@ -23,8 +23,10 @@ export default class LoadingComponent extends React.Component {
 	}
 
 	handleUserLeaveGame() {
-		// TODO send the correct data to the API
-		axios.get('/api/games/removePlayer').then(() => {
+		axios.put('/api/games/remove', {
+			token: localStorage.getItem('token'),
+			gameID: this.props.selectedGameID
+		}).then(() => {
 			this.props.toggleUserWaitingForGameToStart();
 			browserHistory.push('/');
 		});

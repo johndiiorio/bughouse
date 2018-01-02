@@ -158,6 +158,43 @@ class Game {
 		return false;
 	}
 
+	static async removePlayerFromGame(userID, gameID) {
+		try {
+			const game = await Game.getByID(gameID);
+			let userPosition = null;
+			let activePlayers = 0;
+			if (game.player1 === userID) userPosition = 1;
+			else if (game.player2 === userID) userPosition = 2;
+			else if (game.player3 === userID) userPosition = 3;
+			else if (game.player4 === userID) userPosition = 4;
+			if (userPosition === null || game.status !== 'open') {
+				const err = new Error();
+				err.status = 400;
+				throw err;
+			}
+			if (game.player1 !== null) activePlayers += 1;
+			if (game.player2 !== null) activePlayers += 1;
+			if (game.player3 !== null) activePlayers += 1;
+			if (game.player4 !== null) activePlayers += 1;
+			if (activePlayers > 1) {
+				await db.none(sqlFile('game/update_player_open_game.sql'), {
+					playerPosition: `player${userPosition}`,
+					player: null,
+					playerRatingColumn: `player${userPosition}_rating`,
+					userRating: null,
+					id: gameID
+				});
+			} else {
+				await db.none(sqlFile('game/remove_game.sql'), { id: gameID });
+			}
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
 	static async tryToStartGame(id) {
 		const game = await Game.getByID(id);
 		if (game.player1 !== null && game.player2 !== null && game.player3 !== null && game.player4 !== null) {
