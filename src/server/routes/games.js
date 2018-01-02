@@ -152,7 +152,7 @@ router.put('/open/:id', async (req, res, next) => {
 		required: ['playerPosition', 'player'],
 		properties: {
 			playerPosition: { type: 'string' },
-			player: { type: 'string' }
+			player: { type: 'number' }
 		}
 	};
 	if (!validate(req.params, validReqParams).valid || !validate(req.body, validReqBody).valid) {

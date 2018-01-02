@@ -17,7 +17,6 @@ export default class JoinGameModalComponent extends React.Component {
 	joinPlayer(slot) {
 		this.toggleModal();
 		const putData = {
-			id: this.props.modalDisplayedGame.id,
 			player: this.props.currentUser.id,
 			playerPosition: `player${slot}`
 		};
