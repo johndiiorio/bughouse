@@ -7,14 +7,20 @@ export const CLEAR_SELECTED_GAME = 'CLEAR_SELECTED_GAME';
 export const UPDATE_MODAL_DISPLAYED_GAME = 'UPDATE_MODAL_DISPLAYED_GAME';
 export const TOGGLE_MODAL_DISPLAY = 'TOGGLE_MODAL_DISPLAY';
 export const RECEIVE_GAMES_INFO = 'RECEIVE_GAMES_INFO';
+export const TOGGLE_USER_WAITING_FOR_GAME_TO_START = 'TOGGLE_USER_WAITING_FOR_GAME_TO_START';
 
 function updateSelectedGameInternal(game) {
 	return { type: UPDATE_SELECTED_GAME, game };
 }
 
+export function toggleUserWaitingForGameToStart() {
+	return { type: TOGGLE_USER_WAITING_FOR_GAME_TO_START };
+}
+
 export function updateSelectedGame(game) {
 	return dispatch => {
 		dispatch(updateSelectedGameInternal(game));
+		dispatch(toggleUserWaitingForGameToStart());
 		socketLoading.emit('room', game.id);
 		socketLobby.emit('update game list');
 		browserHistory.push('/loading');

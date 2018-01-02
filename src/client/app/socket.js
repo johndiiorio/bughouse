@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { browserHistory } from 'react-router';
 import store from './index';
-import { updateDisplayedGames } from './actions/lobby';
+import { toggleUserWaitingForGameToStart, updateDisplayedGames } from './actions/lobby';
 import { updateDisplayResignChoice, updateDisplayDrawChoice } from './actions/game';
 import playSound from './util/sound';
 
@@ -24,6 +24,7 @@ socketLobby.on('update game list', () => {
 });
 
 socketLoading.on('start game', id => {
+	toggleUserWaitingForGameToStart();
 	playSound('notify');
 	browserHistory.push(`/game/${id}`);
 });

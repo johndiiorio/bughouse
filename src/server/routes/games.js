@@ -55,28 +55,6 @@ router.get('/open', async (req, res, next) => {
 	}
 });
 
-/* Get a single game */
-router.get('/:id', async (req, res, next) => {
-	const validReq = {
-		type: 'object',
-		maxProperties: 1,
-		required: ['id'],
-		properties: {
-			id: { type: 'string' }
-		}
-	};
-	try {
-		if (validate(req.params, validReq).valid) {
-			const row = await Game.getByID(req.params.id);
-			res.json(row);
-		} else {
-			res.sendStatus(400);
-		}
-	} catch (err) {
-		next(err);
-	}
-});
-
 /* Get a single game with users information, include user's position
  * Note that the users ratings are relative to the start of the game, not their current rating
  */
@@ -191,6 +169,12 @@ router.put('/open/:id', async (req, res, next) => {
 			next(err);
 		}
 	}
+});
+
+/* Remove a player from an open game */
+router.get('/removePlayer', async (req, res) => {
+	// TODO
+	res.sendStatus(200);
 });
 
 /* Fetch game state */

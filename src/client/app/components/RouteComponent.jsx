@@ -7,7 +7,7 @@ import HomeComponent from './home/HomeComponent';
 import AboutComponent from './about/AboutComponent';
 import RegisterContainer from '../containers/register/RegisterContainer';
 import LeaderboardContainer from '../containers/leaderboard/LeaderboardContainer';
-import LoadingComponent from './game/LoadingComponent';
+import LoadingContainer from '../containers/game/LoadingContainer';
 import GameContainer from '../containers/game/GameContainer';
 import ProfileContainer from '../containers/profile/ProfileContainer';
 
@@ -89,7 +89,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/user/*" component={ProfileContainer} onEnter={this.requireProfileUser} />
 					<Route path="/register" component={RegisterContainer} />
 					<Route path="/leaderboard" component={LeaderboardContainer} />
-					<Route path="/loading" component={LoadingComponent} onEnter={this.requireAboutToPlay} />
+					<Route path="/loading" component={LoadingContainer} onEnter={this.requireAboutToPlay} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />
 					<Route path="*" component={HomeComponent} onEnter={this.enterHomeComponent} />
 				</Router>
