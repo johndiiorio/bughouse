@@ -24,7 +24,6 @@ export default class LobbyComponent extends React.Component {
 			if (game.player4.id === null) openSlots.push(4);
 			const slot = openSlots[Math.floor(Math.random() * openSlots.length)];
 			const putData = {
-				id: game.id,
 				player: this.props.currentUser.id,
 				playerPosition: `player${slot}`
 			};

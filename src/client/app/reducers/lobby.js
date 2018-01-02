@@ -4,7 +4,8 @@ const defaultState = {
 	displayedGames: [],
 	selectedGame: {},
 	modalDisplayedGame: {},
-	modalDisplay: false
+	modalDisplay: false,
+	userWaitingForGameToStart: false
 };
 
 export default function lobby(state = defaultState, action) {
@@ -28,6 +29,11 @@ export default function lobby(state = defaultState, action) {
 			return {
 				...state,
 				modalDisplay: !state.modalDisplay
+			};
+		case lobbyActions.TOGGLE_USER_WAITING_FOR_GAME_TO_START:
+			return {
+				...state,
+				userWaitingForGameToStart: !state.userWaitingForGameToStart
 			};
 		case lobbyActions.RECEIVE_GAMES_INFO:
 			return {

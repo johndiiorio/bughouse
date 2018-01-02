@@ -55,28 +55,6 @@ router.get('/open', async (req, res, next) => {
 	}
 });
 
-/* Get a single game */
-router.get('/:id', async (req, res, next) => {
-	const validReq = {
-		type: 'object',
-		maxProperties: 1,
-		required: ['id'],
-		properties: {
-			id: { type: 'string' }
-		}
-	};
-	try {
-		if (validate(req.params, validReq).valid) {
-			const row = await Game.getByID(req.params.id);
-			res.json(row);
-		} else {
-			res.sendStatus(400);
-		}
-	} catch (err) {
-		next(err);
-	}
-});
-
 /* Get a single game with users information, include user's position
  * Note that the users ratings are relative to the start of the game, not their current rating
  */
@@ -97,7 +75,7 @@ router.put('/withUsers/:id', async (req, res, next) => {
 			token: { type: 'string' }
 		}
 	};
-	if (!validate(req.params, validReqParams) || !validate(req.body, validReqBody)) {
+	if (!validate(req.params, validReqParams).valid || !validate(req.body, validReqBody).valid) {
 		res.sendStatus(400);
 	} else {
 		try {
@@ -170,14 +148,14 @@ router.put('/open/:id', async (req, res, next) => {
 	};
 	const validReqBody = {
 		type: 'object',
-		maxProperties: 1,
+		maxProperties: 2,
 		required: ['playerPosition', 'player'],
 		properties: {
 			playerPosition: { type: 'string' },
-			player: { type: 'string' }
+			player: { type: 'number' }
 		}
 	};
-	if (!validate(req.params, validReqParams) || !validate(req.body, validReqBody)) {
+	if (!validate(req.params, validReqParams).valid || !validate(req.body, validReqBody).valid) {
 		res.sendStatus(400);
 	} else {
 		try {
@@ -187,6 +165,40 @@ router.put('/open/:id', async (req, res, next) => {
 			} else {
 				res.end();
 			}
+		} catch (err) {
+			next(err);
+		}
+	}
+});
+
+/**
+ * Remove player from all open games
+ *
+ * @param {string} id Game ID
+ * @param {string} token User token
+ */
+router.put('/remove', async (req, res, next) => {
+	const validReqBody = {
+		type: 'object',
+		maxProperties: 2,
+		required: ['token', 'gameID'],
+		properties: {
+			token: { type: 'string' }
+		}
+	};
+	if (!validate(req.body, validReqBody).valid) {
+		res.sendStatus(400);
+	} else {
+		try {
+			jwt.verify(req.body.token, secretToken, async (err, decoded) => {
+				if (err) {
+					err.status = 401;
+					throw err;
+				} else {
+					await Game.removePlayerFromGame(decoded.id, req.body.gameID);
+					res.sendStatus(200);
+				}
+			});
 		} catch (err) {
 			next(err);
 		}
@@ -213,7 +225,7 @@ router.get('/state/:id', async (req, res, next) => {
 			};
 		});
 	}
-	if (!validate(req.params, validReq)) {
+	if (!validate(req.params, validReq).valid) {
 		res.sendStatus(400);
 	} else {
 		try {

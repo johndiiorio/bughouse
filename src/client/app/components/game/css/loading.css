@@ -1,10 +1,14 @@
+.cancel-button {
+	position:fixed;
+	top: 70%;
+	left: 50%;
+	margin-left: -58px;
+}
 .spinner-text {
 	position:fixed;
-	left:0;
-	bottom:0;
-	height:15em;
 	width:100%;
 	text-align: center;
+	top: 60%;
 }
 .spinner-animation {
 	position: fixed;
