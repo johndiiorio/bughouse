@@ -86,7 +86,12 @@ router.post('/', async (req, res) => {
 		}
 	};
 	try {
-		if ((!validate(req.body, validReq)) || req.body.username.length > 15 || req.body.password.length < 6 || req.body.password.length > 50) {
+		if ((!validate(req.body, validReq))
+			|| req.body.username.length > 15
+			|| req.body.password.length < 6
+			|| req.body.password.length > 50
+			|| req.body.email.length < 3
+			|| req.body.email.length > 254) {
 			res.status(400).send({ error: 'Failed to create new user' });
 		} else {
 			const hash = bcrypt.hashSync(req.body.password, 10);
