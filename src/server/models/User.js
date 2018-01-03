@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const database = require('./database');
-const Game = require('./Game');
 const Rating = require('./Rating');
 
 const db = database.db;
@@ -67,7 +66,7 @@ class User {
 		try {
 			const user = await db.oneOrNone(sqlFile('user/get_user_without_ratings_by_username.sql'), { username: username });
 			if (user) {
-				user.gamesList = await Game.getUserGames(user.id);
+				user.gamesList = await User.getUserGames(user.id);
 				user.bulletRd = user.rd_bullet;
 				user.blitzRd = user.rd_blitz;
 				user.classicalRd = user.rd_classical;
@@ -93,6 +92,30 @@ class User {
 			const err = new Error();
 			err.status = 401;
 			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
+	static async getUserGames(id) {
+		try {
+			const rows = await db.any(sqlFile('game/get_user_games.sql'), { id: id });
+			return rows.map(row => {
+				for (let i = 1; i <= 4; i++) {
+					row[`player${i}`] = {
+						title: row[`player${i}Title`],
+						username: row[`player${i}Username`],
+						rating: row[`player${i}Rating`]
+					};
+					delete row[`player${i}Title`];
+					delete row[`player${i}Username`];
+					delete row[`player${i}Rating`];
+				}
+				return row;
+			});
 		} catch (err) {
 			if (!err.status) {
 				err.status = 500;

@@ -24,7 +24,7 @@
 	position: relative;
 }
 
-.cg-board-wrap {
+.game-wrapper .cg-board-wrap {
 	width: 153px;
 	height: 153px;
 }
