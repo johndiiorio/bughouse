@@ -25,7 +25,7 @@ export default class ProfileComponent extends React.Component {
 			<div>
 				<HeaderContainer />
 				<div className="container-fluid">
-					<div className="col-xs-2">
+					<div className="col-xs-2 shaded-box">
 						{user && <div>
 							<div className="title-username">
 								<h2>
@@ -58,7 +58,10 @@ export default class ProfileComponent extends React.Component {
 						</div>}
 					</div>
 					<div className="col-xs-10">
-						{ !this.state.showGames && <RatingsChartContainer /> }
+						{ !this.state.showGames &&
+							<div className="shaded-box">
+								<RatingsChartContainer />
+							</div>}
 						{ user && this.state.showGames &&
 							<div>
 								{user.gamesList.map((game, index) =>

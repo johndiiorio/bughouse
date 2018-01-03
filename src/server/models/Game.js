@@ -114,7 +114,20 @@ class Game {
 
 	static async getUserGames(id) {
 		try {
-			return await db.any(sqlFile('game/get_user_games.sql'), { id: id });
+			const rows = await db.any(sqlFile('game/get_user_games.sql'), { id: id });
+			return rows.map(row => {
+				for (let i = 1; i <= 4; i++) {
+					row[`player${i}`] = {
+						title: row[`player${i}Title`],
+						username: row[`player${i}Username`],
+						rating: row[`player${i}Rating`]
+					};
+					delete row[`player${i}Title`];
+					delete row[`player${i}Username`];
+					delete row[`player${i}Rating`];
+				}
+				return row;
+			});
 		} catch (err) {
 			if (!err.status) {
 				err.status = 500;
