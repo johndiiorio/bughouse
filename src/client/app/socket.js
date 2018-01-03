@@ -24,7 +24,7 @@ socketLobby.on('update game list', () => {
 });
 
 socketLoading.on('start game', id => {
-	toggleUserWaitingForGameToStart();
+	store.dispatch(toggleUserWaitingForGameToStart());
 	playSound('notify');
 	browserHistory.push(`/game/${id}`);
 });

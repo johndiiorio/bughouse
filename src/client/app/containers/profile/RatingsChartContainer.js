@@ -22,18 +22,21 @@ function mapStateToProps(state) {
 			data: user.bulletRatings.map(rating => ({ x: rating[0], y: rating[1] })),
 			fill: false,
 			borderColor: getLineColor('Bullet'),
+			lineTension: 0
 		});
 		data.datasets.push({
 			label: 'Blitz',
 			data: user.blitzRatings.map(rating => ({ x: rating[0], y: rating[1] })),
 			fill: false,
 			borderColor: getLineColor('Blitz'),
+			lineTension: 0
 		});
 		data.datasets.push({
 			label: 'Classical',
 			data: user.classicalRatings.map(rating => ({ x: rating[0], y: rating[1] })),
 			fill: false,
 			borderColor: getLineColor('Classical'),
+			lineTension: 0
 		});
 	}
 
