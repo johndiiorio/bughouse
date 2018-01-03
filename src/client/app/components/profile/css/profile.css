@@ -11,3 +11,17 @@
 .username {
 	display: inline;
 }
+
+.toggle-games-button {
+	margin-top: 20px;
+	margin-bottom: 15px;
+}
+
+.shaded-box {
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+}
+
+.center-text {
+	text-align: center;
+}

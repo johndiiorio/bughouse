@@ -1,6 +1,5 @@
 const glicko = require('glicko2');
 const database = require('./database');
-const User = require('./User');
 
 const db = database.db;
 const sqlFile = database.sqlFile;
@@ -36,6 +35,7 @@ class Rating {
 	 * @returns {Promise.<>}
 	 */
 	static async updateRatings(game, winner) {
+		const User = require('./User'); // eslint-disable-line global-require
 		try {
 			const rows = await db.any(sqlFile('user/get_associated_users.sql'), { id1: game.player1, id2: game.player2, id3: game.player3, id4: game.player4 });
 			const users = rows.map(User.mapRow);

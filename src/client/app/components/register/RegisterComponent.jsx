@@ -15,7 +15,9 @@ export default class RegisterComponent extends React.Component {
 			password: '',
 			passwordValid: null,
 			passwordHelpBlock: '',
-			email: ''
+			email: '',
+			emailValid: null,
+			emailHelpBlock: ''
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleChangeUsername = this.handleChangeUsername.bind(this);
@@ -52,10 +54,19 @@ export default class RegisterComponent extends React.Component {
 
 	handleChangeEmail(e) {
 		this.setState({ email: e.target.value });
+		if (e.target.value === '') {
+			this.setState({ emailValid: null, emailHelpBlock: '' });
+		} else if (e.target.value.length < 3) {
+			this.setState({ emailValid: 'error', emailHelpBlock: 'Email is too short' });
+		} else if (e.target.value.length > 254) {
+			this.setState({ emailValid: 'error', emailHelpBlock: 'Email is too long' });
+		} else {
+			this.setState({ emailValid: 'success', emailHelpBlock: '' });
+		}
 	}
 
 	formValidityForSubmitButton() {
-		return !(this.state.usernameValid === 'success' && this.state.passwordValid === 'success');
+		return !(this.state.usernameValid === 'success' && this.state.passwordValid === 'success' && this.state.emailValid);
 	}
 
 	handleSubmit(e) {
@@ -112,7 +123,7 @@ export default class RegisterComponent extends React.Component {
 								<HelpBlock>{this.state.passwordHelpBlock}</HelpBlock>
 							</Col>
 						</FormGroup>
-						<FormGroup>
+						<FormGroup validationState={this.state.emailValid}>
 							<Col md={4}>
 								<FormControl
 									type="email"
@@ -121,6 +132,7 @@ export default class RegisterComponent extends React.Component {
 									onChange={this.handleChangeEmail}
 								/>
 								<FormControl.Feedback />
+								<HelpBlock>{this.state.emailHelpBlock}</HelpBlock>
 							</Col>
 						</FormGroup>
 						<FormGroup>

@@ -1,0 +1,30 @@
+.game-wrapper {
+	margin-bottom: 50px;
+	cursor: pointer;
+}
+
+.info-wrapper {
+	text-align: center;
+	background-color: #262626;
+	border: 1px solid #3d3d3d;
+}
+
+.align-player-info {
+	top: 3px;
+	position: relative;
+	display: inline-block;
+}
+
+.player-separation {
+	margin-right: 10px;
+}
+
+.versus {
+	top: 7px;
+	position: relative;
+}
+
+.game-wrapper .cg-board-wrap {
+	width: 153px;
+	height: 153px;
+}
