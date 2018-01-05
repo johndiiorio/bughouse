@@ -59,14 +59,16 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 		row.right_reserve_black = row.right_reserve_black ? JSON.parse(row.right_reserve_black) : [];
 		row.left_promoted_pieces = row.left_promoted_pieces ? JSON.parse(row.left_promoted_pieces) : [];
 		row.right_promoted_pieces = row.right_promoted_pieces ? JSON.parse(row.right_promoted_pieces) : [];
+		row.left_fens = row.left_fens.split(',');
+		row.right_fens = row.right_fens.split(',');
 		let game;
 		let move;
 		if (data.userPosition === 1 || data.userPosition === 2) { // Create game for left board
-			game = new Bug(row.left_fen);
+			game = new Bug(row.left_fens[row.left_fens.length - 1]);
 			game.setReserves(row.left_reserve_white, row.left_reserve_black);
 			game.setPromotedPieceSquares(row.left_promoted_pieces);
 		} else { // Create game for right board
-			game = new Bug(row.right_fen);
+			game = new Bug(row.right_fens[row.right_fens.length - 1]);
 			game.setReserves(row.right_reserve_white, row.right_reserve_black);
 			game.setPromotedPieceSquares(row.right_promoted_pieces);
 		}
@@ -96,7 +98,6 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 			let argOtherReserveBlack = [];
 			let leftPromotedPieces = row.left_promoted_pieces;
 			let rightPromotedPieces = row.right_promoted_pieces;
-			const argFen = game.fen();
 			const turn = game.turn() === 'w' ? 'white' : 'black';
 			let capture = false;
 			if (game.history()[0].indexOf('x') !== -1) { // Move is a capture
@@ -117,6 +118,8 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				boardNum = 1;
 				argOtherReserveWhite = JSON.stringify(row.right_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.right_reserve_black.concat(newReserves.other_reserve_black));
+				row.left_fens.push(game.fen());
+				const argFen = row.left_fens.join();
 
 				// don't change clock if white's first move
 				diffTime = moveNum === 1 && turn === 'black' ? row.increment : currentTime - row.left_last_time;
@@ -138,8 +141,9 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					leftPromotedPieces.push(data.move.target);
 				}
 
+
 				argsQuery = [
-					'left_fen', argFen,
+					'left_fens', argFen,
 					'left_reserve_white', argReserveWhite,
 					'left_reserve_black', argReserveBlack,
 					'right_reserve_white', argOtherReserveWhite,
@@ -153,7 +157,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					data.id
 				];
 				emitData = {
-					fen: argFen,
+					fens: row.left_fens,
 					leftReserveWhite: convertReserveToSparePieces(argReserveWhite),
 					leftReserveBlack: convertReserveToSparePieces(argReserveBlack),
 					rightReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
@@ -169,6 +173,9 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				boardNum = 2;
 				argOtherReserveWhite = JSON.stringify(row.left_reserve_white.concat(newReserves.other_reserve_white));
 				argOtherReserveBlack = JSON.stringify(row.left_reserve_black.concat(newReserves.other_reserve_black));
+				row.right_fens.push(game.fen());
+				const argFen = row.right_fens.join();
+
 				// don't change clock if white's first move
 				diffTime = moveNum === 1 && turn === 'black' ? row.increment : currentTime - row.right_last_time;
 				if (data.userPosition === 3) {
@@ -190,7 +197,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 				}
 
 				argsQuery = [
-					'right_fen', argFen,
+					'right_fens', argFen,
 					'right_reserve_white', argReserveWhite,
 					'right_reserve_black', argReserveBlack,
 					'left_reserve_white', argOtherReserveWhite,
@@ -204,7 +211,7 @@ module.exports = async (data, socket, gameSocket, clearRoom) => {
 					data.id
 				];
 				emitData = {
-					fen: argFen,
+					fens: row.right_fens,
 					leftReserveWhite: convertReserveToSparePieces(argOtherReserveWhite),
 					leftReserveBlack: convertReserveToSparePieces(argOtherReserveBlack),
 					rightReserveWhite: convertReserveToSparePieces(argReserveWhite),

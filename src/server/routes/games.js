@@ -236,8 +236,8 @@ router.get('/state/:id', async (req, res, next) => {
 				rightReserveWhite: convertReserveToSparePieces(game.right_reserve_white),
 				rightReserveBlack: convertReserveToSparePieces(game.right_reserve_black),
 				moves: game.moves,
-				leftFen: game.left_fen,
-				rightFen: game.right_fen,
+				leftFens: game.left_fens.split(','),
+				rightFens: game.right_fens.split(','),
 				leftLastMove: JSON.parse(game.left_last_move),
 				rightLastMove: JSON.parse(game.right_last_move),
 				leftColorToPlay: game.left_color_to_play,
@@ -267,11 +267,13 @@ router.put('/validate/pawnpromotion/:id', async (req, res) => {
 			return;
 		}
 		const row = await Game.getByID(req.params.id);
+		const leftFens = row.left_fens.split(',');
+		const rightFens = row.right_fens.split(',');
 		let game;
 		if (req.body.userPosition === 1 || req.body.userPosition === 2) {
-			game = new Bug(row.left_fen);
+			game = new Bug(leftFens[leftFens.length - 1]);
 		} else {
-			game = new Bug(row.right_fen);
+			game = new Bug(rightFens[rightFens.length - 1]);
 		}
 		const move = game.move({
 			from: req.body.source,

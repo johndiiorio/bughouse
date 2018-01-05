@@ -135,12 +135,12 @@ export default class GameBoardsComponent extends React.Component {
 
 				// Hydrate board configs
 				const leftConfig = {
-					fen: data.leftFen,
+					fen: data.leftFens[data.leftFens.length - 1],
 					lastMove: data.leftLastMove,
 					turnColor: data.leftColorToPlay
 				};
 				const rightConfig = {
-					fen: data.rightFen,
+					fen: data.rightFens[data.rightFens.length - 1],
 					lastMove: data.rightLastMove,
 					turnColor: data.rightColorToPlay
 				};
@@ -273,12 +273,12 @@ export default class GameBoardsComponent extends React.Component {
 	updateGame(data) {
 		this.squaresToHighlight = data.move.source !== 'spare' ? [data.move.source, data.move.target] : [data.move.target];
 		const boardStateWithTurnColor = {
-			fen: data.fen,
+			fen: data.fens[data.fens.length - 1],
 			lastMove: this.squaresToHighlight,
 			turnColor: data.turn
 		};
 		const boardStateWithoutTurnColor = {
-			fen: data.fen,
+			fen: data.fens[data.fens.length - 1],
 			lastMove: this.squaresToHighlight
 		};
 		function handleSound() {
