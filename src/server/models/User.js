@@ -114,6 +114,10 @@ class User {
 					delete row[`player${i}Username`];
 					delete row[`player${i}Rating`];
 				}
+				row.leftFen = row.leftFens.split(',')[row.leftFens.split(',').length - 1];
+				row.rightFen = row.rightFens.split(',')[row.rightFens.split(',').length - 1];
+				delete row.leftFens;
+				delete row.rightFens;
 				return row;
 			});
 		} catch (err) {

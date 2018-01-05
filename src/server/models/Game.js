@@ -9,7 +9,7 @@ const sqlFile = database.sqlFile;
 class Game {
 	constructor(id, player1, player2, player3, player4, minutes, increment, ratingRange,
 				mode, status, termination, joinRandom, timestamp, clocks, moves, leftLastTime, rightLastTime,
-				leftFen, rightFen, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack,
+				leftFens, rightFens, leftReserveWhite, leftReserveBlack, rightReserveWhite, rightReserveBlack,
 				leftPromotedPieces, rightPromotedPieces, leftLastMove, rightLastMove, leftColorToPlay,
 				rightColorToPlay, resignState, drawState) {
 		this.id = id;
@@ -29,8 +29,8 @@ class Game {
 		this.moves = moves;
 		this.left_last_time = leftLastTime;
 		this.right_last_time = rightLastTime;
-		this.left_fen = leftFen;
-		this.right_fen = rightFen;
+		this.left_fens = leftFens;
+		this.right_fens = rightFens;
 		this.left_reserve_white = leftReserveWhite;
 		this.left_reserve_black = leftReserveBlack;
 		this.right_reserve_white = rightReserveWhite;
@@ -53,7 +53,7 @@ class Game {
 		return new Game(
 			row.id, row.player1, row.player2, row.player3, row.player4,
 			row.minutes, row.increment, row.rating_range, row.mode, row.status, row.termination, row.join_random,
-			row.timestamp, row.clocks, row.moves, row.left_last_time, row.right_last_time, row.left_fen, row.right_fen,
+			row.timestamp, row.clocks, row.moves, row.left_last_time, row.right_last_time, row.left_fens, row.right_fens,
 			row.left_reserve_white, row.left_reserve_black,	row.right_reserve_white, row.right_reserve_black,
 			row.left_promoted_pieces, row.right_promoted_pieces, row.left_last_move, row.right_last_move,
 			row.left_color_to_play, row.right_color_to_play, row.resign_state, row.draw_state

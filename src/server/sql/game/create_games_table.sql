@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS games (
 	id TEXT PRIMARY KEY NOT NULL,
 	moves TEXT NULL,
-	left_fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-	right_fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+	left_fens TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+	right_fens TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
 	left_reserve_white TEXT NULL,
 	left_reserve_black TEXT NULL,
 	right_reserve_white TEXT NULL,
