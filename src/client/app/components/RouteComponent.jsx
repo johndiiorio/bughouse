@@ -5,6 +5,7 @@ import _ from 'lodash';
 import NotificationSystem from 'react-notification-system';
 import HomeComponent from './home/HomeComponent';
 import AboutComponent from './about/AboutComponent';
+import ResetContainer from '../containers/reset/ResetContainer';
 import RegisterContainer from '../containers/register/RegisterContainer';
 import LeaderboardContainer from '../containers/leaderboard/LeaderboardContainer';
 import LoadingContainer from '../containers/game/LoadingContainer';
@@ -16,6 +17,7 @@ export default class RouteComponent extends React.Component {
 		super(props);
 		this.requireAboutToPlay = this.requireAboutToPlay.bind(this);
 		this.requireProfileUser = this.requireProfileUser.bind(this);
+		this.requireResetToken = this.requireResetToken.bind(this);
 		this.requireGame = this.requireGame.bind(this);
 		this.requireAuth = this.requireAuth.bind(this);
 		this.enterHomeComponent = this.enterHomeComponent.bind(this);
@@ -42,6 +44,14 @@ export default class RouteComponent extends React.Component {
 	requireProfileUser(nextState) {
 		const username = nextState.params.splat;
 		this.props.updateSelectedProfile(username);
+	}
+
+	requireResetToken(nextState) {
+		const resetToken = nextState.params.splat;
+		if (resetToken) {
+			this.props.updateResetToken(resetToken);
+			browserHistory.push('/reset/');
+		}
 	}
 
 	requireGame(nextState) {
@@ -88,6 +98,7 @@ export default class RouteComponent extends React.Component {
 					<Route path="/about" component={AboutComponent} />
 					<Route path="/user/*" component={ProfileContainer} onEnter={this.requireProfileUser} />
 					<Route path="/register" component={RegisterContainer} />
+					<Route path="/reset/*" component={ResetContainer} onEnter={this.requireResetToken} />
 					<Route path="/leaderboard" component={LeaderboardContainer} />
 					<Route path="/loading" component={LoadingContainer} onEnter={this.requireAboutToPlay} />
 					<Route path="/game/*" component={GameContainer} onEnter={this.requireGame} />

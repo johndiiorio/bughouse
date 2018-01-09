@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
 import { Button } from 'react-bootstrap';
+import { browserHistory } from 'react-router';
 import { showErrorNotification } from '../../util/notifications';
 
 export default class LoginComponent extends React.Component {
@@ -14,6 +15,7 @@ export default class LoginComponent extends React.Component {
 		this.handleUsernameChange = this.handleUsernameChange.bind(this);
 		this.handlePasswordChange = this.handlePasswordChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleForgotPassword = this.handleForgotPassword.bind(this);
 	}
 
 	componentWillMount() {
@@ -58,6 +60,10 @@ export default class LoginComponent extends React.Component {
 			showErrorNotification('Invalid username/password combination');
 		});
 		this.setState({ username: '', password: '' });
+	}
+
+	handleForgotPassword() {
+		browserHistory.push('/reset/');
 	}
 
 	render() {
@@ -113,6 +119,12 @@ export default class LoginComponent extends React.Component {
 								<div className="col-md-12">
 									<Button type="submit" bsClass="btn btn-secondary"> Sign in
 									<span className="glyphicon glyphicon-log-in" />
+									</Button>
+									<Button
+										bsClass="btn btn-secondary pull-right"
+										onClick={this.handleForgotPassword}
+									>
+										Reset password
 									</Button>
 								</div>
 							</div>

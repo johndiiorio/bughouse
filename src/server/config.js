@@ -24,5 +24,8 @@ config.database = {
 config.secretToken = process.env.BUGHOUSE_TOKEN_SECRET;
 config.serverPort = process.env.BUGHOUSE_SERVER_PORT;
 config.logFile = process.env.BUGHOUSE_LOG_FILE || 'log.txt';
+config.emailAddress = process.env.BUGHOUSE_EMAIL_ADDRESS;
+config.emailPassword = process.env.BUGHOUSE_EMAIL_PASSWORD;
+config.domainName = process.env.BUGHOUSE_DOMAIN_NAME;
 
 module.exports = config;

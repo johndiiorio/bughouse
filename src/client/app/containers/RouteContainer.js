@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import RouteComponent from '../components/RouteComponent';
-import { clearNotifications } from '../actions/topLevel';
+import { clearNotifications, updateResetToken } from '../actions/topLevel';
 import { clearSelectedGame } from '../actions/lobby';
 import { updateIsPlaying, resetGameState } from '../actions/game';
 import { updateSelectedProfile } from '../actions/user';
@@ -16,6 +16,7 @@ function mapDispatchToProps(dispatch) {
 	return {
 		updateIsPlaying: gameID => dispatch(updateIsPlaying(gameID)),
 		updateSelectedProfile: username => dispatch(updateSelectedProfile(username)),
+		updateResetToken: resetToken => dispatch(updateResetToken(resetToken)),
 		clearNotifications: () => dispatch(clearNotifications()),
 		resetGameState: () => dispatch(resetGameState()),
 		clearSelectedGame: () => dispatch(clearSelectedGame())
