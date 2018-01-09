@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const validate = require('jsonschema').validate;
 const RateLimit = require('express-rate-limit');
 const User = require('../models/User');
@@ -80,18 +81,58 @@ router.post('/forgot', async (req, res, next) => {
 			const user = await User.getByUsername(req.body.username);
 			if (user) {
 				const resetToken = await util.random(20);
-				const payload = { resetToken };
+				const payload = {
+					resetToken,
+					id: user.id
+				};
 				const tokenJWT = jwt.sign(payload, secretToken, { expiresIn: '1 hour' });
 				await User.updateResetToken(user.id, resetToken);
 				util.sendEmail(
 					user.email,
 					`Reset your ${domainName} password`,
-					`Your password reset link is: https://${domainName}/api/login/reset/${tokenJWT}`
+					`Your password reset link is: https://${domainName}/reset/${tokenJWT}`
 				);
 				res.sendStatus(200);
 			} else {
 				res.sendStatus(401);
 			}
+		} catch (err) {
+			next(err);
+		}
+	}
+});
+
+router.post('/reset', async (req, res, next) => {
+	const validReq = {
+		type: 'object',
+		maxProperties: 2,
+		required: ['resetToken', 'password'],
+		properties: {
+			resetToken: { type: 'string' },
+			password: { type: 'string' }
+		}
+	};
+	if (!validate(req.body, validReq)
+		|| req.body.password.length < 6
+		|| req.body.password.length > 50) {
+		res.sendStatus(400);
+	} else {
+		try {
+			jwt.verify(req.body.resetToken, secretToken, async (err, decoded) => {
+				if (err) {
+					res.sendStatus(401);
+				} else {
+					const userID = decoded.id;
+					const resetTokenFromDB = await User.getUserResetTokenById(userID);
+					if (decoded.resetToken === resetTokenFromDB) {
+						const passwordHash = bcrypt.hashSync(req.body.password, 10);
+						await User.updatePasswordAndClearResetToken(userID, passwordHash);
+						res.sendStatus(200);
+					} else {
+						res.sendStatus(401);
+					}
+				}
+			});
 		} catch (err) {
 			next(err);
 		}

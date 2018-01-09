@@ -23,7 +23,7 @@ app.use('/api/games', games);
 app.use('/api/login', login);
 app.use('/api/leaderboard', leaderboard);
 
-app.get('\\/|about|user|leaderboard|register|loading|game/*', (req, res) => {
+app.get('\\/|about|user|leaderboard|register|reset|loading|game/*', (req, res) => {
 	res.sendFile(path.resolve(__dirname, '..', 'client', 'index.html'));
 });
 

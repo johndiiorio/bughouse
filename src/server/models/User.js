@@ -169,8 +169,22 @@ class User {
 		}
 	}
 
-	static async updateResetToken(userID, resetToken) {
-		await db.none(sqlFile('user/update_reset_token.sql'), { userID, resetToken });
+	static async updateResetToken(id, resetToken) {
+		await db.none(sqlFile('user/update_reset_token.sql'), { id, resetToken });
+	}
+
+	static async getUserResetTokenById(id) {
+		try {
+			const row = await db.one(sqlFile('user/get_user_reset_token_by_id.sql'), { id });
+			return row.reset_token;
+		} catch (err) {
+			err.status = 400;
+			throw err;
+		}
+	}
+
+	static async updatePasswordAndClearResetToken(id, passwordHash) {
+		await db.none(sqlFile('user/update_password_clear_rest_token.sql'), { id, passwordHash });
 	}
 
 	async insert() {
