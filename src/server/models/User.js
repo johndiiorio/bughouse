@@ -62,6 +62,23 @@ class User {
 		}
 	}
 
+	static async getByEmail(email) {
+		try {
+			const row = await db.oneOrNone(sqlFile('user/get_user_by_email.sql'), { email: email });
+			if (row) {
+				return User.mapRow(row);
+			}
+			const err = new Error();
+			err.status = 401;
+			throw err;
+		} catch (err) {
+			if (!err.status) {
+				err.status = 500;
+			}
+			throw err;
+		}
+	}
+
 	static async getUserProfile(username) {
 		try {
 			const user = await db.oneOrNone(sqlFile('user/get_user_without_ratings_by_username.sql'), { username: username });

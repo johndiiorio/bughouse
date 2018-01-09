@@ -69,16 +69,16 @@ router.post('/forgot', async (req, res, next) => {
 	const validReq = {
 		type: 'object',
 		maxProperties: 1,
-		required: ['username'],
+		required: ['email'],
 		properties: {
-			username: { type: 'string' }
+			email: { type: 'string' }
 		}
 	};
 	if (!validate(req.body, validReq)) {
 		res.sendStatus(400);
 	} else {
 		try {
-			const user = await User.getByUsername(req.body.username);
+			const user = await User.getByEmail(req.body.email);
 			if (user) {
 				const resetToken = await util.random(20);
 				const payload = {
