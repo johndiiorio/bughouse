@@ -1,9 +1,11 @@
 const express = require('express');
-const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const secretToken = require('../config').secretToken;
 const validate = require('jsonschema').validate;
 const RateLimit = require('express-rate-limit');
+const User = require('../models/User');
+const util = require('../util');
+const secretToken = require('../config').secretToken;
+const domainName = require('../config').domainName;
 
 const router = express.Router();
 
@@ -59,6 +61,40 @@ router.post('/token', async (req, res) => {
 			success: false,
 			message: 'No token provided.'
 		});
+	}
+});
+
+router.post('/forgot', async (req, res, next) => {
+	const validReq = {
+		type: 'object',
+		maxProperties: 1,
+		required: ['username'],
+		properties: {
+			username: { type: 'string' }
+		}
+	};
+	if (!validate(req.body, validReq)) {
+		res.sendStatus(400);
+	} else {
+		try {
+			const user = await User.getByUsername(req.body.username);
+			if (user) {
+				const resetToken = await util.random(20);
+				const payload = { resetToken };
+				const tokenJWT = jwt.sign(payload, secretToken, { expiresIn: '1 hour' });
+				await User.updateResetToken(user.id, resetToken);
+				util.sendEmail(
+					user.email,
+					`Reset your ${domainName} password`,
+					`Your password reset link is: https://${domainName}/api/login/reset/${tokenJWT}`
+				);
+				res.sendStatus(200);
+			} else {
+				res.sendStatus(401);
+			}
+		} catch (err) {
+			next(err);
+		}
 	}
 });
 

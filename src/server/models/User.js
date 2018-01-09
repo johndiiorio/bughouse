@@ -169,6 +169,10 @@ class User {
 		}
 	}
 
+	static async updateResetToken(userID, resetToken) {
+		await db.none(sqlFile('user/update_reset_token.sql'), { userID, resetToken });
+	}
+
 	async insert() {
 		const user = this;
 		if (user.id !== undefined) {

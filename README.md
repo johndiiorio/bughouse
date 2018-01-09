@@ -22,6 +22,9 @@ BUGHOUSE_DB_HOST=?                  // The host for your postgres db, likely loc
 BUGHOUSE_DB_PORT=?                  // The port for your postgres db, likely 5432
 BUGHOUSE_TOKEN_SECRET=?             // Token for authentication. Generate something secure and random
 BUGHOUSE_LOG_FILE=?                 // Path to log file, defaults to ./log.txt
+BUGHOUSE_EMAIL_ADDRESS=?            // Email address to send emails from
+BUGHOUSE_EMAIL_PASSWORD=?           // Email password corresponding to the address above
+BUGHOUSE_DOMAIN_NAME=?              // Domain name
 ```
 7. Run ```npm run createdb``` to create the database schema.
 8. Run ```npm run build``` to create the Webpack bundle for production, otherwise run ```npm run dev``` for development.
