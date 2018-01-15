@@ -72,7 +72,7 @@ router.put('/withUsers/:id', async (req, res, next) => {
 		maxProperties: 1,
 		required: ['token'],
 		properties: {
-			token: { type: 'string' }
+			token: { type: ['string', 'null'] }
 		}
 	};
 	if (!validate(req.params, validReqParams).valid || !validate(req.body, validReqBody).valid) {
