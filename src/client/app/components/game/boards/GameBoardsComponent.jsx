@@ -42,33 +42,6 @@ export default class GameBoardsComponent extends React.Component {
 	componentDidMount() {
 		socketGame.emit('room', this.props.game.id);
 
-		// Game boards
-		const playingConfig = {
-			predroppable: {
-				enabled: true,
-			},
-			movable: {
-				color: (this.props.userPosition === 1 || this.props.userPosition === 3) ? 'white' : 'black',
-			},
-			events: {
-				move: this.onDropFromBoard,
-				dropNewPiece: this.onDropFromReserve
-			}
-		};
-		const viewOnlyConfig = {
-			viewOnly: true,
-			disableContextMenu: true,
-		};
-		const board1Config = this.props.isPlaying ? playingConfig : viewOnlyConfig;
-
-		this.board1 = Chessground(document.getElementById('board1'), board1Config);
-		this.board2 = Chessground(document.getElementById('board2'), viewOnlyConfig);
-		if (this.props.userPosition === 1 || this.props.userPosition === 3) {
-			this.board2.toggleOrientation();
-		} else {
-			this.board1.toggleOrientation();
-		}
-
 		// Clocks
 		const minutesInMilliseconds = this.props.game.minutes * 60 * 1000;
 		const incrementInMilliseconds = this.props.game.increment * 1000;
@@ -133,7 +106,25 @@ export default class GameBoardsComponent extends React.Component {
 					this.props.updateDisplayDrawChoice(true);
 				}
 
-				// Hydrate board configs
+				// Game boards
+				const playingConfig = {
+					predroppable: {
+						enabled: true,
+					},
+					movable: {
+						color: (this.props.userPosition === 1 || this.props.userPosition === 3) ? 'white' : 'black',
+					},
+					events: {
+						move: this.onDropFromBoard,
+						dropNewPiece: this.onDropFromReserve
+					},
+					viewOnly: false
+				};
+				const viewOnlyConfig = {
+					viewOnly: true,
+					disableContextMenu: true
+				};
+				const board1Config = this.props.isPlaying ? playingConfig : viewOnlyConfig;
 				const leftConfig = {
 					fen: data.leftFens[data.leftFens.length - 1],
 					lastMove: data.leftLastMove,
@@ -145,12 +136,18 @@ export default class GameBoardsComponent extends React.Component {
 					turnColor: data.rightColorToPlay
 				};
 				if (this.props.userPosition === 1 || this.props.userPosition === 2) {
-					this.board1.set(leftConfig);
-					this.board2.set(rightConfig);
+					this.board1 = Chessground(document.getElementById('board1'), _.assign({}, leftConfig, board1Config));
+					this.board2 = Chessground(document.getElementById('board2'), _.assign({}, rightConfig, viewOnlyConfig));
 				} else {
-					this.board1.set(rightConfig);
-					this.board2.set(leftConfig);
+					this.board1 = Chessground(document.getElementById('board1'), _.assign({}, rightConfig, board1Config));
+					this.board2 = Chessground(document.getElementById('board2'), _.assign({}, leftConfig, viewOnlyConfig));
 				}
+				if (this.props.userPosition === 1 || this.props.userPosition === 3) {
+					this.board2.toggleOrientation();
+				} else {
+					this.board1.toggleOrientation();
+				}
+
 				// Hydrate clocks
 				const currentTime = Date.now();
 				if (data.leftLastTime) {
