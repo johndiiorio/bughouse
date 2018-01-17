@@ -3,7 +3,7 @@
 ![Bughouse Chess - Game page](https://raw.githubusercontent.com/johndiiorio/bughouse/master/src/client/app/static/img/screenshots/gamePage.png)
 ![Bughouse Chess - Lobby page](https://raw.githubusercontent.com/johndiiorio/bughouse/master/src/client/app/static/img/screenshots/lobbyPage.png)
 
-This web application is designed for the purpose for chess players to play [Bughouse chess](https://en.wikipedia.org/wiki/Bughouse_chess). It is written with React, Redux, and Bootstrap front-end with a Node.js (Express.js) + Socket.io + Postgres backend. This site also utilizes a heavily modified version of jhlywa's [Chess.js](https://github.com/jhlywa/chess.js) and the [Chessground](https://github.com/ornicar/chessground) library. The game notation is specified by the [Bughouse Portable Game Notation standard](http://bughousedb.com/Lieven_BPGN_Standard.txt). This web app is not currently hosted anywhere online and is currently under development.
+This web application is designed for the purpose for chess players to play [Bughouse chess](https://en.wikipedia.org/wiki/Bughouse_chess). It is written with React, Redux, and Bootstrap front-end with a Node.js (Express.js) + Socket.io + Postgres backend. This site also utilizes a heavily modified version of jhlywa's [Chess.js](https://github.com/jhlywa/chess.js) and the [Chessground](https://github.com/ornicar/chessground) library. The game notation is specified by the [Bughouse Portable Game Notation standard](http://bughousedb.com/Lieven_BPGN_Standard.txt). This web app is hosted online at [bughousechess.org](https://bughousechess.org) and is currently under development.
 
 ### Developer installation: ###
 
@@ -32,4 +32,4 @@ BUGHOUSE_DOMAIN_NAME=?              // Domain name
 
 ### Contact: ###
 
-Send me an [email](mailto:johnzdiiorio@gmail.com), open a GitHub issue, or make a pull request.
+Send me an [email](mailto:bughousechess.org@gmail.com), open a GitHub issue, or make a pull request.

@@ -53,7 +53,7 @@ export default function AboutComponent() {
 					<br />
 					<h3>Contact</h3>
 					<p>
-						For any questions about the site or if you wish to register a title, <a href="mailto:johnzdiiorio@gmail.com" target="_top">send us an email</a>.
+						For any questions about the site or if you wish to register a title, <a href="mailto:bughousechess.org@gmail.com" target="_top">send us an email</a>.
 					</p>
 					<br />
 					<h3>Contribute</h3>
