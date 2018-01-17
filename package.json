@@ -1,6 +1,6 @@
 {
   "name": "Bughouse-Chess",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": false,
   "description": "Bughouse chess web application",
   "author": "John DiIorio",
