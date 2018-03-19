@@ -118,6 +118,9 @@ export default class GameBoardsComponent extends React.Component {
 						move: this.onDropFromBoard,
 						dropNewPiece: this.onDropFromReserve
 					},
+					animation: {
+						enabled: false
+					},
 					viewOnly: false
 				};
 				const viewOnlyConfig = {

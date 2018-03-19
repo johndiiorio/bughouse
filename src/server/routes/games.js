@@ -11,18 +11,17 @@ const router = express.Router();
 router.post('/', async (req, res) => {
 	const validReq = {
 		type: 'object',
-		maxProperties: 9,
-		required: ['minutes', 'increment', 'ratingRange', 'mode', 'joinRandom'],
+		maxProperties: 8,
+		required: ['minutes', 'increment', 'player1', 'player2', 'ratingRange', 'mode', 'joinRandom', 'token'],
 		properties: {
 			minutes: { type: 'integer' },
 			increment: { type: 'integer' },
 			player1: { type: ['integer', null] },
 			player2: { type: ['integer', null] },
-			player3: { type: ['integer', null] },
-			player4: { type: ['integer', null] },
 			ratingRange: { type: 'string' },
 			mode: { type: 'string' },
 			joinRandom: { type: 'boolean' },
+			token: { type: 'string' }
 		}
 	};
 	try {
@@ -32,13 +31,24 @@ router.post('/', async (req, res) => {
 			|| (req.body.minutes > 20)
 			|| (req.body.increment < 0)
 			|| (req.body.increment > 30)
+			|| (req.body.player1 && req.body.player2)
+			|| (!req.body.player1 && !req.body.player2)
 			|| (req.body.ratingRange.split(' - ').length === 1)
 			|| (parseInt(req.body.ratingRange.split(' - ')[0]) < 0)
 			|| (parseInt(req.body.ratingRange.split(' - ')[1]) > 3000)) {
 			res.sendStatus(400);
 		} else {
-			const id = await Game.createGame(req.body.player1, req.body.player2, req.body.player3, req.body.player4, req.body.minutes, req.body.increment, req.body.ratingRange, req.body.mode, req.body.joinRandom);
-			res.json({ id });
+			const requestPlayerID = req.body.player1 ? req.body.player1 : req.body.player2;
+			if (requestPlayerID) {
+				jwt.verify(req.body.token, secretToken, async (err, decoded) => {
+					if (err || decoded.id !== requestPlayerID) {
+						res.sendStatus(400);
+					} else {
+						const id = await Game.createGame(req.body.player1, req.body.player2, undefined, undefined, req.body.minutes, req.body.increment, req.body.ratingRange, req.body.mode, req.body.joinRandom);
+						res.json({ id });
+					}
+				});
+			}
 		}
 	} catch (err) {
 		res.status(400).send({ error: 'Failed to create game' });
