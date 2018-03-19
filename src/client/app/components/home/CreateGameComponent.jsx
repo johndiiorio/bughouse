@@ -76,7 +76,8 @@ export default class CreateGameComponent extends React.Component {
 			increment: this.state.increment,
 			joinRandom: this.state.randomSwitch,
 			mode: this.state.mode ? 'Rated' : 'Casual',
-			ratingRange: `${userRating - this.state.ratingRange} - ${userRating + this.state.ratingRange}`
+			ratingRange: `${userRating - this.state.ratingRange} - ${userRating + this.state.ratingRange}`,
+			token: localStorage.getItem('token')
 		};
 		if (side === 'random') {
 			side = Math.floor(Math.random() * 2) === 0 ? 'white' : 'black';
@@ -88,8 +89,6 @@ export default class CreateGameComponent extends React.Component {
 			gameInfo.player1 = null;
 			gameInfo.player2 = this.props.currentUser.id;
 		}
-		gameInfo.player3 = null;
-		gameInfo.player4 = null;
 		this.props.createGame(gameInfo);
 	}
 
